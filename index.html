@@ -106,6 +106,42 @@
       color: #4ecdc4;
     }
 
+    /* TIENDA BLOQUEADA */
+    .store-countdown {
+      margin: 20px auto;
+      max-width: 500px;
+      background: rgba(10,10,26,0.5);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      border: 1px dashed gold;
+      display: none;
+    }
+    .store-section {
+      margin: 20px auto;
+      max-width: 500px;
+      background: rgba(10,10,26,0.5);
+      padding: 15px;
+      border-radius: 15px;
+      border: 1px solid #ff6b6b;
+      display: none;
+    }
+    .store-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .store-item {
+      background: rgba(25,25,45,0.8);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .store-item.gold { border-left: 4px solid gold; }
+    .store-item.orange { border-left: 4px solid #ff6b35; }
+    .store-item.purple { border-left: 4px solid #a29bfe; }
+
+    /* COLECCIÓN MEJORADA */
     .collection {
       display: none;
       margin: 20px auto;
@@ -113,16 +149,18 @@
     }
     .collection-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
       margin-top: 15px;
     }
     .collection-card {
       background: rgba(20,20,40,0.8);
-      border-radius: 12px;
-      padding: 10px;
+      border-radius: 10px;
+      padding: 8px;
       position: relative;
-      opacity: 0.5;
+      opacity: 0.6;
+      cursor: not-allowed;
+      transition: opacity 0.2s;
     }
     .collection-card.unlocked {
       opacity: 1;
@@ -134,15 +172,60 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 2em;
+      font-size: 1.8em;
       color: #ff6b6b;
     }
     .collection-card img {
       width: 100%;
-      border-radius: 8px;
+      border-radius: 6px;
       border: 2px solid #333;
     }
 
+    /* Vista detallada de carta */
+    .card-preview {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(10,10,26,0.95);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 300px;
+      z-index: 2000;
+      border: 3px solid gold;
+      box-shadow: 0 0 30px gold;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .card-preview.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    .card-preview img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .rarity-tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-block;
+      margin: 5px 0;
+    }
+    .rarity-common-tag { background: rgba(255,255,255,0.2); color: white; }
+    .rarity-rare-tag { background: rgba(255,107,53,0.3); color: #ff6b35; }
+    .rarity-epic-tag { background: rgba(162,155,254,0.3); color: #a29bfe; }
+    .rarity-legendary-tag { 
+      background: linear-gradient(45deg, red, gold, blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      font-weight: bold;
+    }
+
+    /* Cartas en batalla y mazo */
     .card {
       background: rgba(20,20,40,0.8);
       border-radius: 12px;
@@ -157,6 +240,7 @@
     }
     .card.fainted { opacity: 0.4; filter: grayscale(100%); cursor: not-allowed; }
     .card.in-deck { box-shadow: 0 0 10px gold; }
+    .card:hover { transform: scale(1.03); }
     .card img { width: 100%; border-radius: 8px; }
 
     .rarity-common { border-color: white; box-shadow: 0 0 8px rgba(255,255,255,0.4); }
@@ -246,15 +330,19 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.5);
     }
 
+    .coming-soon {
+      border: 2px dashed gold;
+    }
     .coming-soon h3 {
       color: gold;
       font-family: 'Bebas Neue';
     }
 
     @media (max-width: 500px) {
-      .card, .collection-card { width: 120px; }
+      .card, .collection-card { width: 100px; }
       h1 { font-size: 1.9em; }
       .trophy-bar { flex-direction: column; gap: 8px; }
+      .card-preview { width: 90%; padding: 15px; }
     }
   </style>
 </head>
@@ -281,7 +369,7 @@
 
     <div class="collection" id="collectionView">
       <h2 style="color: #4ecdc4;">Mi Colección</h2>
-      <p>Tus cartas desbloqueadas aparecen aquí. ¡Colecciónalas todas!</p>
+      <p>Selecciona cartas desbloqueadas para tu mazo.</p>
       <div class="collection-grid" id="collectionGrid">
       </div>
       
@@ -292,6 +380,37 @@
       </div>
     </div>
 
+    <!-- 🔑 TIENDA: HOY A LA 1:00 AM -->
+    <div class="store-countdown" id="storeCountdown">
+      <h3 style="color: gold; font-family:'Bebas Neue';">⏳ ¡TIENDA DISPONIBLE HOY A LA 1:00 AM! ⏳</h3>
+      <div id="storeTimer" style="font-size:1.4em; color:gold; margin:10px 0; font-weight:bold;"></div>
+    </div>
+
+    <div class="store-section" id="storeSection">
+      <h3 style="color:gold; font-family:'Bebas Neue'">🛒 TIENDA DE BATALLA</h3>
+      <div class="store-items">
+        <div class="store-item gold">
+          <div style="font-weight:bold;">Skin Dorada</div>
+          <div class="power">+30 DEF</div>
+          <div style="color:gold; font-weight:bold;">50 💎</div>
+          <button class="action-btn" onclick="buyItem('golden_skin',50)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
+        </div>
+        <div class="store-item purple">
+          <div style="font-weight:bold;">Confeti Épico</div>
+          <div class="power">Ataque Sorpresa</div>
+          <div style="color:gold; font-weight:bold;">30 💎</div>
+          <button class="action-btn" onclick="buyItem('epic_confetti',30)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
+        </div>
+        <div class="store-item orange">
+          <div style="font-weight:bold;">Doble Voto</div>
+          <div class="power">Doble Ataque</div>
+          <div style="color:gold; font-weight:bold;">70 💎</div>
+          <button class="action-btn" onclick="buyItem('double_vote',70)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
+        </div>
+      </div>
+      <p id="storeMessage" style="margin-top:10px; color:#4ecdc4; font-style:italic;"></p>
+    </div>
+
     <div class="coming-soon">
       <h3>🔔 ¡PRÓXIMA ACTUALIZACIÓN! 🔔</h3>
       <p><strong>Mañana a las 15:00</strong></p>
@@ -300,13 +419,22 @@
     </div>
   </div>
 
+  <!-- Vista detallada de carta -->
+  <div class="card-preview" id="cardPreview">
+    <img id="previewImg" src="" alt="">
+    <h3 id="previewName"></h3>
+    <div id="previewRarity" class="rarity-tag"></div>
+    <div id="previewStats"></div>
+    <div id="previewPower" style="color:gold; font-style:italic;"></div>
+  </div>
+
   <audio id="hitSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
   <audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3" preload="auto"></audio>
   <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
   <audio id="levelUpSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-new-level-2195.mp3" preload="auto"></audio>
 
   <script>
-    // ==== CONFIGURACIÓN INICIAL ====
+    // ==== DATOS ====
     let CARDS = [
       { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
       { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
@@ -328,7 +456,7 @@
       { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend" }
     ];
 
-    // ==== ESTADO DEL JUEGO ====
+    // ==== ESTADO ====
     let playerCards = [];
     let enemyCard = null;
     let round = 1;
@@ -337,8 +465,9 @@
     let trophies = parseInt(localStorage.getItem('trophies')) || 0;
     let currentLeague = LEAGUES[0];
     let currentDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
+    let credits = 100;
 
-    // Cargar estado de cartas
+    // Cargar cartas
     const savedCards = JSON.parse(localStorage.getItem('cards')) || {};
     CARDS.forEach(card => {
       if (savedCards[card.id] !== undefined) {
@@ -346,7 +475,7 @@
       }
     });
 
-    // ==== FUNCIONES PRINCIPALES ====
+    // ==== FUNCIONES ====
     function saveCollection() {
       const state = {};
       CARDS.forEach(card => state[card.id] = card.unlocked);
@@ -366,7 +495,9 @@
         if (CARDS[unlockIndex] && !CARDS[unlockIndex].unlocked) {
           CARDS[unlockIndex].unlocked = true;
           saveCollection();
-          renderCollection();
+          if (document.getElementById('collectionView').style.display === 'block') {
+            renderCollection();
+          }
         }
       }
       document.getElementById('leagueBadge').className = `league-badge ${newLeague.badgeClass}`;
@@ -391,13 +522,46 @@
       setTimeout(() => document.body.removeChild(notif), 3000);
     }
 
+    // ✨ Mostrar vista detallada
+    function showCardPreview(card) {
+      document.getElementById('previewImg').src = card.img;
+      document.getElementById('previewName').innerText = card.name;
+      
+      const rarityColors = {
+        common: "rarity-common-tag",
+        rare: "rarity-rare-tag",
+        epic: "rarity-epic-tag",
+        legendary: "rarity-legendary-tag"
+      };
+      const rarityNames = {
+        common: "Común",
+        rare: "Rara",
+        epic: "Épica",
+        legendary: "Legendaria"
+      };
+      
+      const rarityEl = document.getElementById('previewRarity');
+      rarityEl.className = `rarity-tag ${rarityColors[card.rarity]}`;
+      rarityEl.innerText = rarityNames[card.rarity];
+      
+      document.getElementById('previewStats').innerText = `ATK: ${card.atk} | DEF: ${card.def}`;
+      document.getElementById('previewPower').innerText = card.power;
+      
+      document.getElementById('cardPreview').classList.add('show');
+    }
+
+    function hideCardPreview() {
+      document.getElementById('cardPreview').classList.remove('show');
+    }
+
+    document.getElementById('cardPreview').onclick = hideCardPreview;
+
     function renderCard(card, isEnemy = false, isFainted = false, inDeck = false) {
       const rarityClass = `rarity-${card.rarity} ${isFainted ? 'fainted' : ''} ${inDeck ? 'in-deck' : ''}`;
-      const rarityName = { common:"Común", rare:"Rara", epic:"Épica", legendary:"Legendaria" };
       return `
         <div class="card ${rarityClass}" style="${isEnemy ? 'transform:scale(1.1);' : ''}" 
              ${!isEnemy && !isFainted ? 'onclick="playerAttack(' + card.id + ')"' : ''}>
-          <div class="rarity-badge">${rarityName[card.rarity]}</div>
+          <div class="rarity-badge">${card.rarity.slice(0,1).toUpperCase()}</div>
           <img src="${card.img}" alt="${card.name}">
           <div class="stats">ATK: ${card.atk} | DEF: ${card.def}</div>
           <div class="power">${card.power}</div>
@@ -412,11 +576,14 @@
         const div = document.createElement('div');
         div.className = `collection-card ${card.unlocked ? 'unlocked' : 'locked'}`;
         if (card.unlocked) {
-          div.innerHTML = `
-            <img src="${card.img}" alt="${card.name}">
-            <div class="rarity-badge" style="position:relative; top:5px;">${card.rarity}</div>
-          `;
-          div.onclick = () => addToDeck(card.id);
+          const img = document.createElement('img');
+          img.src = card.img;
+          img.alt = card.name;
+          div.appendChild(img);
+          div.onclick = () => {
+            showCardPreview(card);
+            setTimeout(() => addToDeck(card.id), 1500);
+          };
         }
         grid.appendChild(div);
       });
@@ -449,6 +616,18 @@
       }
       localStorage.setItem('currentDeck', JSON.stringify(currentDeck));
       showNotification('¡Mazo guardado!');
+    }
+
+    function buyItem(id, cost) {
+      if (credits >= cost) {
+        credits -= cost;
+        localStorage.setItem(`owned_${id}`, 'true');
+        document.getElementById('storeMessage').innerText = '¡Compra exitosa! 🎉';
+        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
+      } else {
+        document.getElementById('storeMessage').innerText = '❌ Créditos insuficientes.';
+        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
+      }
     }
 
     function showView(view) {
@@ -486,7 +665,6 @@
     }
 
     function startBattle() {
-      // Cargar mazo desde localStorage
       const savedDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0,3,6];
       currentDeck = savedDeck;
       
@@ -533,7 +711,6 @@
       document.getElementById('battleArea').innerHTML = html;
     }
 
-    // ✅ CORREGIDO: ahora recibe el ID de la carta
     function playerAttack(cardId) {
       if (!gameActive || !playerTurn) return;
       
@@ -599,7 +776,7 @@
 
       log.innerHTML = `¡${enemyCard.name} ataca a ${targetCard.name}!`;
 
-      const playerEl = document.querySelector(`.player-hand .card[data-id="${targetCard.id}"]`);
+      const playerEl = document.querySelector(`.player-hand .card`);
       if (playerEl) {
         playAttackAnimation(enemyCard.attackType, playerEl);
         document.getElementById('hitSound').play().catch(()=>{});
@@ -647,6 +824,29 @@
       `;
     }
 
+    // ✅ TIENDA: HOY A LA 1:00 AM
+    function updateStoreCountdown() {
+      const now = new Date();
+      const target = new Date(now);
+      target.setHours(1, 0, 0, 0); // 1:00 AM
+      if (now >= target) {
+        target.setDate(target.getDate() + 1);
+      }
+      const diff = target - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      if (diff <= 0) {
+        document.getElementById('storeCountdown').style.display = 'none';
+        document.getElementById('storeSection').style.display = 'block';
+      } else {
+        document.getElementById('storeCountdown').style.display = 'block';
+        document.getElementById('storeTimer').innerText = 
+          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+    }
+
     function updateUpdateCountdown() {
       const now = new Date();
       const target = new Date(now);
@@ -668,6 +868,8 @@
     // ==== INICIAR ====
     createParticles();
     updateTrophies();
+    updateStoreCountdown();
+    setInterval(updateStoreCountdown, 1000);
     updateUpdateCountdown();
     setInterval(updateUpdateCountdown, 1000);
     showView('battle');
