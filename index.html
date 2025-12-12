@@ -5,18 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Torneo de Skins de Fortnite</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    /* Transición de entrada */
     body {
       font-family: 'Segoe UI', 'Arial', sans-serif;
       background: #0a0a1a;
       color: white;
       text-align: center;
       padding: 10px;
-      overflow-x: hidden;
       margin: 0;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
     }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
     h1 {
       color: #ff6b6b;
       margin: 10px 0;
@@ -50,9 +54,6 @@
     }
     .option:hover {
       transform: scale(1.03);
-    }
-    .option:hover img {
-      border-color: #4ecdc4;
     }
     .vs {
       font-size: 1.8em;
@@ -101,23 +102,52 @@
       color: #4caf50;
       margin: 10px 0;
     }
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+    }
+    .leaderboard li {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      gap: 12px;
+    }
+    .leaderboard li:last-child {
+      border-bottom: none;
+    }
+    .skin-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      border: 2px solid #4ecdc4;
+      object-fit: cover;
+    }
+    .rank {
+      font-weight: bold;
+      min-width: 30px;
+      color: #feca57;
+    }
+    .votes {
+      margin-left: auto;
+      color: #ff6b6b;
+    }
     .chart-container {
       margin: 20px auto;
-      max-width: 500px;
-      height: 200px;
       background: rgba(0,0,0,0.2);
       border-radius: 10px;
       padding: 10px;
+      max-width: 500px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       align-items: center;
     }
     .bar {
-      width: 40px;
+      width: 30px;
       background: linear-gradient(to top, #ff6b6b, #ff9ff3);
       border-radius: 5px 5px 0 0;
-      margin: 0 8px;
+      margin: 0 6px;
       transition: height 1s ease;
       position: relative;
     }
@@ -126,7 +156,7 @@
       bottom: -25px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 0.8em;
+      font-size: 0.7em;
       white-space: nowrap;
     }
     .restart-btn {
@@ -157,6 +187,16 @@
       .option {
         max-width: 240px;
       }
+      .winner-img {
+        width: 180px;
+      }
+      .chart-container {
+        height: 200px;
+      }
+      .skin-thumb {
+        width: 50px;
+        height: 50px;
+      }
     }
   </style>
 </head>
@@ -186,24 +226,29 @@
   <div class="chart-container" id="chartContainer"></div>
 
   <div class="leaderboard" id="leaderboard">
-    <h2>📊 Tabla de Clasificación</h2>
+    <h2>📊 Tabla de Clasificación Final</h2>
     <ul id="leaderboardList"></ul>
   </div>
 
   <button class="restart-btn" onclick="restartTournament()">🔄 Reiniciar Torneo</button>
 
-  <!-- Sonido de celebración -->
+  <!-- Sonido -->
   <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
-
   <div class="confetti" id="confetti"></div>
 
   <script>
+    // ✅ ¡10 SKINS ACTUALIZADAS!
     const skins = [
       'https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894',
       'https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871',
       'https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552',
       'https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177',
-      'https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017'
+      'https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017',
+      'https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622',
+      'https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677',
+      'https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818',
+      'https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818',
+      'https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818'
     ];
 
     let votes = {};
@@ -222,6 +267,7 @@
       document.getElementById('results').innerText = '';
       document.getElementById('confetti').innerHTML = '';
       document.getElementById('chartContainer').innerHTML = '';
+      document.getElementById('leaderboardList').innerHTML = '';
 
       displayPair();
     }
@@ -264,15 +310,11 @@
       document.getElementById('votingContainer').style.display = 'none';
       document.getElementById('roundIndicator').style.display = 'none';
 
-      // Sonido
       const sound = document.getElementById('winSound');
       sound.currentTime = 0;
       sound.play();
 
-      // Confeti
       createConfetti();
-
-      // Actualizar gráfico y tabla
       updateChart();
       updateLeaderboard();
     }
@@ -280,7 +322,7 @@
     function createConfetti() {
       const confettiContainer = document.getElementById('confetti');
       confettiContainer.innerHTML = '';
-      for (let i = 0; i < 120; i++) {
+      for (let i = 0; i < 150; i++) {
         const confetti = document.createElement('div');
         confetti.style.position = 'absolute';
         confetti.style.width = Math.random() * 10 + 5 + 'px';
@@ -309,20 +351,17 @@
     function updateChart() {
       const container = document.getElementById('chartContainer');
       container.innerHTML = '<h3 style="margin-bottom:10px;color:#4ecdc4;">Votos por Skin</h3>';
-      
       const sortedSkins = Object.keys(votes).sort((a, b) => votes[b] - votes[a]);
       const maxVotes = Math.max(...Object.values(votes), 1);
 
       sortedSkins.forEach(skin => {
         const bar = document.createElement('div');
         bar.className = 'bar';
-        bar.style.height = `${(votes[skin] / maxVotes) * 150}px`;
-
+        bar.style.height = `${(votes[skin] / maxVotes) * 180}px`;
         const label = document.createElement('div');
         label.className = 'bar-label';
         label.innerText = `Skin ${Object.keys(votes).indexOf(skin) + 1}`;
         bar.appendChild(label);
-
         container.appendChild(bar);
       });
     }
@@ -334,7 +373,11 @@
 
       sortedSkins.forEach((skin, index) => {
         const li = document.createElement('li');
-        li.innerHTML = `<span>${index + 1}. Skin ${index + 1}</span><span>${votes[skin]} votos</span>`;
+        li.innerHTML = `
+          <span class="rank">${index + 1}º</span>
+          <img class="skin-thumb" src="${skin}" alt="Skin ${index + 1}">
+          <span class="votes">${votes[skin]} votos</span>
+        `;
         list.appendChild(li);
       });
     }
