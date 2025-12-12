@@ -177,7 +177,7 @@
       white-space: nowrap;
       color: #feca57;
     }
-    .restart-btn, .share-btn {
+    .restart-btn, .share-btn, .buy-btn {
       background: #4ecdc4;
       color: #0a0a1a;
       border: none;
@@ -195,7 +195,7 @@
       background: #feca57;
       color: #0a0a1a;
     }
-    .restart-btn:hover, .share-btn:hover {
+    .restart-btn:hover, .share-btn:hover, .buy-btn:hover {
       transform: scale(1.07);
       box-shadow: 0 6px 15px rgba(0,0,0,0.5);
     }
@@ -275,6 +275,35 @@
       to { opacity: 1; }
     }
 
+    /* Tienda */
+    .store-section {
+      margin: 40px auto;
+      max-width: 520px;
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid #ff6b6b;
+    }
+    .store-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .store-item {
+      background: rgba(30,30,50,0.7);
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .store-countdown {
+      margin: 30px auto;
+      max-width: 500px;
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+
     @media (max-width: 500px) {
       h1 { font-size: 1.8em; }
       .voting-container { flex-direction: column; }
@@ -283,12 +312,9 @@
       .winner-img { width: 200px; }
       .skin-thumb { width: 55px; height: 55px; }
       .rank { font-size: 1.2em; }
-      .coming-soon {
-        margin: 40px 10px 20px;
-        padding: 20px 15px;
-      }
-      .coming-soon h2 {
-        font-size: 1.9em;
+      .coming-soon, .store-section, .store-countdown {
+        margin: 30px 10px 20px;
+        padding: 15px;
       }
       .cd-value { font-size: 1.8em; }
       .cd-unit { min-width: 50px; padding: 6px; }
@@ -356,6 +382,45 @@
     <p style="margin-top: 15px; font-style: italic; color: #feca57;">
       ¡Prepárate para la batalla definitiva!
     </p>
+  </div>
+
+  <!-- 💎 TIENDA DE OBJETOS - DISPONIBLE HOY A LA 1:00 AM 💎 -->
+  <div class="store-countdown" id="storeCountdown">
+    <h3 style="color: #ff6b6b; font-family: 'Bebas Neue', sans-serif;">⏳ ¡TIENDA DISPONIBLE HOY A LA 1:00 AM! ⏳</h3>
+    <div id="store-timer" style="font-size: 1.4em; color: gold; margin: 10px 0; font-weight: bold;"></div>
+  </div>
+
+  <div class="store-section" id="storeSection" style="display:none;">
+    <h2 style="color: gold; font-family: 'Bebas Neue', sans-serif; font-size: 2em;">🛒 TIENDA DE OBJETOS</h2>
+    <p>Tus créditos: <span id="userCredits" style="color: #4ecdc4; font-weight: bold;">0</span> 💎</p>
+    
+    <div class="store-items">
+      <!-- Objeto 1 -->
+      <div class="store-item" style="border: 1px solid #4ecdc4;">
+        <div style="font-weight: bold; color: white;">Skin Dorada</div>
+        <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Brilla en el torneo!</div>
+        <div style="color: gold; font-weight: bold;">50 💎</div>
+        <button class="buy-btn" onclick="buyItem('golden_skin', 50)" style="background: #4ecdc4; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
+      </div>
+      
+      <!-- Objeto 2 -->
+      <div class="store-item" style="border: 1px solid #ff6b6b;">
+        <div style="font-weight: bold; color: white;">Confeti Épico</div>
+        <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Más confeti al ganar!</div>
+        <div style="color: gold; font-weight: bold;">30 💎</div>
+        <button class="buy-btn" onclick="buyItem('epic_confetti', 30)" style="background: #ff6b6b; color: white; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
+      </div>
+      
+      <!-- Objeto 3 -->
+      <div class="store-item" style="border: 1px solid #feca57;">
+        <div style="font-weight: bold; color: white;">Doble Voto</div>
+        <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Vota 2 veces seguidas!</div>
+        <div style="color: gold; font-weight: bold;">70 💎</div>
+        <button class="buy-btn" onclick="buyItem('double_vote', 70)" style="background: #feca57; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
+      </div>
+    </div>
+    
+    <p id="storeMessage" style="margin-top: 15px; font-style: italic; color: #4ecdc4;"></p>
   </div>
 
   <!-- Sonidos -->
@@ -473,7 +538,6 @@
       return ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#5f27cd'][Math.floor(Math.random() * 7)];
     }
 
-    // ✅ Gráfico siempre visible
     function updateChart() {
       const container = document.getElementById('chartContainer');
       container.innerHTML = '<h3 style="margin-bottom:12px;color:#feca57;">Votos por Skin</h3>';
@@ -529,11 +593,11 @@
       initTournament();
     }
 
-    // ✨ CONTADOR ÉPICO: ACTUALIZACIÓN CADA SEGUNDO
+    // ✨ CONTADOR PRÓXIMA ACTUALIZACIÓN
     function getNextUpdate() {
       const now = new Date();
       let nextUpdate = new Date(now);
-      nextUpdate.setHours(10, 0, 0, 0); // 10:00 AM
+      nextUpdate.setHours(10, 0, 0, 0);
       if (now >= nextUpdate) {
         nextUpdate.setDate(nextUpdate.getDate() + 1);
       }
@@ -580,8 +644,72 @@
       }
     }
 
+    // 💎 SISTEMA DE CRÉDITOS Y TIENDA
+    function getDailyCredits() {
+      const today = new Date().toDateString();
+      const lastClaim = localStorage.getItem('lastCreditClaim');
+      let credits = parseInt(localStorage.getItem('userCredits')) || 0;
+
+      if (lastClaim !== today) {
+        credits = 100;
+        localStorage.setItem('userCredits', credits);
+        localStorage.setItem('lastCreditClaim', today);
+      }
+      return credits;
+    }
+
+    function updateCreditsDisplay() {
+      const credits = getDailyCredits();
+      document.getElementById('userCredits').innerText = credits;
+    }
+
+    function buyItem(itemId, cost) {
+      let credits = getDailyCredits();
+      if (credits >= cost) {
+        credits -= cost;
+        localStorage.setItem('userCredits', credits);
+        localStorage.setItem(`owned_${itemId}`, 'true');
+        updateCreditsDisplay();
+        document.getElementById('storeMessage').innerText = '¡Compra exitosa! 🎉';
+        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
+      } else {
+        document.getElementById('storeMessage').innerText = '❌ No tienes suficientes créditos.';
+        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
+      }
+    }
+
+    // Contador para tienda: hoy a la 1:00 AM
+    function updateStoreCountdown() {
+      const now = new Date();
+      const target = new Date(now);
+      target.setHours(1, 0, 0, 0); // 1:00 AM
+
+      if (now > target) {
+        target.setDate(target.getDate() + 1);
+      }
+
+      const diff = target - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      if (diff <= 0) {
+        document.getElementById('storeCountdown').style.display = 'none';
+        document.getElementById('storeSection').style.display = 'block';
+        updateCreditsDisplay();
+      } else {
+        document.getElementById('storeCountdown').style.display = 'block';
+        document.getElementById('store-timer').innerText = 
+          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+    }
+
+    // Iniciar todo
     updateEpicCountdown();
     setInterval(updateEpicCountdown, 1000);
+
+    updateStoreCountdown();
+    setInterval(updateStoreCountdown, 1000);
 
     initTournament();
   </script>
