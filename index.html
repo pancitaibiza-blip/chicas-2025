@@ -51,7 +51,7 @@
       margin: 10px 0;
     }
 
-    /* Barra de copas y liga */
+    /* Barra de copas */
     .trophy-bar {
       background: rgba(10,10,26,0.7);
       padding: 12px;
@@ -63,10 +63,7 @@
       font-size: 1.2em;
       border: 2px solid gold;
     }
-    .trophy-icon {
-      font-size: 1.5em;
-      margin-right: 8px;
-    }
+    .trophy-icon { font-size: 1.5em; margin-right: 8px; }
     .league-badge {
       padding: 4px 12px;
       border-radius: 20px;
@@ -78,6 +75,107 @@
     .league-gold { background: linear-gradient(to right, gold, #daa520); }
     .league-elite { background: linear-gradient(to right, #4b0082, #8a2be2); }
     .league-legend { background: linear-gradient(45deg, red, gold, blue); animation: rainbow 3s linear infinite; }
+
+    /* Navegación */
+    .nav-buttons {
+      margin: 15px 0;
+    }
+    .nav-btn {
+      background: rgba(78,205,196,0.2);
+      color: white;
+      border: 1px solid #4ecdc4;
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn.active {
+      background: #4ecdc4;
+      color: #0a0a1a;
+      font-weight: bold;
+    }
+
+    /* Mazo actual */
+    .deck-section {
+      background: rgba(10,10,26,0.6);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border: 1px solid #4ecdc4;
+    }
+    .deck-title {
+      margin: 10px 0;
+      color: #4ecdc4;
+    }
+
+    /* Colección */
+    .collection {
+      display: none;
+      margin: 20px auto;
+      max-width: 600px;
+    }
+    .collection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .collection-card {
+      background: rgba(20,20,40,0.8);
+      border-radius: 12px;
+      padding: 10px;
+      position: relative;
+      opacity: 0.5;
+    }
+    .collection-card.unlocked {
+      opacity: 1;
+      cursor: pointer;
+    }
+    .collection-card.locked::after {
+      content: "🔒";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2em;
+      color: #ff6b6b;
+    }
+    .collection-card img {
+      width: 100%;
+      border-radius: 8px;
+      border: 2px solid #333;
+    }
+
+    /* Cartas de batalla */
+    .card {
+      background: rgba(20,20,40,0.8);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 10px;
+      display: inline-block;
+      width: 140px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      position: relative;
+      border: 2px solid #333;
+    }
+    .card.fainted { opacity: 0.4; filter: grayscale(100%); cursor: not-allowed; }
+    .card.in-deck { box-shadow: 0 0 10px gold; }
+    .card img { width: 100%; border-radius: 8px; }
+
+    .rarity-common { border-color: white; box-shadow: 0 0 8px rgba(255,255,255,0.4); }
+    .rarity-rare { border-color: #ff6b35; box-shadow: 0 0 12px rgba(255,107,53,0.6); }
+    .rarity-epic { border-color: #a29bfe; box-shadow: 0 0 15px rgba(162,155,254,0.7); }
+    .rarity-legendary { 
+      border-color: gold;
+      box-shadow: 0 0 20px gold;
+      animation: legendaryGlow 2s infinite alternate;
+    }
+    @keyframes legendaryGlow {
+      0% { box-shadow: 0 0 15px gold; }
+      100% { box-shadow: 0 0 25px gold, 0 0 35px rgba(255,0,0,0.5), 0 0 35px rgba(0,0,255,0.5); }
+    }
 
     .rarity-badge {
       position: absolute;
@@ -101,45 +199,7 @@
     }
     @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
-    .card {
-      background: rgba(20,20,40,0.8);
-      border-radius: 12px;
-      padding: 12px;
-      margin: 10px;
-      display: inline-block;
-      width: 140px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      position: relative;
-      border: 2px solid #333;
-    }
-    .card.fainted {
-      opacity: 0.4;
-      filter: grayscale(100%);
-      cursor: not-allowed;
-    }
-    .card img {
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .rarity-common { border-color: white; box-shadow: 0 0 8px rgba(255,255,255,0.4); }
-    .rarity-rare { border-color: #ff6b35; box-shadow: 0 0 12px rgba(255,107,53,0.6); }
-    .rarity-epic { border-color: #a29bfe; box-shadow: 0 0 15px rgba(162,155,254,0.7); }
-    .rarity-legendary { 
-      border-color: gold;
-      box-shadow: 0 0 20px gold;
-      animation: legendaryGlow 2s infinite alternate;
-    }
-    @keyframes legendaryGlow {
-      0% { box-shadow: 0 0 15px gold; }
-      100% { box-shadow: 0 0 25px gold, 0 0 35px rgba(255,0,0,0.5), 0 0 35px rgba(0,0,255,0.5); }
-    }
-
-    .enemy-card .card {
-      transform: scale(1.1);
-      position: relative;
-    }
+    .enemy-card .card { transform: scale(1.1); position: relative; }
 
     .attack-effect {
       position: absolute;
@@ -157,7 +217,7 @@
     @keyframes windSwirl { 0% { opacity: 0.7; transform: rotate(0) scale(0.5); } 100% { opacity: 0; transform: rotate(180deg) scale(2); } }
     @keyframes arcanePulse { 0% { opacity: 0.9; transform: scale(0.4); box-shadow: 0 0 10px #c864ff; } 50% { box-shadow: 0 0 20px #ff64c8, 0 0 30px #64c8ff; } 100% { opacity: 0; transform: scale(1.8); } }
 
-    .battle-area {
+    .battle-area, .coming-soon {
       margin: 20px auto;
       max-width: 600px;
       background: rgba(10,10,26,0.6);
@@ -191,22 +251,13 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.5);
     }
 
-    .coming-soon {
-      margin: 40px auto;
-      max-width: 500px;
-      background: rgba(0,0,0,0.4);
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      border: 2px dashed gold;
-    }
     .coming-soon h3 {
       color: gold;
       font-family: 'Bebas Neue';
     }
 
     @media (max-width: 500px) {
-      .card { width: 120px; }
+      .card, .collection-card { width: 120px; }
       h1 { font-size: 1.9em; }
       .trophy-bar { flex-direction: column; gap: 8px; }
     }
@@ -217,7 +268,6 @@
   <div class="content">
     <h1>FORTNITE SKIN BATTLE: ¡DERROTA AL JEFÉ!</h1>
     
-    <!-- 🏆 BARRA DE COPAS Y LIGA -->
     <div class="trophy-bar">
       <div>
         <span class="trophy-icon">🏆</span>
@@ -226,7 +276,29 @@
       <div class="league-badge" id="leagueBadge">Bronce</div>
     </div>
 
+    <!-- Navegación -->
+    <div class="nav-buttons">
+      <button class="nav-btn active" onclick="showView('battle')">⚔️ Batalla</button>
+      <button class="nav-btn" onclick="showView('collection')">🃏 Colección</button>
+    </div>
+
+    <!-- ⚔️ BATALLA -->
     <div class="battle-area" id="battleArea">
+    </div>
+
+    <!-- 🃏 COLECCIÓN -->
+    <div class="collection" id="collectionView">
+      <h2 style="color: #4ecdc4;">Mi Colección</h2>
+      <p>Tus cartas desbloqueadas aparecen aquí. ¡Colecciónalas todas!</p>
+      <div class="collection-grid" id="collectionGrid">
+        <!-- Se llena con JS -->
+      </div>
+      
+      <div class="deck-section">
+        <div class="deck-title">Mazo Actual (3 cartas)</div>
+        <div id="currentDeck" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;"></div>
+        <button class="action-btn" onclick="saveDeck()" style="margin-top:10px;">💾 Guardar Mazo</button>
+      </div>
     </div>
 
     <div class="coming-soon">
@@ -263,7 +335,20 @@
       }
     }
 
-    // 🏆 Sistema de ligas
+    // 🃏 CARTAS con estado de desbloqueo
+    let CARDS = [
+      { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
+      { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
+      { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind", unlocked: false },
+      { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:70, power:"Muralla", attackType:"ice", unlocked: true },
+      { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind", unlocked: false },
+      { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire", unlocked: false },
+      { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
+      { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: false },
+      { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: false },
+      { id:9, name:"JEFE FINAL", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: false }
+    ];
+
     const LEAGUES = [
       { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze" },
       { name: "Plata", min: 200, max: 399, badgeClass: "league-silver" },
@@ -272,21 +357,6 @@
       { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend" }
     ];
 
-    // 🃏 Cartas
-    const CARDS = [
-      { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind" },
-      { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire" },
-      { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind" },
-      { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:70, power:"Muralla", attackType:"ice" },
-      { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind" },
-      { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire" },
-      { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice" },
-      { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire" },
-      { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice" },
-      { id:9, name:"JEFE FINAL", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane" }
-    ];
-
-    // Estado del juego
     let playerCards = [];
     let enemyCard = null;
     let round = 1;
@@ -294,18 +364,37 @@
     let playerTurn = true;
     let trophies = parseInt(localStorage.getItem('trophies')) || 0;
     let currentLeague = LEAGUES[0];
+    let currentDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6]; // IDs de cartas iniciales
 
-    // Actualizar copas y liga
+    // ✅ Cargar estado de cartas
+    const savedCards = JSON.parse(localStorage.getItem('cards')) || {};
+    CARDS.forEach(card => {
+      if (savedCards[card.id] !== undefined) {
+        card.unlocked = savedCards[card.id];
+      }
+    });
+
+    function saveCollection() {
+      const state = {};
+      CARDS.forEach(card => state[card.id] = card.unlocked);
+      localStorage.setItem('cards', JSON.stringify(state));
+    }
+
     function updateTrophies() {
       localStorage.setItem('trophies', trophies);
       document.getElementById('trophyCount').innerText = trophies;
       
-      // Determinar liga actual
       const newLeague = LEAGUES.find(l => trophies >= l.min && trophies <= l.max) || LEAGUES[0];
       if (newLeague.name !== currentLeague.name) {
         currentLeague = newLeague;
         document.getElementById('levelUpSound').play().catch(()=>{});
         showNotification(`¡Ascendiste a ${newLeague.name}! 🎉`);
+        // Desbloquear carta al subir de liga
+        const unlockIndex = Math.min(LEAGUES.indexOf(newLeague), CARDS.length - 1);
+        if (CARDS[unlockIndex]) {
+          CARDS[unlockIndex].unlocked = true;
+          saveCollection();
+        }
       }
       document.getElementById('leagueBadge').className = `league-badge ${newLeague.badgeClass}`;
       document.getElementById('leagueBadge').innerText = newLeague.name;
@@ -329,8 +418,8 @@
       setTimeout(() => document.body.removeChild(notif), 3000);
     }
 
-    function renderCard(card, isEnemy = false, isFainted = false) {
-      const rarityClass = `rarity-${card.rarity} ${isFainted ? 'fainted' : ''}`;
+    function renderCard(card, isEnemy = false, isFainted = false, inDeck = false) {
+      const rarityClass = `rarity-${card.rarity} ${isFainted ? 'fainted' : ''} ${inDeck ? 'in-deck' : ''}`;
       const rarityName = { common:"Común", rare:"Rara", epic:"Épica", legendary:"Legendaria" };
       return `
         <div class="card ${rarityClass}" style="${isEnemy ? 'transform:scale(1.1);' : ''}">
@@ -340,6 +429,67 @@
           <div class="power">${card.power}</div>
         </div>
       `;
+    }
+
+    function renderCollection() {
+      const grid = document.getElementById('collectionGrid');
+      grid.innerHTML = '';
+      CARDS.forEach(card => {
+        const div = document.createElement('div');
+        div.className = `collection-card ${card.unlocked ? 'unlocked' : 'locked'}`;
+        if (card.unlocked) {
+          div.innerHTML = `
+            <img src="${card.img}" alt="${card.name}">
+            <div class="rarity-badge" style="position:relative; top:5px;">${card.rarity}</div>
+          `;
+          div.onclick = () => addToDeck(card.id);
+        }
+        grid.appendChild(div);
+      });
+
+      // Renderizar mazo actual
+      const deckEl = document.getElementById('currentDeck');
+      deckEl.innerHTML = '';
+      currentDeck.forEach(id => {
+        const card = CARDS.find(c => c.id === id);
+        if (card) {
+          deckEl.innerHTML += renderCard(card, false, false, true);
+        }
+      });
+    }
+
+    function addToDeck(cardId) {
+      if (currentDeck.length >= 3) {
+        alert('Tu mazo solo puede tener 3 cartas.');
+        return;
+      }
+      if (!currentDeck.includes(cardId)) {
+        currentDeck.push(cardId);
+        renderCollection();
+      }
+    }
+
+    function saveDeck() {
+      if (currentDeck.length !== 3) {
+        alert('¡Tu mazo debe tener exactamente 3 cartas!');
+        return;
+      }
+      localStorage.setItem('currentDeck', JSON.stringify(currentDeck));
+      showNotification('¡Mazo guardado!');
+    }
+
+    function showView(view) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('battleArea').style.display = view === 'battle' ? 'block' : 'none';
+      document.getElementById('collectionView').style.display = view === 'collection' ? 'block' : 'none';
+      
+      if (view === 'collection') {
+        renderCollection();
+      } else if (view === 'battle') {
+        startBattle();
+      }
     }
 
     function playAttackAnimation(type, targetElement) {
@@ -352,24 +502,29 @@
       }, 800);
     }
 
-    // ✅ Ajustar enemigos según liga
     function getEnemyByLeague() {
       const baseIndex = Math.min(round + 3, 9);
       if (currentLeague.name === "Bronce") return CARDS[Math.min(baseIndex, 5)];
       if (currentLeague.name === "Plata") return CARDS[Math.min(baseIndex + 1, 7)];
       if (currentLeague.name === "Oro") return CARDS[Math.min(baseIndex + 2, 8)];
       if (currentLeague.name === "Élite") return CARDS[8];
-      return CARDS[9]; // Leyenda
+      return CARDS[9];
     }
 
     function startBattle() {
-      const nonBoss = CARDS.slice(0, -1);
       playerCards = [];
-      const pool = [...nonBoss];
-      while (playerCards.length < 3 && pool.length > 0) {
-        const idx = Math.floor(Math.random() * pool.length);
-        playerCards.push({...pool.splice(idx, 1)[0], alive: true});
+      currentDeck.forEach(id => {
+        const card = CARDS.find(c => c.id === id);
+        if (card) {
+          playerCards.push({...card, alive: true});
+        }
+      });
+
+      if (playerCards.length === 0) {
+        document.getElementById('battleArea').innerHTML = `<p style="color:#ff6b6b;">¡Tu mazo está vacío! Ve a "Colección" y arma tu mazo.</p>`;
+        return;
       }
+
       enemyCard = {...getEnemyByLeague(), alive: true};
       playerTurn = true;
       renderBattle();
@@ -423,6 +578,14 @@
           if (round > 5) {
             trophies += 50;
             updateTrophies();
+            // Desbloquear una carta al ganar
+            const lockedCards = CARDS.filter(c => !c.unlocked);
+            if (lockedCards.length > 0) {
+              const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
+              randomCard.unlocked = true;
+              saveCollection();
+              showNotification(`¡Nueva carta desbloqueada: ${randomCard.name}! 🎁`);
+            }
             endGame(true);
             return;
           }
@@ -496,20 +659,17 @@
           <h2 style="color:${isWin ? 'gold' : '#ff6b6b'}; text-shadow:0 0 10px ${isWin ? 'gold' : 'red'};">
             ${isWin ? '🎉 ¡VICTORIA ROYALE!' : '💀 DERROTA'} 
           </h2>
-          <p style="font-size:1.2em;">${isWin ? '¡Ganaste 50 copas!' : 'Perdiste 20 copas.'}</p>
+          <p style="font-size:1.2em;">${isWin ? '¡Ganaste 50 copas y una carta!' : 'Perdiste 20 copas.'}</p>
           <button class="action-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
         </div>
       `;
     }
 
-    // ⏰ Contador: mañana a las 15:00
     function updateUpdateCountdown() {
       const now = new Date();
       const target = new Date(now);
       target.setHours(15, 0, 0, 0);
-      if (now >= target) {
-        target.setDate(target.getDate() + 1);
-      }
+      if (now >= target) target.setDate(target.getDate() + 1);
       const diff = target - now;
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -523,12 +683,12 @@
       }
     }
 
-    // Iniciar
     createParticles();
     updateTrophies();
     updateUpdateCountdown();
     setInterval(updateUpdateCountdown, 1000);
-    startBattle();
+    // Iniciar en vista de batalla
+    showView('battle');
   </script>
 </body>
 </html>
