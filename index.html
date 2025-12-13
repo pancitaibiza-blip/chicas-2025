@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fortnite Cartas Épicas</title>
+  <title>🎄 Fortnite Cartas - Evento Navideño</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
+    /* ✨ FONDO NAVIDEÑO */
     body {
-      background: linear-gradient(135deg, #0c0a25, #2a1b5e, #1a1a3a);
+      background: linear-gradient(135deg, #0c3b1f, #1a5e3a, #2d1e4d);
       background-size: 400% 400%;
       animation: gradientBG 20s ease infinite;
       color: white;
@@ -16,6 +17,25 @@
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       overflow-x: hidden;
+      position: relative;
+    }
+    body::before {
+      content: "🎄";
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      opacity: 0.7;
+      z-index: -1;
+    }
+    body::after {
+      content: "❄️";
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-size: 28px;
+      opacity: 0.6;
+      z-index: -1;
     }
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
@@ -24,7 +44,7 @@
     }
     .hidden { display: none !important; }
     .btn {
-      background: #8b5cf6;
+      background: #d42020; /* Rojo navideño */
       color: white;
       border: none;
       padding: 8px 16px;
@@ -37,11 +57,11 @@
     }
     .btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(139, 92, 246, 0.8);
+      box-shadow: 0 0 15px rgba(255, 200, 200, 0.8);
     }
     .card-small {
       width: 110px;
-      background: rgba(20, 20, 40, 0.9);
+      background: rgba(20, 40, 20, 0.9);
       border-radius: 10px;
       padding: 6px;
       text-align: center;
@@ -50,19 +70,19 @@
     }
     .card-small:hover {
       transform: translateY(-5px);
-      box-shadow: 0 0 15px rgba(100, 100, 255, 0.6);
+      box-shadow: 0 0 15px rgba(255, 100, 100, 0.6);
     }
     .card-battle {
       width: 160px;
       height: 240px;
-      background: rgba(10, 10, 30, 0.95);
+      background: rgba(10, 30, 10, 0.95);
       border-radius: 16px;
       padding: 10px;
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 0 25px rgba(200, 0, 0, 0.7);
       transition: all 0.4s;
       position: relative;
     }
@@ -71,7 +91,7 @@
     }
     @keyframes attackPulse {
       0%, 100% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.1); filter: brightness(1.5); box-shadow: 0 0 40px gold; }
+      50% { transform: scale(1.1); filter: brightness(1.5); box-shadow: 0 0 40px #ff4545; }
     }
     .hp-bar {
       height: 8px;
@@ -82,14 +102,14 @@
     }
     .hp-fill {
       height: 100%;
-      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      background: linear-gradient(to right, #d42020, #ff4545);
       transition: width 0.5s ease;
     }
     .timer-badge {
       position: absolute;
       top: 8px;
       right: 8px;
-      background: #ff6b35;
+      background: #d4a017; /* Dorado navideño */
       color: white;
       font-size: 11px;
       padding: 2px 8px;
@@ -100,12 +120,12 @@
     .rarity-common { border-top: 4px solid #9e9e9e; }
     .rarity-rare { border-top: 4px solid #4caf50; }
     .rarity-epic { border-top: 4px solid #9c27b0; }
-    .rarity-legendary { border-top: 4px solid #ff9800; }
+    .rarity-legendary { border-top: 4px solid #d4a017; } /* Dorado navideño */
     .rarity-tournament { border-top: 4px solid #f44336; }
 
-    /* BANNER DE COFRES */
+    /* BANNER DE NAVIDAD */
     #chestsBanner {
-      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      background: linear-gradient(to right, #d42020, #228b22); /* Rojo y verde */
       color: white;
       padding: 10px;
       text-align: center;
@@ -131,16 +151,16 @@
     #countdownTimer {
       display: inline-block;
       background: #000;
-      color: gold;
+      color: #d4a017; /* Dorado */
       padding: 2px 10px;
       border-radius: 6px;
       margin: 0 8px;
       font-weight: bold;
     }
 
-    /* ESTADÍSTICAS ÉPICAS */
+    /* ESTADÍSTICAS NAVIDEÑAS */
     #statsBar {
-      background: rgba(10, 5, 30, 0.85);
+      background: rgba(10, 20, 10, 0.85);
       border-radius: 16px;
       padding: 12px;
       margin-bottom: 16px;
@@ -148,8 +168,8 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 16px;
-      border: 1px solid #8b5cf6;
-      box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+      border: 1px solid #d42020;
+      box-shadow: 0 0 15px rgba(212, 32, 32, 0.4);
     }
     .stat-item {
       display: flex;
@@ -159,9 +179,9 @@
       font-size: 18px;
       text-shadow: 0 0 8px rgba(255,255,255,0.6);
     }
-    .trophy { color: #FFD700; text-shadow: 0 0 10px gold; }
+    .trophy { color: #d4a017; text-shadow: 0 0 10px #d4a017; }
     .gem { color: #4FC3F7; text-shadow: 0 0 10px #4fc3f7; }
-    .crown { color: #FF6F00; text-shadow: 0 0 10px #ff6f00; }
+    .crown { color: #d4a017; text-shadow: 0 0 10px #d4a017; }
 
     /* OVERLAYS */
     .overlay-effect {
@@ -182,15 +202,16 @@
       background: rgba(0,0,0,0.85);
       padding: 30px;
       border-radius: 20px;
-      border: 3px solid gold;
-      box-shadow: 0 0 40px gold;
+      border: 3px solid #d4a017;
+      box-shadow: 0 0 40px #d4a017;
       min-width: 300px;
     }
+
+    /* CONFETI NAVIDEÑO */
     .confetti {
       position: absolute;
       width: 10px;
       height: 10px;
-      background: gold;
       border-radius: 50%;
       animation: fall linear forwards;
     }
@@ -198,7 +219,7 @@
       to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
 
-    /* PERFIL Y LOG */
+    /* PERFIL */
     #playerProfile {
       display: flex;
       align-items: center;
@@ -210,7 +231,7 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      border: 2px solid #8b5cf6;
+      border: 2px solid #d42020;
       object-fit: cover;
       cursor: pointer;
       transition: transform 0.3s;
@@ -237,20 +258,19 @@
       font-size: 14px;
     }
     .log-player { background: rgba(50, 150, 255, 0.2); }
-    .log-ia { background: rgba(255, 80, 80, 0.2); }
+    .log-ia { background: rgba(212, 32, 32, 0.2); }
     .log-system { background: rgba(150, 150, 255, 0.2); }
   </style>
 </head>
 <body>
-  <!-- BANNER DE COFRES -->
+  <!-- BANNER NAVIDEÑO -->
   <div id="chestsBanner">
     <span id="tickerText">
-      🔔 ¡LLEGAN LOS COFRES! 🔔 ¿Qué carta nueva te tocará? 
+      🎄 ¡EVENTO NAVIDAD! 🎄 Consigue la carta LEGENDARIA navideña 
       <span id="countdownTimer">--d --h --m --s</span>
     </span>
   </div>
 
-  <!-- OVERLAY DE VICTORIA -->
   <div id="victoryOverlay" class="overlay-effect">
     <div class="overlay-content">
       <h2 class="text-4xl font-bold text-yellow-400 mb-4">🎉 ¡HAS GANADO!</h2>
@@ -258,7 +278,6 @@
     </div>
   </div>
 
-  <!-- OVERLAY DE DERROTA -->
   <div id="defeatOverlay" class="overlay-effect">
     <div class="overlay-content">
       <h2 class="text-4xl">💀</h2>
@@ -267,15 +286,16 @@
   </div>
 
   <div class="container mx-auto px-4 py-6 pt-20">
-    <!-- PERFIL + ESTADÍSTICAS ÉPICAS -->
+    <!-- PERFIL -->
     <div id="playerProfile" class="text-center">
-      <img id="profileAvatar" src="https://via.placeholder.com/50/4f46e5/ffffff?text=👤" alt="Avatar">
+      <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar Navideño">
       <div>
         <div class="font-bold text-xl" id="playerName">Jugador</div>
+        <button class="btn text-xs mt-1 bg-green-700" onclick="changeAvatar()">Cambiar avatar</button>
       </div>
     </div>
 
-    <!-- ✅ ESTADÍSTICAS ÉPICAS -->
+    <!-- ESTADÍSTICAS -->
     <div id="statsBar" class="text-center">
       <div class="stat-item">
         <i class="fas fa-trophy trophy"></i>
@@ -291,8 +311,8 @@
       </div>
     </div>
 
-    <h1 class="text-3xl font-bold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-yellow-400">
-      🛡️ FORTNITE: BATALLA DE CARTAS
+    <h1 class="text-3xl font-bold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-green-500 to-yellow-400">
+      🎄 FORTNITE: BATALLA NAVIDEÑA
     </h1>
 
     <div id="content" class="mb-24">
@@ -308,8 +328,8 @@
           <div id="playerCards" class="flex flex-wrap justify-center gap-4"></div>
         </div>
         <div class="text-center mt-4">
-          <button class="btn bg-red-600" onclick="playerAttack()">🔥 ATACAR</button>
-          <button class="btn bg-blue-600" onclick="playerDefend()">🛡️ DEFENDER</button>
+          <button class="btn bg-red-700" onclick="playerAttack()">🔥 ATACAR</button>
+          <button class="btn bg-green-700" onclick="playerDefend()">🛡️ DEFENDER</button>
         </div>
       </div>
 
@@ -321,37 +341,37 @@
 
       <!-- Tienda -->
       <div id="shop" class="view hidden">
-        <h2 class="text-2xl text-center mb-4">💎 TIENDA (Rotación en 5 días)</h2>
+        <h2 class="text-2xl text-center mb-4">💎 TIENDA NAVIDEÑA</h2>
         <div id="shopCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
       </div>
 
       <!-- Torneo -->
       <div id="tournament" class="view hidden">
-        <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEO ÉPICO</h2>
-        <div class="bg-gradient-to-r from-red-900 via-orange-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 mx-auto max-w-2xl animate-pulse">
+        <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEO NAVIDEÑO</h2>
+        <div class="bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 mx-auto max-w-2xl animate-pulse">
           <div class="flex items-center justify-center gap-3 mb-2">
             <i class="fas fa-star text-yellow-300 text-xl"></i>
-            <span class="text-xl font-bold text-white">¡NUEVO DESAFÍO!</span>
+            <span class="text-xl font-bold text-white">¡REGALO NAVIDEÑO!</span>
             <i class="fas fa-star text-yellow-300 text-xl"></i>
           </div>
           <p class="text-center text-yellow-100 font-semibold">
-            🏆 Consigue esta carta <span class="text-yellow-300 font-extrabold">LEGENDARIA</span> ganando 5 rondas.
+            🎁 Consigue la carta <span class="text-yellow-300 font-extrabold">FRANCINE SMITH</span> ganando 5 rondas.
           </p>
           <div class="text-center mt-3">
             <img 
-              src="https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" 
-              alt="Carta Legendaria: IA ÉLITE" 
+              src="https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062" 
+              alt="Francine Smith - Navidad"
               class="inline-block w-24 h-24 rounded-lg border-2 border-yellow-400 shadow-lg mx-auto"
             />
-            <div class="text-yellow-200 text-sm font-bold mt-1">IA ÉLITE</div>
+            <div class="text-yellow-200 text-sm font-bold mt-1">Francine Smith</div>
           </div>
         </div>
         <p class="text-center text-gray-300 mb-4">
-          Necesitas <strong>1 copa</strong> para entrar. ¡5 victorias = recompensa legendaria!
+          Necesitas <strong>1 copa</strong> para entrar. ¡Gana 5 rondas y recibe tu regalo!
         </p>
         <div class="text-center">
-          <button class="btn bg-gradient-to-r from-orange-600 to-red-600" onclick="startTournament()">
-            ⚔️ ENTRAR AL TORNEO
+          <button class="btn bg-gradient-to-r from-red-700 to-green-700" onclick="startTournament()">
+            🎁 ENTRAR AL TORNEO
           </button>
         </div>
       </div>
@@ -366,23 +386,19 @@
   </div>
 
   <script>
-    // === ESTADO DEL JUEGO ===
+    // === EVENTO NAVIDEÑO ===
     let gameState = {
       playerName: localStorage.getItem('playerName') || 'Jugador',
       trophies: parseInt(localStorage.getItem('trophies') || '0'),
       diamonds: parseInt(localStorage.getItem('diamonds') || '100'),
       cups: parseInt(localStorage.getItem('cups') || '0'),
-      avatar: localStorage.getItem('playerAvatar') || 'https://via.placeholder.com/50/4f46e5/ffffff?text=👤',
+      // ✅ Avatar navideño por defecto
+      avatar: localStorage.getItem('playerAvatar') || 'https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037',
       ownedCardIds: JSON.parse(localStorage.getItem('ownedCardIds') || '[0,1,2]'),
       currentDeck: [0, 1, 2],
-      tournament: {
-        active: false,
-        round: 0,
-        wins: 0
-      }
+      tournament: { active: false, round: 0, wins: 0 }
     };
 
-    // === ACTUALIZAR PANTALLA ===
     function updateUI() {
       document.getElementById('playerName').textContent = gameState.playerName;
       document.getElementById('profileAvatar').src = gameState.avatar;
@@ -392,7 +408,7 @@
     }
 
     function changeAvatar() {
-      const url = prompt("Pega URL de tu avatar:", gameState.avatar);
+      const url = prompt("Pega URL de tu avatar navideño:", gameState.avatar);
       if (url && url.trim()) {
         gameState.avatar = url;
         localStorage.setItem('playerAvatar', url);
@@ -400,7 +416,7 @@
       }
     }
 
-    // === CONTADOR DE ROTACIÓN ===
+    // === CONTADOR ===
     let lastShopUpdate = localStorage.getItem('lastShopUpdate') || new Date().toISOString();
     localStorage.setItem('lastShopUpdate', lastShopUpdate);
     function calculateTimeLeft() {
@@ -423,7 +439,7 @@
     setInterval(updateAllTimers, 1000);
     updateAllTimers();
 
-    // === EFECTOS ===
+    // ✅ CONFETI NAVIDEÑO (rojo y verde)
     function showVictory() {
       const overlay = document.getElementById('victoryOverlay');
       overlay.style.opacity = '1';
@@ -432,7 +448,7 @@
         const c = document.createElement('div');
         c.className = 'confetti';
         c.style.left = Math.random() * 100 + 'vw';
-        c.style.backgroundColor = ['gold','orange','red','purple','cyan'][Math.floor(Math.random()*5)];
+        c.style.backgroundColor = ['#d42020', '#228b22', '#d4a017', '#ffffff'][Math.floor(Math.random()*4)];
         c.style.animationDuration = (Math.random() * 3 + 2) + 's';
         document.body.appendChild(c);
         setTimeout(() => c.remove(), 5000);
@@ -453,7 +469,6 @@
       }, 2000);
     }
 
-    // === LOG ===
     function addToLog(message, type = 'system') {
       const log = document.getElementById('battleLog');
       const entry = document.createElement('div');
@@ -463,7 +478,7 @@
       log.scrollTop = log.scrollHeight;
     }
 
-    // === DATOS ===
+    // === CARTAS CON FRANCINE SMITH ===
     const ALL_CARDS = [
       { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
@@ -472,7 +487,8 @@
       { id: 4, name: "Tormenta", rarity: "epic", atk: 80, def: 45, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
       { id: 5, name: "Furia", rarity: "legendary", atk: 90, def: 40, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
       { id: 6, name: "Asesina", rarity: "legendary", atk: 95, def: 30, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-      { id: 7, name: "IA ÉLITE", rarity: "legendary", atk: 100, def: 65, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", shopPrice: null }
+      // ✅ CARTA NAVIDEÑA LEGENDARIA
+      { id: 7, name: "Francine Smith", rarity: "legendary", atk: 110, def: 70, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null }
     ];
 
     const IA_CARDS = [
@@ -481,11 +497,7 @@
     ];
 
     let battleState = {
-      playerCards: [
-        { ...ALL_CARDS[0], currentHp: 50, alive: true },
-        { ...ALL_CARDS[1], currentHp: 70, alive: true },
-        { ...ALL_CARDS[2], currentHp: 65, alive: true }
-      ],
+      playerCards: [],
       enemyCard: null,
       playerTurn: true,
       inTournament: false
@@ -572,7 +584,6 @@
       document.querySelectorAll('.card-battle')[index + 1]?.classList.add('attacking');
     }
 
-    // === BATALLA ===
     function startBattle(isTournament = false) {
       const enemy = isTournament 
         ? { ...IA_CARDS[1], currentHp: 120, alive: true } 
@@ -588,7 +599,7 @@
         inTournament: isTournament
       };
       renderBattle();
-      addToLog(isTournament ? "⚔️ ¡Ronda " + (gameState.tournament.round + 1) + " del torneo!" : "⏳ ¡Elige una carta y ataca!", 'system');
+      addToLog(isTournament ? "⚔️ ¡Ronda " + (gameState.tournament.round + 1) + " del torneo navideño!" : "⏳ ¡Elige una carta y ataca!", 'system');
     }
 
     function playerAttack() {
@@ -613,21 +624,23 @@
           if (battleState.inTournament) {
             gameState.tournament.wins++;
             if (gameState.tournament.wins >= 5) {
-              // Victoria en torneo
               gameState.cups -= 1;
-              gameState.ownedCardIds.push(7); // Desbloquear IA ÉLITE
+              // ✅ DESBLOQUEAR FRANCINE SMITH
+              if (!gameState.ownedCardIds.includes(7)) {
+                gameState.ownedCardIds.push(7);
+              }
               gameState.trophies += 500;
-              alert("¡FELICIDADES! Has ganado el torneo y desbloqueado la carta IA ÉLITE.");
+              alert("¡FELICIDADES! 🎄 Has ganado el evento navideño y desbloqueado a FRANCINE SMITH.");
               gameState.tournament = { active: false, round: 0, wins: 0 };
             } else {
               gameState.tournament.round++;
-              alert("¡Ronda " + gameState.tournament.wins + " ganada! Preparando siguiente ronda...");
+              alert("¡Ronda " + gameState.tournament.wins + " ganada! 🎅");
               setTimeout(() => startBattle(true), 1000);
               return;
             }
           } else {
             gameState.trophies += 30;
-            showVictory();
+            showVictory(); // ✅ con confeti navideño
           }
           saveGame();
           updateUI();
@@ -656,8 +669,8 @@
       if (aliveCards.length === 0) {
         if (battleState.inTournament) {
           gameState.tournament = { active: false, round: 0, wins: 0 };
-          gameState.cups -= 1;
-          addToLog("💀 Has perdido el torneo.", 'system');
+          gameState.cups = Math.max(0, gameState.cups - 1);
+          addToLog("💀 Has perdido el torneo navideño.", 'system');
         } else {
           gameState.trophies = Math.max(0, gameState.trophies - 15);
           showDefeat();
@@ -680,8 +693,8 @@
         if (!stillAlive) {
           if (battleState.inTournament) {
             gameState.tournament = { active: false, round: 0, wins: 0 };
-            gameState.cups -= 1;
-            addToLog("💀 Has perdido el torneo.", 'system');
+            gameState.cups = Math.max(0, gameState.cups - 1);
+            addToLog("💀 Has perdido el torneo navideño.", 'system');
           } else {
             gameState.trophies = Math.max(0, gameState.trophies - 15);
             showDefeat();
@@ -695,10 +708,9 @@
       }, 1200);
     }
 
-    // ✅ ¡AHORA EL TORNEO ES FUNCIONAL!
     function startTournament() {
       if (gameState.cups < 1) {
-        alert("¡Necesitas 1 copa para entrar al torneo! Tienes " + gameState.cups + ".");
+        alert("¡Necesitas 1 copa para el evento navideño! 🎄 Tienes " + gameState.cups + ".");
         return;
       }
       if (!gameState.currentDeck || gameState.currentDeck.length === 0) {
