@@ -31,7 +31,7 @@
     .content { position: relative; z-index: 10; opacity: 0; animation: fadeIn 1.5s forwards; }
     @keyframes fadeIn { to { opacity: 1; } }
 
-    /* Barra de copas */
+    /* Barra de trofeos */
     .trophy-bar {
       background: rgba(10,10,26,0.7);
       padding: 12px;
@@ -349,6 +349,50 @@
       font-family: 'Bebas Neue';
     }
 
+    /* Vista detallada de carta */
+    .card-preview {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(10,10,26,0.95);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 300px;
+      z-index: 2000;
+      border: 3px solid gold;
+      box-shadow: 0 0 30px gold;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .card-preview.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    .card-preview img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .rarity-tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-block;
+      margin: 5px 0;
+    }
+    .rarity-common-tag { background: rgba(255,255,255,0.2); color: white; }
+    .rarity-rare-tag { background: rgba(255,107,53,0.3); color: #ff6b35; }
+    .rarity-epic-tag { background: rgba(162,155,254,0.3); color: #a29bfe; }
+    .rarity-legendary-tag { 
+      background: linear-gradient(45deg, red, gold, blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      font-weight: bold;
+    }
+
     @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
     @media (max-width: 600px) {
@@ -356,6 +400,7 @@
       .hand-card { width: 100px; }
       .battle-table, .store-section, .collection-grid { padding: 15px; }
       .nav-btn { padding: 8px 14px; font-size: 0.95em; }
+      .card-preview { width: 90%; padding: 15px; }
     }
   </style>
 </head>
@@ -367,7 +412,7 @@
     <div class="trophy-bar">
       <div>
         <span class="trophy-icon">🏆</span>
-        <span id="trophyCount">0</span> copas
+        <span id="trophyCount">0</span> trofeos
       </div>
       <div class="league-badge" id="leagueBadge">Bronce</div>
     </div>
@@ -379,7 +424,7 @@
       <button class="nav-btn" onclick="showView('store')">🛒 Tienda</button>
     </div>
 
-    <!-- 💎 TIENDA (siempre visible) -->
+    <!-- 💎 TIENDA -->
     <div class="store-section" id="storeView" style="display:none;">
       <h3 style="color:gold; font-family:'Bebas Neue'">🛒 TIENDA DE BATALLA</h3>
       <div class="store-items">
@@ -472,6 +517,15 @@
       <p><strong>Mañana: ¡Modo Multijugador!</strong></p>
       <p>Juega contra amigos en tiempo real.</p>
     </div>
+  </div>
+
+  <!-- Vista detallada de carta -->
+  <div class="card-preview" id="cardPreview">
+    <img id="previewImg" src="" alt="">
+    <h3 id="previewName"></h3>
+    <div id="previewRarity" class="rarity-tag"></div>
+    <div id="previewStats"></div>
+    <div id="previewPower" style="color:gold; font-style:italic;"></div>
   </div>
 
   <!-- Sonidos -->
@@ -582,10 +636,44 @@
       document.getElementById('battleTable').style.display = 'none';
     }
 
+    // ✨ VISTA DETALLADA DE CARTA
+    function showCardPreview(card) {
+      document.getElementById('previewImg').src = card.img;
+      document.getElementById('previewName').innerText = card.name;
+      
+      const rarityColors = {
+        common: "rarity-common-tag",
+        rare: "rarity-rare-tag",
+        epic: "rarity-epic-tag",
+        legendary: "rarity-legendary-tag"
+      };
+      const rarityNames = {
+        common: "Común",
+        rare: "Rara",
+        epic: "Épica",
+        legendary: "Legendaria"
+      };
+      
+      const rarityEl = document.getElementById('previewRarity');
+      rarityEl.className = `rarity-tag ${rarityColors[card.rarity]}`;
+      rarityEl.innerText = rarityNames[card.rarity];
+      
+      document.getElementById('previewStats').innerText = `ATK: ${card.atk} | DEF: ${card.def}`;
+      document.getElementById('previewPower').innerText = card.power;
+      
+      document.getElementById('cardPreview').classList.add('show');
+    }
+
+    function hideCardPreview() {
+      document.getElementById('cardPreview').classList.remove('show');
+    }
+
+    document.getElementById('cardPreview').onclick = hideCardPreview;
+
     function renderCollection() {
       const grid = document.getElementById('collectionGrid');
       grid.innerHTML = '';
-      CARDS.slice(0, -1).forEach(card => { // Excluye la IA
+      CARDS.slice(0, -1).forEach(card => {
         const div = document.createElement('div');
         div.className = `collection-card ${card.unlocked ? 'unlocked' : 'locked'}`;
         if (card.unlocked) {
@@ -593,7 +681,7 @@
           img.src = card.img;
           img.alt = card.name;
           div.appendChild(img);
-          div.onclick = () => addToDeck(card.id);
+          div.onclick = () => showCardPreview(card);
         }
         grid.appendChild(div);
       });
@@ -606,7 +694,7 @@
           const cardEl = document.createElement('div');
           cardEl.style.width = '100px';
           cardEl.style.margin = '5px';
-          cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;">`;
+          cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;" onclick="showCardPreview(${JSON.stringify(card).replace(/"/g, '&quot;')})">`;
           deckEl.appendChild(cardEl);
         }
       });
@@ -669,7 +757,6 @@
         return;
       }
 
-      // La IA usa una carta aleatoria (no el jefe)
       const iaCard = {...CARDS[9], currentHp: CARDS[9].def, alive: true};
       enemyCard = iaCard;
 
@@ -684,14 +771,12 @@
     }
 
     function updateBattleUI() {
-      // IA
       document.getElementById('enemyCardImg').src = enemyCard.img;
       document.getElementById('enemyRarity').innerText = enemyCard.rarity;
       document.getElementById('enemyRarity').className = `card-rarity ${enemyCard.rarity}`;
       document.getElementById('enemyHp').innerText = enemyCard.currentHp;
       document.getElementById('enemyHpBar').style.width = `${(enemyCard.currentHp / enemyCard.def) * 100}%`;
       
-      // Jugador
       if (selectedPlayerCard) {
         document.getElementById('playerCardImg').src = selectedPlayerCard.img;
         document.getElementById('playerRarity').innerText = selectedPlayerCard.rarity;
@@ -700,7 +785,6 @@
         document.getElementById('playerHpBar').style.width = `${(selectedPlayerCard.currentHp / selectedPlayerCard.def) * 100}%`;
       }
 
-      // Mano
       const handEl = document.getElementById('playerHand');
       handEl.innerHTML = '';
       playerCards.forEach(card => {
@@ -728,7 +812,6 @@
 
       playAttackEffect(selectedPlayerCard.attackType);
 
-      // Daño a IA
       const damage = Math.max(5, selectedPlayerCard.atk - Math.floor(enemyCard.def * 0.3));
       setTimeout(() => {
         enemyCard.currentHp = Math.max(0, enemyCard.currentHp - damage);
@@ -737,9 +820,11 @@
         if (enemyCard.currentHp <= 0) {
           log.innerHTML = `¡${selectedPlayerCard.name} derrotó a la IA!`;
           setTimeout(() => {
+            const oldTrophies = trophies;
             trophies += 30;
             updateTrophies();
-            endBattle(true);
+            log.innerHTML += `<br><br>¡Ganaste 30 trofeos!<br>Total: ${trophies} trofeos.`;
+            setTimeout(() => endBattle(true), 2000);
           }, 1500);
         } else {
           log.innerHTML += `<br>¡Turno de la IA!`;
@@ -757,7 +842,6 @@
 
       playAttackEffect(enemyCard.attackType);
 
-      // Daño modificado por liga
       const baseDamage = Math.max(5, enemyCard.atk - Math.floor(selectedPlayerCard.def * 0.3));
       const modifier = currentLeague.iaMod / 100;
       const damage = Math.round(baseDamage * (1 + modifier));
@@ -772,9 +856,11 @@
           
           const aliveCards = playerCards.filter(c => c.alive);
           if (aliveCards.length === 0) {
+            const oldTrophies = trophies;
             trophies = Math.max(0, trophies - 15);
             updateTrophies();
-            endBattle(false);
+            log.innerHTML += `<br><br>Perdiste 15 trofeos.<br>Total: ${trophies} trofeos.`;
+            setTimeout(() => endBattle(false), 2000);
             return;
           }
           selectedPlayerCard = aliveCards[0];
@@ -789,20 +875,13 @@
       gameActive = false;
       const sound = isWin ? 'winSound' : 'loseSound';
       document.getElementById(sound).play();
-      
-      document.getElementById('battleLog').innerHTML = `
-        <h3 style="color:${isWin ? 'gold' : '#ff6b6b'};">
-          ${isWin ? '🎉 ¡VICTORIA!' : '💀 DERROTA'}
-        </h3>
-        <p style="margin-top:15px;">
-          ${isWin ? '¡Ganaste 30 copas!' : 'Perdiste 15 copas.'}
-        </p>
-      `;
     }
 
     function exitBattle() {
       document.getElementById('battleTable').style.display = 'none';
       document.getElementById('battleView').style.display = 'block';
+      // Mostrar trofeos actuales
+      showNotification(`Tus trofeos actuales: ${trophies}`);
     }
 
     createParticles();
