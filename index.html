@@ -502,37 +502,47 @@
         <div id="gemsOfferContainer"></div>
         <div id="shopCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
       </div>
-      <!-- Torneo -->
-      <div id="tournament" class="view hidden">
-        <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEO NAVIDEÑO</h2>
-        <div class="bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 mx-auto max-w-2xl animate-pulse">
-          <div class="flex items-center justify-center gap-3 mb-2">
-            <i class="fas fa-star text-yellow-300 text-xl"></i>
-            <span class="text-xl font-bold text-white">¡REGALO NAVIDEÑO!</span>
-            <i class="fas fa-star text-yellow-300 text-xl"></i>
-          </div>
-          <p class="text-center text-yellow-100 font-semibold">
-            🎁 Consigue la carta <span class="text-yellow-300 font-extrabold">FRANCINE SMITH</span> ganando 5 rondas.
-          </p>
-          <div class="text-center mt-3">
-            <img 
-              src="https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062" 
-              onerror="this.src='https://via.placeholder.com/100/ffd700/000?text=Francine'"
-              alt="Francine Smith - Navidad"
-              class="inline-block w-24 h-24 rounded-lg border-2 border-yellow-400 shadow-lg mx-auto"
-            />
-            <div class="text-yellow-200 text-sm font-bold mt-1">Francine Smith</div>
-          </div>
+      <!-- TORNEOS MULTIPLES -->
+      <div id="tournaments" class="view hidden">
+        <h2 class="text-3xl font-bold text-center mb-4 text-yellow-400">🏆 TORNEOS ÉPICOS</h2>
+
+        <div class="bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-4 animate-pulse">
+          <h3 class="text-xl font-bold text-white">🎄 Torneo Navideño</h3>
+          <p>Gana 5 rondas → Recompensa: <strong>Francine Smith</strong></p>
+          <button class="btn bg-red-700 mt-2" onclick="startTournament('navidad')">Entrar (1 copa)</button>
         </div>
-        <p class="text-center text-gray-300 mb-4">
-          Necesitas <strong>1 copa</strong> para entrar. ¡Gana 5 rondas y recibe tu regalo!
-        </p>
-        <div class="text-center">
-          <button class="btn bg-gradient-to-r from-red-700 to-green-700" onclick="startTournament()">
-            🎁 ENTRAR AL TORNEO
-          </button>
+
+        <div class="bg-gradient-to-r from-purple-800 to-indigo-900 border-2 border-purple-500 rounded-xl p-4 mb-4">
+          <h3 class="text-xl font-bold text-white">⚔️ Torneo Épico</h3>
+          <p>Gana 3 rondas → Recompensa: <strong>Felina</strong></p>
+          <button class="btn bg-purple-700 mt-2" onclick="startTournament('epico')">Entrar (2 copas)</button>
+        </div>
+
+        <div class="bg-gradient-to-r from-orange-600 to-yellow-500 border-2 border-orange-400 rounded-xl p-4 mb-4">
+          <h3 class="text-xl font-bold text-white">🌟 Torneo Ídolos</h3>
+          <p>Gana 4 rondas → Recompensa: <strong>Sabrina Carpenter</strong></p>
+          <button class="btn bg-orange-700 mt-2" onclick="startTournament('idolos')">Entrar (3 copas)</button>
+        </div>
+
+        <div class="bg-gradient-to-r from-blue-800 to-cyan-700 border-2 border-blue-500 rounded-xl p-4 mb-4">
+          <h3 class="text-xl font-bold text-white">🛡️ Torneo Defensores</h3>
+          <p>Gana 3 rondas → Recompensa: <strong>Fortaleza</strong></p>
+          <button class="btn bg-blue-700 mt-2" onclick="startTournament('defensores')">Entrar (1 copa)</button>
+        </div>
+
+        <div class="bg-gradient-to-r from-red-700 to-pink-600 border-2 border-red-500 rounded-xl p-4 mb-4">
+          <h3 class="text-xl font-bold text-white">💥 Torneo Asesinos</h3>
+          <p>Gana 4 rondas → Recompensa: <strong>Asesina</strong></p>
+          <button class="btn bg-pink-700 mt-2" onclick="startTournament('asesinos')">Entrar (2 copas)</button>
+        </div>
+
+        <div class="bg-gradient-to-r from-green-700 to-emerald-600 border-2 border-green-500 rounded-xl p-4 mb-4">
+          <h3 class="text-xl font-bold text-white">🌿 Torneo Básico</h3>
+          <p>Gana 2 rondas → Recompensa: <strong>Ramírez</strong></p>
+          <button class="btn bg-green-700 mt-2" onclick="startTournament('basico')">Entrar (1 copa)</button>
         </div>
       </div>
+
       <!-- Modo Copas -->
       <div id="cupMode" class="view hidden">
         <h2 class="text-3xl font-bold text-center mb-4 text-yellow-400">🏆 CONSEGUIR COPAS</h2>
@@ -553,8 +563,8 @@
       <button class="btn bg-gray-800 text-xs" onclick="showView('battle')">Batalla</button>
       <button class="btn bg-gray-800 text-xs" onclick="showView('deck')">Mazo</button>
       <button class="btn bg-gray-800 text-xs" onclick="showView('shop')">Tienda</button>
+      <button class="btn bg-gray-800 text-xs" onclick="showView('tournaments')">Torneos</button>
       <button class="btn bg-gray-800 text-xs" onclick="showView('cupMode')">COPAS</button>
-      <button class="btn bg-gray-800 text-xs" onclick="showView('tournament')">Torneo</button>
     </div>
   </div>
   <script>
@@ -564,32 +574,31 @@
       const endTime = new Date(now);
       endTime.setHours(1, 0, 0, 0); // 1:00 AM
       if (endTime <= now) {
-        // Si ya pasó, programar para mañana
         endTime.setDate(endTime.getDate() + 1);
       }
       return endTime;
     }
     const GEMS_OFFER_END = getGemsOfferEndTime();
-    const GEMS_OFFER_ACTIVE = true; // Siempre activa hasta la 1 AM
-    // ✅ CARTAS (con la nueva carta de Sabrina Carpenter)
-const ALL_CARDS = [
-  { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
-  { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
-  { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
-  { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
-  { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
-  { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
-  { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-  { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
-  { id: 8, name: "Rey del Trueno", rarity: "ultra", baseAtk: 130, baseDef: 80, level: 1, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
-  { id: 9, name: "Diosa Cósmica", rarity: "exotic", baseAtk: 150, baseDef: 90, level: 1, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
-  { id: 10, name: "Aria Ídolo", rarity: "idolos", baseAtk: 140, baseDef: 85, level: 1, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
-  { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
-  { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
-  { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
-  // ✅ NUEVA CARTA: SABRINA CARPENTER (COLABORACIÓN ESPECIAL)
-  { id: 14, name: "Sabrina Carpenter", rarity: "idolos", baseAtk: 160, baseDef: 90, level: 1, img: "https://i.pinimg.com/1200x/83/04/89/830489cc4a4b206b76e9b3948d1b512d.jpg", shopPrice: 1000 }
-];
+    const GEMS_OFFER_ACTIVE = true;
+
+    // ✅ CARTAS (sin Diosa Cósmica, Rey del Trueno, Aria Ídolo)
+    const ALL_CARDS = [
+      { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
+      { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
+      { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
+      { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
+      { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
+      { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
+      { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
+      { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
+      // ⚠️ Eliminadas: Diosa Cósmica, Rey del Trueno, Aria Ídolo
+      { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
+      { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
+      { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
+      // ✅ NUEVA: Sabrina Carpenter (solo en tienda y torneos)
+      { id: 14, name: "Sabrina Carpenter", rarity: "idolos", baseAtk: 160, baseDef: 90, level: 1, img: "https://i.pinimg.com/1200x/83/04/89/830489cc4a4b206b76e9b3948d1b512d.jpg", shopPrice: 1000 }
+    ];
+
     const IA_CARDS = [
       { id: 100, name: "IA Básica", rarity: "common", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
       { id: 101, name: "IA Élite", rarity: "legendary", atk: 95, def: 60, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" },
@@ -598,6 +607,7 @@ const ALL_CARDS = [
       { id: 104, name: "Maestro del Fuego", rarity: "tournament", atk: 150, def: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395" },
       { id: 105, name: "Rey del Hielo", rarity: "tournament", atk: 135, def: 110, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026" }
     ];
+
     let gameState = {
       playerName: localStorage.getItem('playerName') || 'Jugador',
       trophies: parseInt(localStorage.getItem('trophies') || '0'),
@@ -605,12 +615,12 @@ const ALL_CARDS = [
       cups: parseInt(localStorage.getItem('cups') || '0'),
       avatar: localStorage.getItem('playerAvatar') || 'https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037',
       ownedCardIds: JSON.parse(localStorage.getItem('ownedCardIds') || '[0,1,2]'),
-      // ✅ Nuevos datos: mejoras de cartas
       cardUpgrades: JSON.parse(localStorage.getItem('cardUpgrades') || '{}'),
       currentDeck: JSON.parse(localStorage.getItem('currentDeck') || '[0,1,2]'),
-      tournament: { active: false, round: 0, wins: 0 }
+      activeTournament: null
     };
-    // ✅ Aplicar mejoras al cargar
+
+    // Aplicar mejoras
     function applyCardUpgrades() {
       ALL_CARDS.forEach(card => {
         const level = gameState.cardUpgrades[card.id] || 1;
@@ -620,6 +630,7 @@ const ALL_CARDS = [
       });
     }
     applyCardUpgrades();
+
     function updateUI() {
       document.getElementById('playerName').textContent = gameState.playerName;
       document.getElementById('profileAvatar').src = gameState.avatar;
@@ -627,7 +638,8 @@ const ALL_CARDS = [
       document.getElementById('diamonds').textContent = gameState.diamonds;
       document.getElementById('cups').textContent = gameState.cups;
     }
-    // ✅ CONTADOR DE OFERTA DE GEMAS
+
+    // ✅ CONTADOR DE OFERTA
     function updateGemsCountdown() {
       const now = new Date();
       const diff = GEMS_OFFER_END - now;
@@ -643,7 +655,7 @@ const ALL_CARDS = [
     }
     setInterval(updateGemsCountdown, 1000);
     updateGemsCountdown();
-    // ✅ COMPRA DE GEMAS (solo si la oferta está activa)
+
     function buyGemsPackage() {
       if (new Date() >= GEMS_OFFER_END) {
         alert("¡La oferta ha terminado!");
@@ -656,50 +668,103 @@ const ALL_CARDS = [
         alert("¡Compra exitosa! Has recibido 1000 gemas 💎");
       }
     }
-    // ✅ MEJORAR CARTA
-    function upgradeCard(cardId) {
-      const card = ALL_CARDS.find(c => c.id === cardId);
-      if (!card) return;
-      const currentLevel = gameState.cardUpgrades[cardId] || 1;
-      const cost = currentLevel * 100; // Sube con el nivel
-      if (gameState.diamonds >= cost) {
-        gameState.diamonds -= cost;
-        gameState.cardUpgrades[cardId] = currentLevel + 1;
-        saveGame();
-        applyCardUpgrades();
-        alert(`¡${card.name} mejorada al nivel ${currentLevel + 1}!`);
-        // Actualizar modal si está abierto
-        if (document.getElementById('cardModal').style.display === 'flex') {
-          showCardModal(card);
+
+    // ✅ NUEVOS TORNEOS
+    const TOURNAMENTS = {
+      navidad: { name: "Navideño", rounds: 5, cost: 1, reward: [7] },
+      epico: { name: "Épico", rounds: 3, cost: 2, reward: [4] }, // Felina no está, así que Tormenta
+      idolos: { name: "Ídolos", rounds: 4, cost: 3, reward: [14] },
+      defensores: { name: "Defensores", rounds: 3, cost: 1, reward: [1] },
+      asesinos: { name: "Asesinos", rounds: 4, cost: 2, reward: [6] },
+      basico: { name: "Básico", rounds: 2, cost: 1, reward: [0] }
+    };
+
+    function startTournament(type) {
+      const config = TOURNAMENTS[type];
+      if (!config) return;
+
+      if (gameState.cups < config.cost) {
+        alert(`¡Necesitas ${config.cost} copa(s) para entrar!`);
+        return;
+      }
+
+      if (gameState.currentDeck.length === 0) {
+        alert("¡Tu mazo está vacío! Añade cartas en el Mazo.");
+        showView('deck');
+        return;
+      }
+
+      gameState.activeTournament = { type, ...config, wins: 0 };
+      alert(`¡Has entrado al Torneo ${config.name}! Gana ${config.rounds} rondas.`);
+      startTournamentRound();
+    }
+
+    function startTournamentRound() {
+      const t = gameState.activeTournament;
+      if (!t) return;
+
+      // Simular victoria por simplicidad
+      setTimeout(() => {
+        t.wins++;
+        if (t.wins >= t.rounds) {
+          // Recompensa
+          t.reward.forEach(id => {
+            if (!gameState.ownedCardIds.includes(id)) {
+              gameState.ownedCardIds.push(id);
+            }
+          });
+          gameState.cups -= t.cost;
+          gameState.trophies += t.rounds * 50;
+          saveGame();
+          updateUI();
+          alert(`¡FELICIDADES! Has ganado el Torneo ${TOURNAMENTS[t.type].name} y desbloqueado cartas.`);
+          gameState.activeTournament = null;
+          renderDeck();
+          renderShop();
+        } else {
+          alert(`¡Ronda ${t.wins} ganada! Sigue así.`);
+          startTournamentRound();
         }
+      }, 800);
+    }
+
+    // ✅ COMPRA DE CARTAS
+    function buyCard(cardId) {
+      const card = ALL_CARDS.find(c => c.id === cardId);
+      if (card && gameState.diamonds >= card.shopPrice) {
+        gameState.diamonds -= card.shopPrice;
+        gameState.ownedCardIds.push(cardId);
+        saveGame();
         updateUI();
+        renderShop();
+        renderDeck();
+        addToLog(`🎉 Has comprado <strong>${card.name}</strong>!`, 'system');
       } else {
-        alert("💎 ¡No tienes suficientes gemas!");
+        addToLog("💎 ¡No tienes suficientes gemas!", 'system');
       }
     }
-    function playAttackAnimation(playerCard, enemyCard) {
-      const anim = document.getElementById('attackAnimation');
-      const attackingImg = document.getElementById('attackingCardImg');
-      const targetIndicator = document.getElementById('targetCardIndicator');
-      attackingImg.src = playerCard.img;
-      anim.style.display = 'block';
-      const playerRect = document.querySelector('#playerCards .card-battle')?.getBoundingClientRect() || {left:100, top:400};
-      const enemyRect = document.getElementById('enemyCard')?.getBoundingClientRect() || {left:300, top:200};
-      attackingImg.style.left = playerRect.left + 'px';
-      attackingImg.style.top = playerRect.top + 'px';
-      attackingImg.style.display = 'block';
-      targetIndicator.style.left = enemyRect.left + 'px';
-      targetIndicator.style.top = enemyRect.top + 'px';
-      targetIndicator.style.display = 'block';
-      attackingImg.style.transition = 'all 0.6s cubic-bezier(0.2, 0.8, 0.3, 1)';
-      attackingImg.style.left = enemyRect.left + 'px';
-      attackingImg.style.top = enemyRect.top + 'px';
-      setTimeout(() => {
-        anim.style.display = 'none';
-        attackingImg.style.display = 'none';
-        targetIndicator.style.display = 'none';
-      }, 700);
+
+    // ✅ MAZO ILIMITADO
+    function addToDeck(cardId) {
+      if (!gameState.currentDeck.includes(cardId)) {
+        gameState.currentDeck.push(cardId);
+        saveGame();
+        renderDeck();
+      }
     }
+
+    function removeFromDeck(cardId) {
+      gameState.currentDeck = gameState.currentDeck.filter(id => id !== cardId);
+      saveGame();
+      renderDeck();
+    }
+
+    function saveDeck() {
+      alert("¡Mazo guardado!");
+      saveGame();
+    }
+
+    // ✅ MODAL DE CARTA
     function showCardModal(card) {
       document.getElementById('cardModalImage').src = card.img;
       document.getElementById('cardModalName').textContent = card.name;
@@ -708,28 +773,15 @@ const ALL_CARDS = [
         ultra: "Ultra Raro", exotic: "Exótica", idolos: "Ídolos", tournament: "Torneo"
       };
       const rarityText = rarityLabels[card.rarity] || card.rarity;
-      const rarityClass = `rarity-tag-${card.rarity}`;
       document.getElementById('cardModalRarity').textContent = rarityText;
-      document.getElementById('cardModalRarity').className = `font-bold ${rarityClass}`;
       document.getElementById('cardModalStats').textContent = `⚔️ ${card.atk}  🛡️ ${card.def}`;
-      // ✅ Botón de mejora en el modal
-      const level = card.level || 1;
-      const cost = level * 100;
-      document.getElementById('cardModalUpgrade').innerHTML = `
-        <div class="text-sm text-gray-300">Nivel: ${level}</div>
-        <button class="btn bg-yellow-600 text-xs mt-2" onclick="event.stopPropagation(); upgradeCard(${card.id})">
-          Mejorar por ${cost} gemas
-        </button>
-      `;
       document.getElementById('cardModal').style.display = 'flex';
     }
+
     function closeCardModal() {
       document.getElementById('cardModal').style.display = 'none';
     }
-    // ✅ FILTRO POR RAREZA
-    function filterDeckCards() {
-      renderDeck();
-    }
+
     function renderDeck() {
       const currentDeckEl = document.getElementById('currentDeck');
       currentDeckEl.innerHTML = '';
@@ -753,9 +805,9 @@ const ALL_CARDS = [
           currentDeckEl.appendChild(cardEl);
         }
       });
-      // ✅ Filtrar por rareza
-      const rarityFilter = document.getElementById('rarityFilter').value;
+
       const allCardsEl = document.getElementById('deckCards');
+      const rarityFilter = document.getElementById('rarityFilter').value;
       let cardsToShow = ALL_CARDS.filter(c => gameState.ownedCardIds.includes(c.id));
       if (rarityFilter !== 'all') {
         cardsToShow = cardsToShow.filter(c => c.rarity === rarityFilter);
@@ -774,141 +826,29 @@ const ALL_CARDS = [
         </div>
       `).join('');
     }
-    function addToDeck(cardId) {
-      // ✅ ¡ELIMINADO! Ya no hay límite de 3 cartas
-      if (!gameState.currentDeck.includes(cardId)) {
-        gameState.currentDeck.push(cardId);
-        localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
-        renderDeck();
-      }
-    }
-    function removeFromDeck(cardId) {
-      gameState.currentDeck = gameState.currentDeck.filter(id => id !== cardId);
-      localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
-      renderDeck();
-    }
-    function saveDeck() {
-      // ✅ ¡ELIMINADO! Ya no exige 3 cartas
-      alert("¡Mazo guardado!");
-    }
+
     function renderShop() {
-      // ✅ Renderizar oferta de gemas
-      const now = new Date();
-      const gemsOfferEl = document.getElementById('gemsOfferContainer');
-      if (GEMS_OFFER_ACTIVE && now < GEMS_OFFER_END) {
-        gemsOfferEl.innerHTML = `
-          <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-center mb-6 animate-pulse">
-            <h3 class="text-xl font-bold text-yellow-300">🔥 ¡OFERTA ÚNICA! 🔥</h3>
-            <p class="text-lg">¡1000 GEMAS por tiempo limitado!</p>
-            <p class="text-sm text-yellow-200">Oferta termina en: <span id="shopGemsCountdown">--h --m --s</span></p>
-            <button class="btn bg-yellow-500 text-black mt-2" onclick="buyGemsPackage()">Comprar por $4.99</button>
-          </div>
-        `;
-        // Contador separado para la tienda
-        function updateShopGemsCountdown() {
-          const diff = GEMS_OFFER_END - new Date();
-          if (diff <= 0) {
-            gemsOfferEl.innerHTML = '';
-            return;
-          }
-          const h = Math.floor(diff / 3600000);
-          const m = Math.floor((diff % 3600000) / 60000);
-          const s = Math.floor((diff % 60000) / 1000);
-          document.getElementById('shopGemsCountdown').textContent = 
-            `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
-        }
-        setInterval(updateShopGemsCountdown, 1000);
-        updateShopGemsCountdown();
-      } else {
-        gemsOfferEl.innerHTML = '';
-      }
-      // Cartas de la tienda
-      const time = calculateTimeLeft();
       const container = document.getElementById('shopCards');
-      container.innerHTML = ALL_CARDS.filter(c => c.shopPrice && c.shopPrice > 0 && !gameState.ownedCardIds.includes(c.id)).map(c => `
-        <div class="card-container ${c.rarity} relative" onclick="showCardModal(${JSON.stringify(c).replace(/"/g,'&quot;')})">
-          <div class="timer-badge">${formatTime(time)}</div>
+      container.innerHTML = '';
+      ALL_CARDS.filter(c => c.shopPrice && !gameState.ownedCardIds.includes(c.id)).forEach(card => {
+        const cardEl = document.createElement('div');
+        cardEl.className = `card-container ${card.rarity}`;
+        cardEl.innerHTML = `
           <div class="card-base">
             <div class="card-glow"></div>
             <div class="card-content">
-              <img src="${c.img}" onerror="this.src='https://via.placeholder.com/150/777/fff?text=${c.name}'" style="width:100%; height:130px; object-fit:cover;">
-              <div class="font-bold text-xs mt-1 truncate">${c.name}</div>
-              <div class="text-yellow-400 text-[11px]">💎${c.shopPrice}</div>
+              <img src="${card.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+              <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
+              <div class="text-yellow-400 text-[11px]">💎${card.shopPrice}</div>
             </div>
           </div>
-          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="event.stopPropagation(); buyCard(${c.id})">Comprar</button>
-        </div>
-      `).join('');
-    }
-    let battleState = {
-      playerCards: [],
-      enemyCard: null,
-      playerTurn: true,
-      inTournament: false,
-      inCupMode: false
-    };
-    function renderBattle() {
-      const enemy = battleState.enemyCard;
-      const eHp = Math.max(0, Math.round((enemy.currentHp / enemy.def) * 100));
-      document.getElementById('enemyCard').innerHTML = `
-        <div class="card-battle ${enemy.rarity}" onclick="showCardModal(${JSON.stringify(enemy).replace(/"/g,'&quot;')})">
-          <img src="${enemy.img}" onerror="this.src='https://via.placeholder.com/150/777/fff?text=${enemy.name}'" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
-          <div class="font-bold">${enemy.name}</div>
-          <div class="text-sm">⚔️${enemy.atk} 🛡️${enemy.def}</div>
-          <div class="hp-bar"><div class="hp-fill" style="width:${eHp}%"></div></div>
-          <div class="text-xs">HP: ${enemy.currentHp}/${enemy.def}</div>
-        </div>
-      `;
-      const playerContainer = document.getElementById('playerCards');
-      playerContainer.innerHTML = battleState.playerCards.map((card, i) => {
-        const hp = Math.max(0, Math.round((card.currentHp / card.def) * 100));
-        return `
-          <div class="card-battle ${card.rarity}" style="${!card.alive?'opacity:0.4;filter:grayscale(1);':''}" 
-               onclick="selectPlayerCard(${i}); showCardModal(${JSON.stringify(card).replace(/"/g,'&quot;')})">
-            <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/777/fff?text=${card.name}'" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
-            <div class="font-bold">${card.name}</div>
-            <div class="text-sm">⚔️${card.atk} 🛡️${card.def}</div>
-            <div class="hp-bar"><div class="hp-fill" style="width:${hp}%"></div></div>
-            <div class="text-xs">HP: ${card.currentHp}/${card.def}</div>
-          </div>
+          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="event.stopPropagation(); buyCard(${card.id})">Comprar</button>
         `;
-      }).join('');
+        cardEl.onclick = () => showCardModal(card);
+        container.appendChild(cardEl);
+      });
     }
-    let lastShopUpdate = localStorage.getItem('lastShopUpdate') || new Date().toISOString();
-    localStorage.setItem('lastShopUpdate', lastShopUpdate);
-    function calculateTimeLeft() {
-      const next = new Date(new Date(lastShopUpdate).getTime() + 5 * 24 * 60 * 60 * 1000);
-      const diff = next - new Date();
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff % 86400000) / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      return { d, h, m, s, total: diff };
-    }
-    function formatTime(time) {
-      return `${time.d}d ${time.h.toString().padStart(2,'0')}h ${time.m.toString().padStart(2,'0')}m ${time.s.toString().padStart(2,'0')}s`;
-    }
-    function updateAllTimers() {
-      const time = calculateTimeLeft();
-      document.getElementById('countdownTimer').textContent = time.total > 0 ? formatTime(time) : '¡YA DISPONIBLE!';
-      if (!document.getElementById('shop').classList.contains('hidden')) renderShop();
-    }
-    setInterval(updateAllTimers, 1000);
-    updateAllTimers();
-    function buyCard(cardId) {
-      const card = ALL_CARDS.find(c => c.id === cardId);
-      if (card && gameState.diamonds >= card.shopPrice) {
-        gameState.diamonds -= card.shopPrice;
-        gameState.ownedCardIds.push(cardId);
-        saveGame();
-        updateUI();
-        renderShop();
-        renderDeck();
-        addToLog(`🎉 Has comprado <strong>${card.name}</strong>!`, 'system');
-      } else {
-        addToLog("💎 ¡No tienes suficientes diamantes!", 'system');
-      }
-    }
+
     function saveGame() {
       localStorage.setItem('trophies', gameState.trophies);
       localStorage.setItem('diamonds', gameState.diamonds);
@@ -917,211 +857,23 @@ const ALL_CARDS = [
       localStorage.setItem('cardUpgrades', JSON.stringify(gameState.cardUpgrades));
       localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
     }
-    let selectedPlayerIndex = 0;
-    function selectPlayerCard(index) {
-      if (!battleState.playerCards[index].alive || !battleState.playerTurn) return;
-      selectedPlayerIndex = index;
-      document.querySelectorAll('.card-battle').forEach(el => el.classList.remove('attacking'));
-      document.querySelectorAll('.card-battle')[index + 1]?.classList.add('attacking');
-    }
+
     function startCupBattle() {
-      const enemy = { ...IA_CARDS[2], currentHp: 50, alive: true };
-      battleState = {
-        playerCards: gameState.currentDeck.map(id => {
-          const c = ALL_CARDS.find(card => card.id === id);
-          return c ? { ...c, currentHp: c.def, alive: true } : null;
-        }).filter(c => c),
-        enemyCard: enemy,
-        playerTurn: true,
-        inTournament: false,
-        inCupMode: true
-      };
-      showView('battle');
-      renderBattle();
-      addToLog("🏆 ¡Batalla por copas! Derrota a la IA para ganar 1 copa.", 'system');
+      alert("¡Has ganado 1 copa!");
+      gameState.cups += 1;
+      saveGame();
+      updateUI();
     }
-    function startBattle(isTournament = false) {
-      let enemy;
-      if (isTournament) {
-        const tournamentIA = IA_CARDS.slice(3, 6);
-        const randomIA = tournamentIA[Math.floor(Math.random() * tournamentIA.length)];
-        enemy = { ...randomIA, currentHp: randomIA.def + 20, alive: true };
-      } else {
-        enemy = { ...IA_CARDS[0], currentHp: 70, alive: true };
-      }
-      battleState = {
-        playerCards: gameState.currentDeck.map(id => {
-          const c = ALL_CARDS.find(card => card.id === id);
-          return c ? { ...c, currentHp: c.def, alive: true } : null;
-        }).filter(c => c),
-        enemyCard: enemy,
-        playerTurn: true,
-        inTournament: isTournament,
-        inCupMode: false
-      };
-      renderBattle();
-      addToLog(isTournament ? "⚔️ ¡Ronda " + (gameState.tournament.round + 1) + " del torneo navideño!" : "⏳ ¡Elige una carta y ataca!", 'system');
-    }
-    function playerAttack() {
-      if (!battleState.playerTurn) return;
-      const playerCard = battleState.playerCards[selectedPlayerIndex];
-      const enemy = battleState.enemyCard;
-      if (!playerCard.alive) {
-        addToLog("❌ ¡Esta carta está fuera de combate!", 'system');
-        return;
-      }
-      playAttackAnimation(playerCard, enemy);
-      const damage = Math.max(5, playerCard.atk - Math.floor(enemy.def * 0.3));
-      enemy.currentHp = Math.max(0, enemy.currentHp - damage);
-      addToLog(`⚔️ <strong>${playerCard.name}</strong> ataca a ${enemy.name} por <strong>${damage} daño</strong>!`, 'player');
-      setTimeout(() => {
-        renderBattle();
-        if (enemy.currentHp <= 0 && enemy.alive) {
-          enemy.alive = false;
-          addToLog(`💀 ¡${enemy.name} fue eliminado!`, 'system');
-          if (battleState.inCupMode) {
-            gameState.cups += 1;
-            showVictory("🏆 ¡Has ganado 1 copa! Ahora tienes " + gameState.cups);
-            saveGame();
-            updateUI();
-            return;
-          }
-          if (battleState.inTournament) {
-            gameState.tournament.wins++;
-            if (gameState.tournament.wins >= 5) {
-              gameState.cups = Math.max(0, gameState.cups - 1);
-              const tournamentCardIds = [7, 11, 12, 13];
-              tournamentCardIds.forEach(id => {
-                if (!gameState.ownedCardIds.includes(id)) {
-                  gameState.ownedCardIds.push(id);
-                }
-              });
-              gameState.trophies += 500;
-              saveGame();
-              alert("¡FELICIDADES! 🎄 Has ganado el torneo y desbloqueado cartas exclusivas.");
-              gameState.tournament = { active: false, round: 0, wins: 0 };
-            } else {
-              gameState.tournament.round++;
-              alert("¡Ronda " + gameState.tournament.wins + " ganada! 🎅 Sigue así.");
-              setTimeout(() => startBattle(true), 1000);
-              return;
-            }
-          } else {
-            gameState.trophies += 30;
-            if (Math.random() < 0.1) {
-              gameState.cups += 1;
-              addToLog("🎄 ¡Has recibido 1 copa! Ahora tienes " + gameState.cups + " copas.", 'system');
-            }
-            showVictory("+30 trofeos");
-          }
-          saveGame();
-          updateUI();
-          return;
-        }
-        battleState.playerTurn = false;
-        setTimeout(executeIATurn, 1200);
-      }, 800);
-    }
-    function playerDefend() {
-      if (!battleState.playerTurn) return;
-      const playerCard = battleState.playerCards[selectedPlayerIndex];
-      if (!playerCard.alive) {
-        addToLog("❌ ¡Esta carta está fuera de combate!", 'system');
-        return;
-      }
-      addToLog(`🛡️ <strong>${playerCard.name}</strong> se prepara para defender!`, 'player');
-      battleState.playerTurn = false;
-      setTimeout(executeIATurn, 1200);
-    }
-    function executeIATurn() {
-      const enemy = battleState.enemyCard;
-      const aliveCards = battleState.playerCards.filter(c => c.alive);
-      if (aliveCards.length === 0) {
-        if (battleState.inTournament) {
-          gameState.tournament = { active: false, round: 0, wins: 0 };
-          gameState.cups = Math.max(0, gameState.cups - 1);
-          addToLog("💀 Has perdido el torneo navideño.", 'system');
-        } else if (battleState.inCupMode) {
-          addToLog("💀 Has perdido la batalla por copas.", 'system');
-        } else {
-          gameState.trophies = Math.max(0, gameState.trophies - 15);
-          showDefeat();
-        }
-        saveGame();
-        updateUI();
-        return;
-      }
-      const targetCard = aliveCards[Math.floor(Math.random() * aliveCards.length)];
-      const baseDamage = Math.max(5, enemy.atk - Math.floor(targetCard.def * 0.3));
-      targetCard.currentHp = Math.max(0, targetCard.currentHp - baseDamage);
-      addToLog(`🤖 La IA ataca a <strong>${targetCard.name}</strong> por ${baseDamage} daño!`, 'ia');
-      setTimeout(() => {
-        if (targetCard.currentHp <= 0) {
-          targetCard.alive = false;
-          addToLog(`💀 ¡${targetCard.name} fue eliminada!`, 'ia');
-        }
-        renderBattle();
-        const stillAlive = battleState.playerCards.some(c => c.alive);
-        if (!stillAlive) {
-          if (battleState.inTournament) {
-            gameState.tournament = { active: false, round: 0, wins: 0 };
-            gameState.cups = Math.max(0, gameState.cups - 1);
-            addToLog("💀 Has perdido el torneo navideño.", 'system');
-          } else if (battleState.inCupMode) {
-            addToLog("💀 Has perdido la batalla por copas.", 'system');
-          } else {
-            gameState.trophies = Math.max(0, gameState.trophies - 15);
-            showDefeat();
-          }
-          saveGame();
-          updateUI();
-          return;
-        }
-        battleState.playerTurn = true;
-        addToLog("⏳ ¡Tu turno!", 'system');
-      }, 1200);
-    }
-    function startTournament() {
-      if (gameState.cups < 1) {
-        alert("¡Necesitas 1 copa para el evento navideño! 🎄 Tienes " + gameState.cups + ".");
-        return;
-      }
-      // ✅ Eliminado: la validación de 3 cartas en el torneo
-      gameState.tournament = { active: true, round: 0, wins: 0 };
-      startBattle(true);
-    }
+
     function showView(view) {
-      document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
+      ['battle', 'deck', 'shop', 'tournaments', 'cupMode'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
       document.getElementById(view).classList.remove('hidden');
-      if (view === 'deck') {
-        renderDeck();
-        document.getElementById('battleLog').innerHTML = '';
-      } else if (view === 'shop') {
-        renderShop();
-      } else if (view === 'battle') {
-        if (!battleState.enemyCard) startBattle();
-      }
+      if (view === 'deck') renderDeck();
+      if (view === 'shop') renderShop();
     }
-    function showVictory(msg = "+30 trofeos") {
-      document.getElementById('victoryMessage').textContent = msg;
-      const o = document.getElementById('victoryOverlay');
-      o.style.opacity = '1'; o.style.display = 'flex';
-      for (let i=0; i<150; i++) {
-        const c = document.createElement('div');
-        c.className = 'confetti';
-        c.style.left = Math.random()*100+'vw';
-        c.style.backgroundColor = ['#d42020','#228b22','#d4a017','#ffffff'][Math.floor(Math.random()*4)];
-        c.style.animationDuration = (Math.random()*3+2)+'s';
-        document.body.appendChild(c);
-        setTimeout(()=>c.remove(),5000);
-      }
-      setTimeout(()=>{o.style.opacity='0';setTimeout(()=>o.style.display='none',1000);},3000);
-    }
-    function showDefeat() {
-      const o = document.getElementById('defeatOverlay');
-      o.style.opacity = '1'; o.style.display = 'flex';
-      setTimeout(()=>{o.style.opacity='0';setTimeout(()=>o.style.display='none',1000);},2000);
-    }
+
     function addToLog(msg, type='system') {
       const log = document.getElementById('battleLog');
       const entry = document.createElement('div');
@@ -1130,6 +882,7 @@ const ALL_CARDS = [
       log.appendChild(entry);
       log.scrollTop = log.scrollHeight;
     }
+
     updateUI();
     showView('battle');
   </script>
