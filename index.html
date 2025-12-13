@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FORTNITE SKIN BATTLE: ¡DERROTA AL JEFÉ!</title>
+  <title>FORTNITE SKIN BATTLE: ¡DERROTA A LA IA!</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oxanium:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -56,7 +56,7 @@
     .league-elite { background: linear-gradient(to right, #4b0082, #8a2be2); }
     .league-legend { background: linear-gradient(45deg, red, gold, blue); animation: rainbow 3s linear infinite; }
 
-    /* Navegación */
+    /* Pestañas */
     .nav-buttons {
       margin: 15px 0;
     }
@@ -64,19 +64,19 @@
       background: rgba(78,205,196,0.2);
       color: white;
       border: 1px solid #4ecdc4;
-      padding: 8px 16px;
+      padding: 10px 18px;
       margin: 0 5px;
       border-radius: 20px;
       cursor: pointer;
       transition: all 0.2s;
+      font-weight: bold;
     }
     .nav-btn.active {
       background: #4ecdc4;
       color: #0a0a1a;
-      font-weight: bold;
     }
 
-    /* Tienda (siempre visible) */
+    /* Tienda */
     .store-section {
       margin: 20px auto;
       max-width: 500px;
@@ -239,11 +239,6 @@
       transform: translateY(-8px);
       box-shadow: 0 8px 20px rgba(78,205,196,0.6);
     }
-    .hand-card.fainted {
-      opacity: 0.4;
-      filter: grayscale(100%);
-      cursor: not-allowed;
-    }
     .hand-card img {
       width: 100%;
       border-radius: 8px;
@@ -277,7 +272,7 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.5);
     }
 
-    .main-menu, .collection {
+    .main-menu {
       text-align: center;
     }
     .menu-btn {
@@ -340,18 +335,19 @@
       border: 1px solid #4ecdc4;
     }
 
-    .end-screen {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 3000;
+    .coming-soon {
+      margin: 30px auto;
+      max-width: 500px;
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      border: 2px dashed gold;
     }
-    .win-screen { background: radial-gradient(circle, rgba(255,215,0,0.2), transparent); }
-    .lose-screen { background: radial-gradient(circle, rgba(255,107,107,0.2), transparent); }
+    .coming-soon h3 {
+      color: gold;
+      font-family: 'Bebas Neue';
+    }
 
     @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
@@ -359,13 +355,14 @@
       .battle-card { width: 130px; }
       .hand-card { width: 100px; }
       .battle-table, .store-section, .collection-grid { padding: 15px; }
+      .nav-btn { padding: 8px 14px; font-size: 0.95em; }
     }
   </style>
 </head>
 <body>
   <div class="particles" id="particles"></div>
   <div class="content">
-    <h1>FORTNITE SKIN BATTLE: ¡DERROTA AL JEFÉ!</h1>
+    <h1>FORTNITE SKIN BATTLE: ¡DERROTA A LA IA!</h1>
     
     <div class="trophy-bar">
       <div>
@@ -375,13 +372,15 @@
       <div class="league-badge" id="leagueBadge">Bronce</div>
     </div>
 
+    <!-- Pestañas -->
     <div class="nav-buttons">
       <button class="nav-btn active" onclick="showView('battle')">⚔️ Batalla</button>
-      <button class="nav-btn" onclick="showView('collection')">🃏 Colección</button>
+      <button class="nav-btn" onclick="showView('collection')">🃏 Mazo</button>
+      <button class="nav-btn" onclick="showView('store')">🛒 Tienda</button>
     </div>
 
-    <!-- 💎 TIENDA (siempre visible, sin contador) -->
-    <div class="store-section" id="storeSection">
+    <!-- 💎 TIENDA (siempre visible) -->
+    <div class="store-section" id="storeView" style="display:none;">
       <h3 style="color:gold; font-family:'Bebas Neue'">🛒 TIENDA DE BATALLA</h3>
       <div class="store-items">
         <div class="store-item gold">
@@ -406,21 +405,34 @@
       <p id="storeMessage" style="margin-top:10px; color:#4ecdc4; font-style:italic;"></p>
     </div>
 
-    <!-- Menú principal -->
-    <div class="main-menu" id="mainMenu">
-      <button class="menu-btn" onclick="startBattle()">⚔️ ¡INICIAR BATALLA!</button>
-      <p style="color:#4ecdc4; margin-top:20px;">Arma tu mazo en "Colección" antes de luchar.</p>
+    <!-- ⚔️ BATALLA -->
+    <div class="main-menu" id="battleView">
+      <button class="menu-btn" onclick="startBattle()">⚔️ ¡INICIAR BATALLA CONTRA LA IA!</button>
+      <p style="color:#4ecdc4; margin-top:20px;">Usa las cartas de tu mazo para derrotar a la IA.</p>
+    </div>
+
+    <!-- 🃏 MAZO -->
+    <div class="collection" id="collectionView" style="display:none;">
+      <h2 style="color: #4ecdc4;">Mi Mazo (3 cartas)</h2>
+      <p>Selecciona cartas desbloqueadas para tu mazo.</p>
+      <div class="collection-grid" id="collectionGrid">
+      </div>
+      
+      <div class="deck-section">
+        <div id="currentDeck" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;"></div>
+        <button class="action-btn" onclick="saveDeck()" style="margin-top:10px;">💾 Guardar Mazo</button>
+      </div>
     </div>
 
     <!-- Mesa de batalla -->
     <div class="battle-table" id="battleTable">
-      <div class="battle-header">MESA DE BATALLA - Ronda <span id="roundNumber">1</span></div>
+      <div class="battle-header">BATALLA CONTRA LA IA - Arena: <span id="arenaName">Bronce</span></div>
       
       <div class="battle-zone">
         <div class="enemy-zone">
-          <div class="zone-title">ENARIO</div>
+          <div class="zone-title">IA</div>
           <div class="battle-card">
-            <img id="enemyCardImg" class="card-image" src="" alt="Enemigo">
+            <img id="enemyCardImg" class="card-image" src="" alt="IA">
             <div class="card-rarity" id="enemyRarity"></div>
             <div class="hp-bar">
               <div class="hp-fill" id="enemyHpBar"></div>
@@ -454,25 +466,11 @@
       <button class="action-btn" onclick="exitBattle()" style="background:#ff6b6b;">🚪 Salir</button>
     </div>
 
-    <!-- Colección -->
-    <div class="collection" id="collectionView" style="display:none;">
-      <h2 style="color: #4ecdc4;">Mi Colección</h2>
-      <p>Selecciona cartas desbloqueadas para tu mazo.</p>
-      <div class="collection-grid" id="collectionGrid">
-      </div>
-      
-      <div class="deck-section">
-        <div class="deck-title">Mazo Actual (3 cartas)</div>
-        <div id="currentDeck" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;"></div>
-        <button class="action-btn" onclick="saveDeck()" style="margin-top:10px;">💾 Guardar Mazo</button>
-      </div>
-    </div>
-
-    <!-- Pantalla de fin -->
-    <div class="end-screen" id="endScreen">
-      <h2 id="endTitle" style="font-size:3em; margin-bottom:20px;"></h2>
-      <p id="endMessage" style="font-size:1.4em; margin-bottom:30px;"></p>
-      <button class="menu-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
+    <!-- 🔜 Actualización -->
+    <div class="coming-soon">
+      <h3>🔔 ¡PRÓXIMA ACTUALIZACIÓN! 🔔</h3>
+      <p><strong>Mañana: ¡Modo Multijugador!</strong></p>
+      <p>Juega contra amigos en tiempo real.</p>
     </div>
   </div>
 
@@ -496,29 +494,26 @@
       { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
       { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: false },
       { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: false },
-      { id:9, name:"JEFE FINAL", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: false }
+      { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true }
     ];
 
     const LEAGUES = [
-      { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze" },
-      { name: "Plata", min: 200, max: 399, badgeClass: "league-silver" },
-      { name: "Oro", min: 400, max: 599, badgeClass: "league-gold" },
-      { name: "Élite", min: 600, max: 799, badgeClass: "league-elite" },
-      { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend" }
+      { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze", iaMod: -20 },
+      { name: "Plata", min: 200, max: 399, badgeClass: "league-silver", iaMod: 0 },
+      { name: "Oro", min: 400, max: 599, badgeClass: "league-gold", iaMod: 20 },
+      { name: "Élite", min: 600, max: 799, badgeClass: "league-elite", iaMod: 40 },
+      { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend", iaMod: 60 }
     ];
 
     let currentDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
     let playerCards = [];
     let enemyCard = null;
-    let round = 1;
     let gameActive = true;
     let playerTurn = true;
     let selectedPlayerCard = null;
     let trophies = parseInt(localStorage.getItem('trophies')) || 0;
     let currentLeague = LEAGUES[0];
-    let credits = 100;
 
-    // Cargar estado de cartas
     const savedCards = JSON.parse(localStorage.getItem('cards')) || {};
     CARDS.forEach(card => {
       if (savedCards[card.id] !== undefined) {
@@ -539,19 +534,11 @@
       const newLeague = LEAGUES.find(l => trophies >= l.min && trophies <= l.max) || LEAGUES[0];
       if (newLeague.name !== currentLeague.name) {
         currentLeague = newLeague;
-        document.getElementById('levelUpSound').play().catch(()=>{});
         showNotification(`¡Ascendiste a ${newLeague.name}! 🎉`);
-        const unlockIndex = Math.min(LEAGUES.indexOf(newLeague), CARDS.length - 1);
-        if (CARDS[unlockIndex] && !CARDS[unlockIndex].unlocked) {
-          CARDS[unlockIndex].unlocked = true;
-          saveCollection();
-          if (document.getElementById('collectionView').style.display === 'block') {
-            renderCollection();
-          }
-        }
       }
       document.getElementById('leagueBadge').className = `league-badge ${newLeague.badgeClass}`;
       document.getElementById('leagueBadge').innerText = newLeague.name;
+      document.getElementById('arenaName').innerText = newLeague.name;
     }
 
     function showNotification(msg) {
@@ -572,6 +559,7 @@
       setTimeout(() => document.body.removeChild(notif), 3000);
     }
 
+    let credits = 100;
     function buyItem(id, cost) {
       if (credits >= cost) {
         credits -= cost;
@@ -588,20 +576,16 @@
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       
-      document.getElementById('mainMenu').style.display = view === 'battle' ? 'block' : 'none';
-      document.getElementById('battleTable').style.display = 'none';
-      document.getElementById('endScreen').style.display = 'none';
+      document.getElementById('battleView').style.display = view === 'battle' ? 'block' : 'none';
       document.getElementById('collectionView').style.display = view === 'collection' ? 'block' : 'none';
-      
-      if (view === 'collection') {
-        renderCollection();
-      }
+      document.getElementById('storeView').style.display = view === 'store' ? 'block' : 'none';
+      document.getElementById('battleTable').style.display = 'none';
     }
 
     function renderCollection() {
       const grid = document.getElementById('collectionGrid');
       grid.innerHTML = '';
-      CARDS.forEach(card => {
+      CARDS.slice(0, -1).forEach(card => { // Excluye la IA
         const div = document.createElement('div');
         div.className = `collection-card ${card.unlocked ? 'unlocked' : 'locked'}`;
         if (card.unlocked) {
@@ -681,50 +665,42 @@
       });
 
       if (playerCards.length === 0) {
-        alert('¡Tu mazo está vacío! Ve a "Colección" y arma tu mazo.');
+        alert('¡Tu mazo está vacío! Ve a "Mazo" y arma tu mazo.');
         return;
       }
 
-      enemyCard = {...CARDS[9], currentHp: CARDS[9].def, alive: true};
-      round = 1;
+      // La IA usa una carta aleatoria (no el jefe)
+      const iaCard = {...CARDS[9], currentHp: CARDS[9].def, alive: true};
+      enemyCard = iaCard;
+
       gameActive = true;
       playerTurn = true;
       selectedPlayerCard = null;
 
-      document.getElementById('mainMenu').style.display = 'none';
+      document.getElementById('battleView').style.display = 'none';
       document.getElementById('battleTable').style.display = 'block';
-      document.getElementById('endScreen').style.display = 'none';
       
       updateBattleUI();
     }
 
     function updateBattleUI() {
-      document.getElementById('roundNumber').innerText = round;
-      
-      // Enemigo
+      // IA
       document.getElementById('enemyCardImg').src = enemyCard.img;
       document.getElementById('enemyRarity').innerText = enemyCard.rarity;
       document.getElementById('enemyRarity').className = `card-rarity ${enemyCard.rarity}`;
       document.getElementById('enemyHp').innerText = enemyCard.currentHp;
       document.getElementById('enemyHpBar').style.width = `${(enemyCard.currentHp / enemyCard.def) * 100}%`;
       
-      // Jugador: solo si hay carta seleccionada
+      // Jugador
       if (selectedPlayerCard) {
         document.getElementById('playerCardImg').src = selectedPlayerCard.img;
         document.getElementById('playerRarity').innerText = selectedPlayerCard.rarity;
         document.getElementById('playerRarity').className = `card-rarity ${selectedPlayerCard.rarity}`;
         document.getElementById('playerHp').innerText = selectedPlayerCard.currentHp;
         document.getElementById('playerHpBar').style.width = `${(selectedPlayerCard.currentHp / selectedPlayerCard.def) * 100}%`;
-      } else {
-        // Mostrar carta por defecto (la primera viva)
-        const firstAlive = playerCards.find(c => c.alive);
-        if (firstAlive) {
-          selectedPlayerCard = firstAlive;
-          updateBattleUI();
-        }
       }
 
-      // Mano de cartas (solo para elegir)
+      // Mano
       const handEl = document.getElementById('playerHand');
       handEl.innerHTML = '';
       playerCards.forEach(card => {
@@ -737,15 +713,11 @@
           `;
           cardEl.onclick = () => {
             selectedPlayerCard = card;
-            updateBattleUI();
+            attackWithSelected();
           };
           handEl.appendChild(cardEl);
         }
       });
-    }
-
-    function selectPlayerCard(cardId) {
-      // Ya no se usa directamente; ahora se elige en la mano
     }
 
     function attackWithSelected() {
@@ -756,27 +728,18 @@
 
       playAttackEffect(selectedPlayerCard.attackType);
 
+      // Daño a IA
       const damage = Math.max(5, selectedPlayerCard.atk - Math.floor(enemyCard.def * 0.3));
-
       setTimeout(() => {
         enemyCard.currentHp = Math.max(0, enemyCard.currentHp - damage);
         updateBattleUI();
 
         if (enemyCard.currentHp <= 0) {
-          log.innerHTML = `¡${selectedPlayerCard.name} derrotó a ${enemyCard.name}!`;
+          log.innerHTML = `¡${selectedPlayerCard.name} derrotó a la IA!`;
           setTimeout(() => {
-            round++;
-            if (round > 3) {
-              trophies += 50;
-              updateTrophies();
-              endBattle(true);
-            } else {
-              const nextEnemy = CARDS[Math.min(5 + round, 9)];
-              enemyCard = {...nextEnemy, currentHp: nextEnemy.def, alive: true};
-              playerTurn = true;
-              updateBattleUI();
-              log.innerHTML = `¡Ronda ${round}! Elige tu carta para atacar:`;
-            }
+            trophies += 30;
+            updateTrophies();
+            endBattle(true);
           }, 1500);
         } else {
           log.innerHTML += `<br>¡Turno de la IA!`;
@@ -786,39 +749,18 @@
       }, 1000);
     }
 
-    // Modificar la mano para que ataque al elegir
-    function updateBattleUI() {
-      // ... (código anterior igual)
-
-      const handEl = document.getElementById('playerHand');
-      handEl.innerHTML = '';
-      playerCards.forEach(card => {
-        if (card.alive) {
-          const cardEl = document.createElement('div');
-          cardEl.className = 'hand-card';
-          cardEl.innerHTML = `
-            <img src="${card.img}" alt="${card.name}">
-            <div style="font-size:0.9em; margin-top:5px;">${card.name}</div>
-          `;
-          cardEl.onclick = () => {
-            selectedPlayerCard = card;
-            // Atacar inmediatamente al elegir
-            attackWithSelected();
-          };
-          handEl.appendChild(cardEl);
-        }
-      });
-    }
-
     function iaAttack() {
-      if (!gameActive) return;
+      if (!gameActive || !selectedPlayerCard) return;
       
       const log = document.getElementById('battleLog');
-      log.innerHTML = `¡${enemyCard.name} ataca a ${selectedPlayerCard.name}!`;
+      log.innerHTML = `¡La IA ataca a ${selectedPlayerCard.name}!`;
 
       playAttackEffect(enemyCard.attackType);
 
-      const damage = Math.max(5, enemyCard.atk - Math.floor(selectedPlayerCard.def * 0.3));
+      // Daño modificado por liga
+      const baseDamage = Math.max(5, enemyCard.atk - Math.floor(selectedPlayerCard.def * 0.3));
+      const modifier = currentLeague.iaMod / 100;
+      const damage = Math.round(baseDamage * (1 + modifier));
 
       setTimeout(() => {
         selectedPlayerCard.currentHp = Math.max(0, selectedPlayerCard.currentHp - damage);
@@ -830,12 +772,11 @@
           
           const aliveCards = playerCards.filter(c => c.alive);
           if (aliveCards.length === 0) {
-            trophies = Math.max(0, trophies - 20);
+            trophies = Math.max(0, trophies - 15);
             updateTrophies();
             endBattle(false);
             return;
           }
-          // Cambiar a otra carta viva
           selectedPlayerCard = aliveCards[0];
         }
 
@@ -846,24 +787,45 @@
 
     function endBattle(isWin) {
       gameActive = false;
-      document.getElementById('endTitle').innerText = isWin ? '🎉 ¡VICTORIA ROYALE!' : '💀 DERROTA';
-      document.getElementById('endMessage').innerText = isWin 
-        ? '¡Has derrotado al Jefe Final!' 
-        : 'Todas tus cartas fueron eliminadas.';
+      const sound = isWin ? 'winSound' : 'loseSound';
+      document.getElementById(sound).play();
       
-      document.getElementById('endScreen').className = `end-screen ${isWin ? 'win-screen' : 'lose-screen'}`;
-      document.getElementById('endScreen').style.display = 'flex';
-      
-      document.getElementById(isWin ? 'winSound' : 'loseSound').play();
+      document.getElementById('battleLog').innerHTML = `
+        <h3 style="color:${isWin ? 'gold' : '#ff6b6b'};">
+          ${isWin ? '🎉 ¡VICTORIA!' : '💀 DERROTA'}
+        </h3>
+        <p style="margin-top:15px;">
+          ${isWin ? '¡Ganaste 30 copas!' : 'Perdiste 15 copas.'}
+        </p>
+      `;
     }
 
     function exitBattle() {
       document.getElementById('battleTable').style.display = 'none';
-      document.getElementById('mainMenu').style.display = 'block';
+      document.getElementById('battleView').style.display = 'block';
     }
 
     createParticles();
     updateTrophies();
+
+    function createParticles() {
+      const c = document.getElementById('particles');
+      const n = 15;
+      for (let i = 0; i < n; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const s = Math.random() * 4 + 1;
+        p.style.width = p.style.height = `${s}px`;
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.top = `${Math.random() * 100}%`;
+        const cols = ['rgba(255,107,107,0.7)','rgba(78,205,196,0.7)','rgba(254,202,87,0.7)'];
+        p.style.background = cols[Math.floor(Math.random() * cols.length)];
+        p.style.setProperty('--tx', `${(Math.random()-0.5)*200}px`);
+        p.style.setProperty('--ty', `${(Math.random()-0.5)*200}px`);
+        p.style.animationDuration = `${15 + Math.random() * 20}s`;
+        c.appendChild(p);
+      }
+    }
   </script>
 </body>
 </html>
