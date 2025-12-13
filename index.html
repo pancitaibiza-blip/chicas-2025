@@ -138,7 +138,32 @@
       font-weight: bold;
     }
 
-    /* CALAVERA Y CONFETI */
+    /* ESTADÍSTICAS ÉPICAS */
+    #statsBar {
+      background: rgba(10, 5, 30, 0.85);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      border: 1px solid #8b5cf6;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: bold;
+      font-size: 18px;
+      text-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }
+    .trophy { color: #FFD700; text-shadow: 0 0 10px gold; }
+    .gem { color: #4FC3F7; text-shadow: 0 0 10px #4fc3f7; }
+    .crown { color: #FF6F00; text-shadow: 0 0 10px #ff6f00; }
+
+    /* OVERLAYS */
     .overlay-effect {
       position: fixed;
       top: 0;
@@ -154,11 +179,12 @@
     }
     .overlay-content {
       text-align: center;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       padding: 30px;
       border-radius: 20px;
       border: 3px solid gold;
       box-shadow: 0 0 40px gold;
+      min-width: 300px;
     }
     .confetti {
       position: absolute;
@@ -232,21 +258,36 @@
     </div>
   </div>
 
-  <!-- OVERLAY DE CALAVERA -->
-  <div id="skullOverlay" class="overlay-effect">
+  <!-- OVERLAY DE DERROTA -->
+  <div id="defeatOverlay" class="overlay-effect">
     <div class="overlay-content">
       <h2 class="text-4xl">💀</h2>
-      <p class="text-xl">¡Carta eliminada!</p>
+      <p class="text-xl">¡Has perdido 15 trofeos!</p>
     </div>
   </div>
 
   <div class="container mx-auto px-4 py-6 pt-20">
-    <!-- PERFIL -->
+    <!-- PERFIL + ESTADÍSTICAS ÉPICAS -->
     <div id="playerProfile" class="text-center">
       <img id="profileAvatar" src="https://via.placeholder.com/50/4f46e5/ffffff?text=👤" alt="Avatar">
       <div>
         <div class="font-bold text-xl" id="playerName">Jugador</div>
-        <button class="btn text-xs mt-1" onclick="changeAvatar()">Cambiar avatar</button>
+      </div>
+    </div>
+
+    <!-- ✅ ESTADÍSTICAS ÉPICAS -->
+    <div id="statsBar" class="text-center">
+      <div class="stat-item">
+        <i class="fas fa-trophy trophy"></i>
+        <span id="trophies">0</span>
+      </div>
+      <div class="stat-item">
+        <i class="fas fa-gem gem"></i>
+        <span id="diamonds">100</span>
+      </div>
+      <div class="stat-item">
+        <i class="fas fa-crown crown"></i>
+        <span id="cups">0</span>
       </div>
     </div>
 
@@ -305,8 +346,8 @@
             <div class="text-yellow-200 text-sm font-bold mt-1">IA ÉLITE</div>
           </div>
         </div>
-        <p class="text-center text-gray-300 mb-6">
-          ¡Derrota a 5 jefes poderosos en ronda consecutiva y desbloquearás esta carta exclusiva!
+        <p class="text-center text-gray-300 mb-4">
+          Necesitas <strong>1 copa</strong> para entrar. ¡5 victorias = recompensa legendaria!
         </p>
         <div class="text-center">
           <button class="btn bg-gradient-to-r from-orange-600 to-red-600" onclick="startTournament()">
@@ -325,86 +366,91 @@
   </div>
 
   <script>
-    // === PERFIL ===
-    let playerProfile = {
-      name: localStorage.getItem('playerName') || 'Jugador',
-      avatar: localStorage.getItem('playerAvatar') || 'https://via.placeholder.com/50/4f46e5/ffffff?text=👤'
+    // === ESTADO DEL JUEGO ===
+    let gameState = {
+      playerName: localStorage.getItem('playerName') || 'Jugador',
+      trophies: parseInt(localStorage.getItem('trophies') || '0'),
+      diamonds: parseInt(localStorage.getItem('diamonds') || '100'),
+      cups: parseInt(localStorage.getItem('cups') || '0'),
+      avatar: localStorage.getItem('playerAvatar') || 'https://via.placeholder.com/50/4f46e5/ffffff?text=👤',
+      ownedCardIds: JSON.parse(localStorage.getItem('ownedCardIds') || '[0,1,2]'),
+      currentDeck: [0, 1, 2],
+      tournament: {
+        active: false,
+        round: 0,
+        wins: 0
+      }
     };
-    document.getElementById('playerName').textContent = playerProfile.name;
-    document.getElementById('profileAvatar').src = playerProfile.avatar;
+
+    // === ACTUALIZAR PANTALLA ===
+    function updateUI() {
+      document.getElementById('playerName').textContent = gameState.playerName;
+      document.getElementById('profileAvatar').src = gameState.avatar;
+      document.getElementById('trophies').textContent = gameState.trophies;
+      document.getElementById('diamonds').textContent = gameState.diamonds;
+      document.getElementById('cups').textContent = gameState.cups;
+    }
+
     function changeAvatar() {
-      const url = prompt("Pega URL de tu avatar:", playerProfile.avatar);
+      const url = prompt("Pega URL de tu avatar:", gameState.avatar);
       if (url && url.trim()) {
-        playerProfile.avatar = url;
+        gameState.avatar = url;
         localStorage.setItem('playerAvatar', url);
-        document.getElementById('profileAvatar').src = url;
+        updateUI();
       }
     }
 
-    // === CONTADOR GLOBAL DE 5 DÍAS (ACTUALIZA CADA SEGUNDO) ===
+    // === CONTADOR DE ROTACIÓN ===
     let lastShopUpdate = localStorage.getItem('lastShopUpdate') || new Date().toISOString();
-    localStorage.setItem('lastShopUpdate', lastShopUpdate); // asegurar
-    let timeLeft = 0;
-
+    localStorage.setItem('lastShopUpdate', lastShopUpdate);
     function calculateTimeLeft() {
-      const nextUpdate = new Date(new Date(lastShopUpdate).getTime() + 5 * 24 * 60 * 60 * 1000);
-      const diff = nextUpdate - new Date();
-      timeLeft = Math.max(0, diff);
+      const next = new Date(new Date(lastShopUpdate).getTime() + 5 * 24 * 60 * 60 * 1000);
+      const diff = next - new Date();
       const d = Math.floor(diff / 86400000);
       const h = Math.floor((diff % 86400000) / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
       return { d, h, m, s, total: diff };
     }
-
     function formatTime(time) {
       return `${time.d}d ${time.h.toString().padStart(2,'0')}h ${time.m.toString().padStart(2,'0')}m ${time.s.toString().padStart(2,'0')}s`;
     }
-
     function updateAllTimers() {
       const time = calculateTimeLeft();
       document.getElementById('countdownTimer').textContent = time.total > 0 ? formatTime(time) : '¡YA DISPONIBLE!';
-      
-      // Actualizar tienda si está visible
-      if (document.getElementById('shop').classList.contains('hidden') === false) {
-        renderShop();
-      }
+      if (!document.getElementById('shop').classList.contains('hidden')) renderShop();
     }
-
     setInterval(updateAllTimers, 1000);
     updateAllTimers();
 
-    // === EFECTOS VISUALES ===
+    // === EFECTOS ===
     function showVictory() {
       const overlay = document.getElementById('victoryOverlay');
       overlay.style.opacity = '1';
       overlay.style.display = 'flex';
-      
-      // Confeti
       for (let i = 0; i < 150; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + 'vw';
-        confetti.style.backgroundColor = ['gold','orange','red','purple','cyan'][Math.floor(Math.random()*5)];
-        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 5000);
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.backgroundColor = ['gold','orange','red','purple','cyan'][Math.floor(Math.random()*5)];
+        c.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
       }
-      
       setTimeout(() => {
         overlay.style.opacity = '0';
         setTimeout(() => overlay.style.display = 'none', 1000);
       }, 3000);
     }
 
-    function showSkull() {
-      const overlay = document.getElementById('skullOverlay');
+    function showDefeat() {
+      const overlay = document.getElementById('defeatOverlay');
       overlay.style.opacity = '1';
       overlay.style.display = 'flex';
       setTimeout(() => {
         overlay.style.opacity = '0';
         setTimeout(() => overlay.style.display = 'none', 1000);
-      }, 1500);
+      }, 2000);
     }
 
     // === LOG ===
@@ -425,39 +471,31 @@
       { id: 3, name: "Azulita", rarity: "rare", atk: 70, def: 55, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
       { id: 4, name: "Tormenta", rarity: "epic", atk: 80, def: 45, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
       { id: 5, name: "Furia", rarity: "legendary", atk: 90, def: 40, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
-      { id: 6, name: "Asesina", rarity: "legendary", atk: 95, def: 30, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 }
+      { id: 6, name: "Asesina", rarity: "legendary", atk: 95, def: 30, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
+      { id: 7, name: "IA ÉLITE", rarity: "legendary", atk: 100, def: 65, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", shopPrice: null }
     ];
 
     const IA_CARDS = [
-      { id: 100, name: "IA Básica", rarity: "common", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" }
+      { id: 100, name: "IA Básica", rarity: "common", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
+      { id: 101, name: "IA Élite", rarity: "legendary", atk: 95, def: 60, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" }
     ];
 
-    let gameState = {
+    let battleState = {
       playerCards: [
         { ...ALL_CARDS[0], currentHp: 50, alive: true },
         { ...ALL_CARDS[1], currentHp: 70, alive: true },
         { ...ALL_CARDS[2], currentHp: 65, alive: true }
       ],
-      enemyCard: { ...IA_CARDS[0], currentHp: 70, alive: true },
-      diamonds: 100,
-      ownedCardIds: [0, 1, 2],
-      playerTurn: true
+      enemyCard: null,
+      playerTurn: true,
+      inTournament: false
     };
 
     function saveGame() {
-      localStorage.setItem('ownedCardIds', JSON.stringify(gameState.ownedCardIds));
+      localStorage.setItem('trophies', gameState.trophies);
       localStorage.setItem('diamonds', gameState.diamonds);
-    }
-
-    function loadGame() {
-      const saved = localStorage.getItem('ownedCardIds');
-      if (saved) {
-        gameState.ownedCardIds = JSON.parse(saved);
-        if (gameState.ownedCardIds.length === 0) {
-          gameState.ownedCardIds = [0, 1, 2];
-        }
-      }
-      gameState.diamonds = parseInt(localStorage.getItem('diamonds') || '100');
+      localStorage.setItem('cups', gameState.cups);
+      localStorage.setItem('ownedCardIds', JSON.stringify(gameState.ownedCardIds));
     }
 
     function renderDeck() {
@@ -470,7 +508,6 @@
       `).join('');
     }
 
-    // ✅ TIENDA CON CONTADOR EN TIEMPO REAL POR CADA CARTA
     function renderShop() {
       const time = calculateTimeLeft();
       const container = document.getElementById('shopCards');
@@ -486,7 +523,7 @@
     }
 
     function renderBattle() {
-      const enemy = gameState.enemyCard;
+      const enemy = battleState.enemyCard;
       const eHp = Math.max(0, Math.round((enemy.currentHp / enemy.def) * 100));
       document.getElementById('enemyCard').innerHTML = `
         <div class="card-battle ${enemy.rarity}" style="${!enemy.alive ? 'opacity:0.4; filter: grayscale(1);' : ''}">
@@ -498,7 +535,7 @@
         </div>
       `;
       const playerContainer = document.getElementById('playerCards');
-      playerContainer.innerHTML = gameState.playerCards.map((card, i) => {
+      playerContainer.innerHTML = battleState.playerCards.map((card, i) => {
         const hp = Math.max(0, Math.round((card.currentHp / card.def) * 100));
         return `
           <div class="card-battle ${card.rarity}" style="cursor:pointer; ${!card.alive ? 'opacity:0.4; filter: grayscale(1);' : ''}" onclick="selectPlayerCard(${i})">
@@ -518,6 +555,7 @@
         gameState.diamonds -= card.shopPrice;
         gameState.ownedCardIds.push(cardId);
         saveGame();
+        updateUI();
         renderShop();
         renderDeck();
         addToLog(`🎉 Has comprado <strong>${card.name}</strong>!`, 'system');
@@ -528,16 +566,35 @@
 
     let selectedPlayerIndex = 0;
     function selectPlayerCard(index) {
-      if (!gameState.playerCards[index].alive || !gameState.playerTurn) return;
+      if (!battleState.playerCards[index].alive || !battleState.playerTurn) return;
       selectedPlayerIndex = index;
       document.querySelectorAll('.card-battle').forEach(el => el.classList.remove('attacking'));
       document.querySelectorAll('.card-battle')[index + 1]?.classList.add('attacking');
     }
 
+    // === BATALLA ===
+    function startBattle(isTournament = false) {
+      const enemy = isTournament 
+        ? { ...IA_CARDS[1], currentHp: 120, alive: true } 
+        : { ...IA_CARDS[0], currentHp: 70, alive: true };
+      
+      battleState = {
+        playerCards: gameState.currentDeck.map(id => {
+          const c = ALL_CARDS.find(card => card.id === id);
+          return c ? { ...c, currentHp: c.def, alive: true } : null;
+        }).filter(c => c),
+        enemyCard: enemy,
+        playerTurn: true,
+        inTournament: isTournament
+      };
+      renderBattle();
+      addToLog(isTournament ? "⚔️ ¡Ronda " + (gameState.tournament.round + 1) + " del torneo!" : "⏳ ¡Elige una carta y ataca!", 'system');
+    }
+
     function playerAttack() {
-      if (!gameState.playerTurn) return;
-      const playerCard = gameState.playerCards[selectedPlayerIndex];
-      const enemy = gameState.enemyCard;
+      if (!battleState.playerTurn) return;
+      const playerCard = battleState.playerCards[selectedPlayerIndex];
+      const enemy = battleState.enemyCard;
       if (!playerCard.alive) {
         addToLog("❌ ¡Esta carta está fuera de combate!", 'system');
         return;
@@ -552,62 +609,106 @@
         renderBattle();
         if (enemy.currentHp <= 0 && enemy.alive) {
           enemy.alive = false;
-          addToLog(`💀 ¡${enemy.name} fue eliminado! +30 trofeos`, 'system');
-          showVictory(); // ✅ AHORA SÍ APARECE
+          addToLog(`💀 ¡${enemy.name} fue eliminado!`, 'system');
+          if (battleState.inTournament) {
+            gameState.tournament.wins++;
+            if (gameState.tournament.wins >= 5) {
+              // Victoria en torneo
+              gameState.cups -= 1;
+              gameState.ownedCardIds.push(7); // Desbloquear IA ÉLITE
+              gameState.trophies += 500;
+              alert("¡FELICIDADES! Has ganado el torneo y desbloqueado la carta IA ÉLITE.");
+              gameState.tournament = { active: false, round: 0, wins: 0 };
+            } else {
+              gameState.tournament.round++;
+              alert("¡Ronda " + gameState.tournament.wins + " ganada! Preparando siguiente ronda...");
+              setTimeout(() => startBattle(true), 1000);
+              return;
+            }
+          } else {
+            gameState.trophies += 30;
+            showVictory();
+          }
+          saveGame();
+          updateUI();
           return;
         }
-        gameState.playerTurn = false;
+        battleState.playerTurn = false;
         setTimeout(executeIATurn, 1500);
       }, 800);
     }
 
     function playerDefend() {
-      if (!gameState.playerTurn) return;
-      const playerCard = gameState.playerCards[selectedPlayerIndex];
+      if (!battleState.playerTurn) return;
+      const playerCard = battleState.playerCards[selectedPlayerIndex];
       if (!playerCard.alive) {
         addToLog("❌ ¡Esta carta está fuera de combate!", 'system');
         return;
       }
       addToLog(`🛡️ <strong>${playerCard.name}</strong> se prepara para defender!`, 'player');
-      gameState.playerTurn = false;
+      battleState.playerTurn = false;
       setTimeout(executeIATurn, 1500);
     }
 
     function executeIATurn() {
-      const enemy = gameState.enemyCard;
-      const aliveCards = gameState.playerCards.filter(c => c.alive);
+      const enemy = battleState.enemyCard;
+      const aliveCards = battleState.playerCards.filter(c => c.alive);
       if (aliveCards.length === 0) {
-        addToLog("💀 Has perdido la batalla.", 'system');
-        showSkull();
+        if (battleState.inTournament) {
+          gameState.tournament = { active: false, round: 0, wins: 0 };
+          gameState.cups -= 1;
+          addToLog("💀 Has perdido el torneo.", 'system');
+        } else {
+          gameState.trophies = Math.max(0, gameState.trophies - 15);
+          showDefeat();
+        }
+        saveGame();
+        updateUI();
         return;
       }
-      if (!enemy.alive) return;
-
       const targetCard = aliveCards[Math.floor(Math.random() * aliveCards.length)];
       const baseDamage = Math.max(5, enemy.atk - Math.floor(targetCard.def * 0.3));
       targetCard.currentHp = Math.max(0, targetCard.currentHp - baseDamage);
       addToLog(`🤖 La IA ataca a <strong>${targetCard.name}</strong> por ${baseDamage} daño!`, 'ia');
-
       setTimeout(() => {
         if (targetCard.currentHp <= 0) {
           targetCard.alive = false;
           addToLog(`💀 ¡${targetCard.name} fue eliminada!`, 'ia');
-          showSkull();
         }
         renderBattle();
-        const stillAlive = gameState.playerCards.some(c => c.alive);
+        const stillAlive = battleState.playerCards.some(c => c.alive);
         if (!stillAlive) {
-          addToLog("💀 Has perdido la batalla.", 'system');
-          showSkull();
+          if (battleState.inTournament) {
+            gameState.tournament = { active: false, round: 0, wins: 0 };
+            gameState.cups -= 1;
+            addToLog("💀 Has perdido el torneo.", 'system');
+          } else {
+            gameState.trophies = Math.max(0, gameState.trophies - 15);
+            showDefeat();
+          }
+          saveGame();
+          updateUI();
           return;
         }
-        gameState.playerTurn = true;
+        battleState.playerTurn = true;
         addToLog("⏳ ¡Tu turno!", 'system');
       }, 1200);
     }
 
+    // ✅ ¡AHORA EL TORNEO ES FUNCIONAL!
     function startTournament() {
-      alert("¡Torneo en desarrollo!");
+      if (gameState.cups < 1) {
+        alert("¡Necesitas 1 copa para entrar al torneo! Tienes " + gameState.cups + ".");
+        return;
+      }
+      if (!gameState.currentDeck || gameState.currentDeck.length === 0) {
+        alert("¡Arma tu mazo primero!");
+        showView('deck');
+        return;
+      }
+      gameState.tournament = { active: true, round: 0, wins: 0 };
+      startBattle(true);
+      showView('battle');
     }
 
     function showView(view) {
@@ -616,14 +717,12 @@
       if (view === 'deck') renderDeck();
       if (view === 'shop') renderShop();
       if (view === 'battle') {
-        gameState.playerTurn = true;
-        document.getElementById('battleLog').innerHTML = '';
+        if (!battleState.enemyCard) startBattle();
         renderBattle();
-        addToLog("⏳ ¡Elige una carta y ataca!", 'system');
       }
     }
 
-    loadGame();
+    updateUI();
     showView('battle');
   </script>
 </body>
