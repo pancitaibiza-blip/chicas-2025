@@ -147,8 +147,22 @@
       border-radius: 6px;
       margin-left: 8px;
     }
-    #deck, #shop, #tournament, #cupMode, #ranking { display: none; }
-    #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active { display: block; }
+    #battle-area { display: none; }
+    #battle.active #battle-area { display: block; }
+    #battle.active .battle-placeholder { display: none; }
+    .card-battle {
+      width: 140px;
+      height: 180px;
+      background: rgba(20, 20, 40, 0.9);
+      border-radius: 12px;
+      padding: 8px;
+      text-align: center;
+      display: inline-block;
+      margin: 8px;
+      cursor: pointer;
+    }
+    #deck, #shop, #tournament, #cupMode, #ranking, #battle { display: none; }
+    #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active, #battle.active { display: block; }
     .card-grid { 
       display: grid; 
       grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
@@ -164,7 +178,6 @@
       border-radius: 8px;
       border: 1px solid #555;
     }
-    /* MODAL DE CARTA */
     #cardModal {
       position: fixed;
       top: 0;
@@ -193,7 +206,6 @@
       border-radius: 12px;
       margin-bottom: 20px;
     }
-    /* RANKING */
     .ranking-item {
       display: flex;
       align-items: center;
@@ -208,10 +220,16 @@
       height: 40px;
       border-radius: 50%;
       border: 2px solid gold;
+      background-size: cover;
     }
     .ranking-info { flex: 1; }
     .ranking-name { font-weight: bold; font-size: 16px; }
     .ranking-trophies { color: gold; }
+    .battle-placeholder {
+      text-align: center;
+      padding: 20px;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
@@ -238,13 +256,29 @@
 
     <!-- Batalla -->
     <div id="battle" class="active">
-      <div class="text-center mb-6">
+      <div class="battle-placeholder">
         <h2 class="text-2xl font-bold mb-4">⚔️ BATALLA</h2>
-        <p>¡Elige una carta y ataca!</p>
+        <p>¡Añade cartas a tu mazo y entra a la batalla!</p>
       </div>
-      <div class="text-center mt-6">
-        <button class="btn bg-red-600 mr-2">🔥 ATACAR</button>
-        <button class="btn bg-blue-600">🛡️ DEFENDER</button>
+      <div id="battle-area" class="hidden">
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-bold text-red-400">IA</h3>
+          <div id="enemyCard" class="inline-block">
+            <div class="card-battle">
+              <img src="https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" style="width:100%; height:100px; object-fit:cover; border-radius:6px;">
+              <div class="font-bold">IA Básica</div>
+              <div class="text-sm">⚔️65 🛡️70</div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center">
+          <h3 class="text-xl font-bold text-green-400">TU MAZO</h3>
+          <div id="playerCards" class="flex flex-wrap justify-center gap-4"></div>
+        </div>
+        <div class="text-center mt-6">
+          <button class="btn bg-red-600 mr-2" onclick="playerAttack()">🔥 ATACAR</button>
+          <button class="btn bg-blue-600" onclick="playerDefend()">🛡️ DEFENDER</button>
+        </div>
       </div>
     </div>
 
@@ -324,7 +358,7 @@
       <h2 class="text-2xl font-bold text-center mb-4">🏅 CONSEGUIR COPAS</h2>
       <p class="text-center">¡Gana batallas fáciles para obtener copas!</p>
       <div class="text-center mt-4">
-        <button class="btn bg-yellow-600">Iniciar Batalla por Copas</button>
+        <button class="btn bg-yellow-600" onclick="startCupBattle()">Iniciar Batalla por Copas</button>
       </div>
     </div>
   </div>
@@ -362,25 +396,24 @@
     }
     const GEMS_OFFER_END = getGemsOfferEndTime();
 
-    // ✅ CARTAS (con nivel de mejora)
-const ALL_CARDS = [
-  { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
-  { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
-  { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
-  { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
-  { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
-  { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
-  { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-  { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
-  { id: 8, name: "Rey del Trueno", rarity: "ultra", baseAtk: 130, baseDef: 80, level: 1, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
-  { id: 9, name: "Diosa Cósmica", rarity: "exotic", baseAtk: 150, baseDef: 90, level: 1, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
-  { id: 10, name: "Aria Ídolo", rarity: "idolos", baseAtk: 140, baseDef: 85, level: 1, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
-  { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
-  { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
-  { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
-  // ✅ NUEVA CARTA: FELINA
-  { id: 14, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 300 }
-];
+    // ✅ CARTAS (URLs limpias)
+    const ALL_CARDS = [
+      { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
+      { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
+      { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
+      { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
+      { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
+      { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
+      { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
+      { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
+      { id: 8, name: "Rey del Trueno", rarity: "ultra", baseAtk: 130, baseDef: 80, level: 1, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
+      { id: 9, name: "Diosa Cósmica", rarity: "exotic", baseAtk: 150, baseDef: 90, level: 1, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
+      { id: 10, name: "Aria Ídolo", rarity: "idolos", baseAtk: 140, baseDef: 85, level: 1, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
+      { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
+      { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
+      { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
+      { id: 14, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 300 }
+    ];
 
     let gameState = {
       playerName: localStorage.getItem('playerName') || 'Jugador',
@@ -410,7 +443,7 @@ const ALL_CARDS = [
       document.getElementById('trophies').textContent = gameState.trophies;
       document.getElementById('diamonds').textContent = gameState.diamonds;
       document.getElementById('cups').textContent = gameState.cups;
-      updateRanking(); // ✅ Actualizar ranking al cambiar algo
+      updateRanking();
     }
 
     // ✅ CONTADOR DE OFERTA
@@ -443,6 +476,139 @@ const ALL_CARDS = [
         saveGame();
         updateUI();
         alert("¡Compra exitosa! Has recibido 1000 gemas 💎");
+      }
+    }
+
+    // ✅ FUNCIONES DE BATALLA
+    let currentEnemy = { name: "IA Básica", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" };
+    let playerCurrentHp = {};
+    let enemyHp = 70;
+    let playerTurn = true;
+
+    function startBattle() {
+      if (gameState.currentDeck.length === 0) {
+        alert("¡Tu mazo está vacío! Añade cartas en el Mazo.");
+        return;
+      }
+      // Restablecer HP
+      enemyHp = 70;
+      playerCurrentHp = {};
+      gameState.currentDeck.forEach(id => {
+        const card = ALL_CARDS.find(c => c.id === id);
+        if (card) playerCurrentHp[id] = card.def;
+      });
+      playerTurn = true;
+      renderBattle();
+      document.querySelector('#battle .battle-placeholder').style.display = 'none';
+      document.getElementById('battle-area').style.display = 'block';
+    }
+
+    function renderBattle() {
+      // Carta enemiga
+      document.getElementById('enemyCard').innerHTML = `
+        <div class="card-battle">
+          <img src="${currentEnemy.img}" style="width:100%; height:100px; object-fit:cover; border-radius:6px;">
+          <div class="font-bold">${currentEnemy.name}</div>
+          <div class="text-sm">⚔️${currentEnemy.atk} 🛡️${currentEnemy.def}</div>
+        </div>
+      `;
+
+      // Cartas del jugador
+      const playerContainer = document.getElementById('playerCards');
+      playerContainer.innerHTML = '';
+      gameState.currentDeck.forEach(id => {
+        const card = ALL_CARDS.find(c => c.id === id);
+        if (card) {
+          const hp = playerCurrentHp[id] || card.def;
+          const alive = hp > 0;
+          const cardEl = document.createElement('div');
+          cardEl.className = 'card-battle';
+          if (!alive) cardEl.style.opacity = '0.4';
+          cardEl.innerHTML = `
+            <img src="${card.img}" style="width:100%; height:100px; object-fit:cover; border-radius:6px;">
+            <div class="font-bold">${card.name}</div>
+            <div class="text-sm">⚔️${card.atk} 🛡️${hp}</div>
+          `;
+          playerContainer.appendChild(cardEl);
+        }
+      });
+    }
+
+    function playerAttack() {
+      if (!playerTurn) return;
+      const cardId = gameState.currentDeck[0]; // Usa la primera carta
+      const card = ALL_CARDS.find(c => c.id === cardId);
+      if (!card || (playerCurrentHp[cardId] || card.def) <= 0) {
+        alert("¡No tienes cartas vivas!");
+        return;
+      }
+      const damage = Math.max(5, card.atk - Math.floor(currentEnemy.def * 0.3));
+      enemyHp = Math.max(0, enemyHp - damage);
+      alert(`¡${card.name} ataca por ${damage} de daño!`);
+      
+      if (enemyHp <= 0) {
+        gameState.trophies += 30;
+        saveGame();
+        updateUI();
+        alert("¡Victoria! +30 trofeos");
+        startBattle(); // Reiniciar
+      } else {
+        // IA ataca
+        playerTurn = false;
+        setTimeout(() => {
+          const aliveCards = gameState.currentDeck.filter(id => (playerCurrentHp[id] || ALL_CARDS.find(c => c.id === id)?.def || 0) > 0);
+          if (aliveCards.length > 0) {
+            const targetId = aliveCards[0];
+            const targetCard = ALL_CARDS.find(c => c.id === targetId);
+            const iaDamage = Math.max(5, currentEnemy.atk - Math.floor(targetCard.def * 0.3));
+            playerCurrentHp[targetId] = Math.max(0, (playerCurrentHp[targetId] || targetCard.def) - iaDamage);
+            alert(`La IA ataca a ${targetCard.name} por ${iaDamage} de daño!`);
+            if (playerCurrentHp[targetId] <= 0) {
+              alert(`¡${targetCard.name} fue eliminada!`);
+            }
+          }
+          playerTurn = true;
+          renderBattle();
+        }, 1000);
+      }
+      renderBattle();
+    }
+
+    function playerDefend() {
+      alert("🛡️ ¡Te preparas para defender!");
+      // IA ataca igual
+      playerTurn = false;
+      setTimeout(() => {
+        const aliveCards = gameState.currentDeck.filter(id => (playerCurrentHp[id] || ALL_CARDS.find(c => c.id === id)?.def || 0) > 0);
+        if (aliveCards.length > 0) {
+          const targetId = aliveCards[0];
+          const targetCard = ALL_CARDS.find(c => c.id === targetId);
+          const iaDamage = Math.max(5, currentEnemy.atk - Math.floor(targetCard.def * 0.3));
+          playerCurrentHp[targetId] = Math.max(0, (playerCurrentHp[targetId] || targetCard.def) - iaDamage);
+          alert(`La IA ataca a ${targetCard.name} por ${iaDamage} de daño!`);
+          if (playerCurrentHp[targetId] <= 0) {
+            alert(`¡${targetCard.name} fue eliminada!`);
+          }
+        }
+        playerTurn = true;
+        renderBattle();
+      }, 1000);
+    }
+
+    // ✅ COMPRA DE CARTAS
+    function buyCard(cardId) {
+      const card = ALL_CARDS.find(c => c.id === cardId);
+      if (!card) return;
+      if (gameState.diamonds >= card.shopPrice) {
+        gameState.diamonds -= card.shopPrice;
+        gameState.ownedCardIds.push(cardId);
+        saveGame();
+        updateUI();
+        renderShop();
+        renderDeck();
+        alert(`🎉 ¡Has comprado ${card.name}!`);
+      } else {
+        alert("💎 ¡No tienes suficientes gemas!");
       }
     }
 
@@ -528,6 +694,7 @@ const ALL_CARDS = [
               <div class="text-yellow-400 text-[11px]">💎${card.shopPrice}</div>
             </div>
           </div>
+          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="event.stopPropagation(); buyCard(${card.id})">Comprar</button>
         `;
         cardEl.onclick = () => showCardModal(card);
         container.appendChild(cardEl);
@@ -555,9 +722,8 @@ const ALL_CARDS = [
       } else {
         rankings.push(playerData);
       }
-      // Ordenar por trofeos
       rankings.sort((a, b) => b.trophies - a.trophies);
-      rankings = rankings.slice(0, 10); // Top 10
+      rankings = rankings.slice(0, 10);
       localStorage.setItem('rankings', JSON.stringify(rankings));
     }
 
@@ -570,7 +736,7 @@ const ALL_CARDS = [
         const item = document.createElement('div');
         item.className = 'ranking-item';
         item.innerHTML = `
-          <div class="ranking-avatar" style="background-image: url('${player.avatar}'); background-size: cover;"></div>
+          <div class="ranking-avatar" style="background-image: url('${player.avatar}');"></div>
           <div class="ranking-info">
             <div class="ranking-name">${player.name}</div>
             <div class="ranking-trophies">🪙 ${player.trophies} trofeos</div>
@@ -586,7 +752,6 @@ const ALL_CARDS = [
         alert("¡Necesitas 1 copa para el evento navideño! 🎄");
         return;
       }
-      // Simular victoria
       alert("¡FELICIDADES! 🎄 Has ganado el torneo.");
       [7, 11, 12, 13].forEach(id => {
         if (!gameState.ownedCardIds.includes(id)) {
@@ -600,6 +765,13 @@ const ALL_CARDS = [
       renderDeck();
     }
 
+    function startCupBattle() {
+      alert("¡Has ganado 1 copa!");
+      gameState.cups += 1;
+      saveGame();
+      updateUI();
+    }
+
     function showView(view) {
       ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking'].forEach(id => {
         document.getElementById(id).classList.remove('active');
@@ -608,6 +780,7 @@ const ALL_CARDS = [
       if (view === 'deck') renderDeck();
       if (view === 'shop') renderShop();
       if (view === 'ranking') updateRanking();
+      if (view === 'battle') startBattle();
     }
 
     updateUI();
