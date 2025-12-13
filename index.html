@@ -74,44 +74,53 @@
     }
     .hidden { display: none !important; }
     .btn {
-      background: #d42020;
+      background: linear-gradient(to right, #d42020, #ff4545);
       color: white;
       border: none;
-      padding: 8px 16px;
+      padding: 10px 20px;
       margin: 4px;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       font-weight: bold;
-      transition: all 0.3s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(255, 200, 200, 0.8);
+      box-shadow: 0 6px 12px rgba(255, 200, 200, 0.8);
     }
     .card-container {
       position: relative;
       display: inline-block;
       margin: 4px;
       cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .card-container:hover {
+      transform: translateY(-5px);
     }
     .card-base {
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
       position: relative;
-      width: 150px;
-      background: rgba(10, 15, 25, 0.9);
+      width: 160px;
+      background: rgba(10, 15, 25, 0.95);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     .card-glow {
       position: absolute;
-      top: -8px;
-      left: -8px;
-      right: -8px;
-      bottom: -8px;
-      border-radius: 20px;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 24px;
       z-index: -1;
-      opacity: 0.6;
-      filter: blur(10px);
+      opacity: 0.7;
+      filter: blur(12px);
+      transition: opacity 0.3s ease;
+    }
+    .card-container:hover .card-glow {
+      opacity: 1;
     }
     .rarity-common .card-glow { background: #9e9e9e; }
     .rarity-rare .card-glow { background: #4caf50; }
@@ -127,78 +136,77 @@
     .rarity-idolos .card-base { box-shadow: 0 0 20px #ff9800, 0 0 30px #ff4081; }
     .rarity-tournament .card-glow { background: #f44336; }
     .card-content {
-      padding: 6px;
+      padding: 8px;
       text-align: center;
       position: relative;
       z-index: 2;
     }
     .upgrade-badge {
       position: absolute;
-      top: 4px;
-      right: 4px;
-      background: gold;
-      color: black;
-      font-size: 10px;
-      padding: 1px 4px;
-      border-radius: 4px;
+      top: 8px;
+      right: 8px;
+      background: linear-gradient(to bottom, #ffd700, #d4af37);
+      color: #333;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 6px;
       font-weight: bold;
-    }
-    .card-base:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 25px currentColor;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
     .stats-bar {
-      background: rgba(10, 20, 10, 0.85);
-      border-radius: 16px;
-      padding: 12px;
-      margin: 20px 0;
+      background: rgba(10, 20, 10, 0.9);
+      border-radius: 20px;
+      padding: 16px;
+      margin: 24px 0;
       display: flex;
       justify-content: center;
-      gap: 20px;
-      border: 1px solid #d42020;
+      gap: 24px;
+      border: 1px solid rgba(212, 32, 32, 0.5);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-    .stat { font-weight: bold; font-size: 18px; }
+    .stat { font-weight: bold; font-size: 20px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
     .trophy { color: #FFD700; }
     .gem { color: #4FC3F7; }
     .crown { color: #FFAA00; }
     #offerBanner {
       background: linear-gradient(to right, #ff416c, #ff4b2b);
       color: white;
-      padding: 10px;
+      padding: 12px;
       text-align: center;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       z-index: 1000;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     #gemsCountdown {
       display: inline-block;
-      background: #000;
+      background: rgba(0,0,0,0.8);
       color: gold;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-left: 8px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      margin-left: 10px;
     }
     #deck, #shop, #tournament, #cupMode, #ranking { display: none; }
     #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active { display: block; }
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
       justify-content: center;
-      margin-top: 16px;
+      margin-top: 20px;
     }
-    .filter-bar { text-align: center; margin-bottom: 16px; }
+    .filter-bar { text-align: center; margin-bottom: 20px; }
     .filter-bar select {
-      background: #333;
+      background: rgba(51,51,51,0.9);
       color: white;
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid #555;
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(85,85,85,0.5);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     /* MODAL DE CARTA */
     #cardModal {
@@ -207,100 +215,111 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.9);
+      background: rgba(0,0,0,0.85);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 3000;
+      backdrop-filter: blur(5px);
     }
     #cardModalContent {
-      background: rgba(20, 20, 40, 0.95);
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 400px;
+      background: rgba(20, 20, 40, 0.98);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 450px;
       text-align: center;
-      border: 4px solid gold;
-      box-shadow: 0 0 40px gold;
+      border: 4px solid rgba(255,215,0,0.5);
+      box-shadow: 0 0 50px rgba(255,215,0,0.3);
     }
     #cardModalImage {
       width: 100%;
-      max-height: 300px;
+      max-height: 350px;
       object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
     /* RANKING */
     .ranking-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: rgba(30, 30, 50, 0.7);
-      border-radius: 12px;
-      margin-bottom: 8px;
+      gap: 16px;
+      padding: 16px;
+      background: rgba(30, 30, 50, 0.8);
+      border-radius: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .ranking-avatar {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      border: 2px solid gold;
+      border: 3px solid gold;
+      box-shadow: 0 0 10px rgba(255,215,0,0.3);
     }
     .ranking-info { flex: 1; }
-    .ranking-name { font-weight: bold; font-size: 16px; }
+    .ranking-name { font-weight: bold; font-size: 18px; }
     .ranking-trophies { color: gold; }
     /* NUEVO DISEÑO DE BATALLA */
     #battle {
       display: none;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 16px;
-      margin-top: 20px;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      margin-top: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     #battle.active {
       display: block;
     }
     .battle-header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .battle-ia {
       display: flex;
       justify-content: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
     .battle-ia-card {
-      background: rgba(0, 0, 0, 0.5);
-      border: 2px solid #d42020;
-      border-radius: 16px;
-      padding: 15px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 3px solid #d42020;
+      border-radius: 20px;
+      padding: 20px;
       text-align: center;
-      width: 160px;
-      box-shadow: 0 0 20px rgba(212, 32, 32, 0.5);
+      width: 180px;
+      box-shadow: 0 0 25px rgba(212, 32, 32, 0.6);
+      transition: transform 0.3s ease;
+    }
+    .battle-ia-card:hover {
+      transform: scale(1.02);
     }
     .battle-ia-card img {
       width: 100%;
-      height: 140px;
+      height: 160px;
       object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 8px;
+      border-radius: 12px;
+      margin-bottom: 12px;
     }
     .battle-ia-card .name {
       font-weight: bold;
-      margin: 8px 0;
+      margin: 12px 0;
+      font-size: 18px;
     }
     .battle-ia-card .stats {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      font-size: 14px;
-      margin: 8px 0;
+      gap: 12px;
+      font-size: 16px;
+      margin: 12px 0;
     }
     .hp-bar {
-      height: 8px;
+      height: 10px;
       background: #333;
-      border-radius: 4px;
+      border-radius: 5px;
       overflow: hidden;
-      margin: 8px 0;
+      margin: 12px 0;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
     }
     .hp-fill {
       height: 100%;
@@ -308,75 +327,80 @@
       transition: width 0.5s ease;
     }
     .hp-text {
-      font-size: 12px;
+      font-size: 14px;
       text-align: center;
-      margin-top: 4px;
+      margin-top: 6px;
     }
     .battle-player-cards {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 24px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .player-card {
-      background: rgba(0, 0, 0, 0.5);
-      border: 2px solid #00bcd4;
-      border-radius: 16px;
-      padding: 15px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 3px solid #00bcd4;
+      border-radius: 20px;
+      padding: 20px;
       text-align: center;
-      width: 160px;
-      box-shadow: 0 0 20px rgba(0, 188, 212, 0.5);
+      width: 180px;
+      box-shadow: 0 0 25px rgba(0, 188, 212, 0.6);
+      transition: transform 0.3s ease;
+    }
+    .player-card:hover {
+      transform: scale(1.02);
     }
     .player-card img {
       width: 100%;
-      height: 140px;
+      height: 160px;
       object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 8px;
+      border-radius: 12px;
+      margin-bottom: 12px;
     }
     .player-card .name {
       font-weight: bold;
-      margin: 8px 0;
+      margin: 12px 0;
+      font-size: 18px;
     }
     .player-card .stats {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      font-size: 14px;
-      margin: 8px 0;
+      gap: 12px;
+      font-size: 16px;
+      margin: 12px 0;
     }
     .attack-button {
-      background: #d42020;
+      background: linear-gradient(to right, #d42020, #ff4545);
       color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
+      padding: 14px 28px;
+      border-radius: 14px;
       cursor: pointer;
       font-weight: bold;
-      transition: all 0.3s;
-      box-shadow: 0 4px 10px rgba(212, 32, 32, 0.5);
-      margin: 0 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(212, 32, 32, 0.6);
+      margin: 0 12px;
     }
     .attack-button:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 15px rgba(255, 200, 200, 0.8);
+      box-shadow: 0 6px 18px rgba(255, 200, 200, 0.9);
     }
     .defend-button {
-      background: #00bcd4;
+      background: linear-gradient(to right, #00bcd4, #00e5ff);
       color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
+      padding: 14px 28px;
+      border-radius: 14px;
       cursor: pointer;
       font-weight: bold;
-      transition: all 0.3s;
-      box-shadow: 0 4px 10px rgba(0, 188, 212, 0.5);
-      margin: 0 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
+      margin: 0 12px;
     }
     .defend-button:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 15px rgba(0, 255, 255, 0.8);
+      box-shadow: 0 6px 18px rgba(0, 255, 255, 0.9);
     }
     /* Fireworks */
     .firework {
@@ -391,6 +415,15 @@
       0% { transform: scale(0); opacity: 1; }
       100% { transform: scale(3); opacity: 0; }
     }
+    /* Glassmorphism for sections */
+    .section-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
   </style>
 </head>
 <body>
@@ -402,20 +435,20 @@
   <div class="container mx-auto px-4 py-6 pt-24">
     <!-- Perfil y estadísticas -->
     <div class="text-center mb-6">
-      <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar" class="w-16 h-16 rounded-full mx-auto border-2 border-red-500">
-      <h2 class="text-xl font-bold mt-2" id="playerName">Jugador</h2>
+      <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar" class="w-20 h-20 rounded-full mx-auto border-4 border-red-500 shadow-lg">
+      <h2 class="text-2xl font-bold mt-3" id="playerName">Jugador</h2>
     </div>
     <div class="stats-bar">
       <div class="stat"><i class="fas fa-trophy trophy"></i> <span id="trophies">0</span></div>
       <div class="stat"><i class="fas fa-gem gem"></i> <span id="diamonds">100</span></div>
       <div class="stat"><i class="fas fa-crown crown"></i> <span id="cups">0</span></div>
     </div>
-    <h1 class="text-3xl font-bold text-center mb-6">🎄 FORTNITE: BATALLA NAVIDEÑA</h1>
+    <h1 class="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-green-500">🎄 FORTNITE: BATALLA NAVIDEÑA</h1>
     <!-- Batalla -->
-    <div id="battle" class="active">
+    <div id="battle" class="active section-container">
       <div class="battle-header">
-        <h2 class="text-2xl font-bold mb-4">⚔️ BATALLA</h2>
-        <p>¡Elige una carta y ataca!</p>
+        <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">⚔️ BATALLA</h2>
+        <p class="text-lg">¡Elige una carta y ataca con estilo navideño!</p>
       </div>
       <div class="battle-ia">
         <div class="battle-ia-card">
@@ -430,14 +463,14 @@
         </div>
       </div>
       <div class="battle-player-cards" id="battlePlayerCards"></div>
-      <div class="text-center mt-6">
+      <div class="text-center mt-8">
         <button class="attack-button" onclick="playerAttack()">🔥 ATACAR</button>
         <button class="defend-button" onclick="playerDefend()">🛡️ DEFENDER</button>
       </div>
     </div>
     <!-- Mazo -->
-    <div id="deck">
-      <h2 class="text-2xl font-bold text-center mb-4">🎴 TU MAZO</h2>
+    <div id="deck" class="section-container">
+      <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">🎴 TU MAZO</h2>
       <div class="filter-bar">
         <select id="rarityFilter" onchange="renderDeck()">
           <option value="all">Todas las rarezas</option>
@@ -452,37 +485,37 @@
         </select>
       </div>
       <div class="card-grid" id="deckCards"></div>
-      <div class="text-center mt-4">
+      <div class="text-center mt-6">
         <button class="btn bg-purple-700" onclick="saveDeck()">💾 Guardar Mazo</button>
       </div>
     </div>
     <!-- Tienda -->
-    <div id="shop">
-      <h2 class="text-2xl font-bold text-center mb-4">💎 TIENDA NAVIDEÑA</h2>
-      <div id="gemsOffer" class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-center mb-6 mx-auto max-w-2xl animate-pulse">
-        <h3 class="text-xl font-bold text-yellow-300">🔥 ¡OFERTA ÚNICA! 🔥</h3>
-        <p class="text-lg">¡1000 GEMAS por tiempo limitado!</p>
-        <p class="text-sm text-yellow-200">Oferta termina en: <span id="shopGemsCountdown">--h --m --s</span></p>
-        <button class="btn bg-yellow-500 text-black mt-2" onclick="buyGemsPackage()">Comprar por $4.99</button>
+    <div id="shop" class="section-container">
+      <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">💎 TIENDA NAVIDEÑA</h2>
+      <div id="gemsOffer" class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-2xl text-center mb-8 mx-auto max-w-3xl animate-pulse shadow-xl">
+        <h3 class="text-2xl font-bold text-yellow-300">🔥 ¡OFERTA ÚNICA! 🔥</h3>
+        <p class="text-xl">¡1000 GEMAS por tiempo limitado!</p>
+        <p class="text-md text-yellow-200">Oferta termina en: <span id="shopGemsCountdown">--h --m --s</span></p>
+        <button class="btn bg-yellow-500 text-black mt-4" onclick="buyGemsPackage()">Comprar por $4.99</button>
       </div>
       <div class="card-grid" id="shopCards"></div>
     </div>
     <!-- Torneo -->
-    <div id="tournament">
-      <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEOS DISPONIBLES</h2>
-      <div id="tournamentsList" class="flex flex-col gap-6 mx-auto max-w-2xl"></div>
+    <div id="tournament" class="section-container">
+      <h2 class="text-3xl font-bold text-center mb-6 text-yellow-400">🏆 TORNEOS DISPONIBLES</h2>
+      <div id="tournamentsList" class="flex flex-col gap-8 mx-auto max-w-3xl"></div>
     </div>
     <!-- Ranking -->
-    <div id="ranking">
-      <h2 class="text-2xl font-bold text-center mb-4">🏆 RANKING GLOBAL</h2>
+    <div id="ranking" class="section-container">
+      <h2 class="text-3xl font-bold text-center mb-6">🏆 RANKING GLOBAL</h2>
       <div id="rankingList" class="max-h-96 overflow-y-auto"></div>
     </div>
     <!-- Modo Copas -->
-    <div id="cupMode">
-      <h2 class="text-2xl font-bold text-center mb-4">🏅 CONSEGUIR COPAS</h2>
-      <p class="text-center">¡Gana batallas fáciles para obtener copas!</p>
-      <div class="text-center mt-4">
-        <button class="btn bg-yellow-600" onclick="startCupBattle()">Iniciar Batalla por Copas</button>
+    <div id="cupMode" class="section-container">
+      <h2 class="text-3xl font-bold text-center mb-6 text-yellow-500">🏅 CONSEGUIR COPAS</h2>
+      <p class="text-center text-lg mb-6">¡Gana batallas fáciles para obtener copas y desbloquear torneos!</p>
+      <div class="text-center">
+        <button class="btn bg-yellow-600 text-lg px-8 py-4" onclick="startCupBattle()">Iniciar Batalla por Copas</button>
       </div>
     </div>
   </div>
@@ -490,20 +523,21 @@
   <div id="cardModal" onclick="closeCardModal()">
     <div id="cardModalContent" onclick="event.stopPropagation()">
       <img id="cardModalImage" src="" alt="Carta" />
-      <h2 id="cardModalName" class="text-2xl font-bold"></h2>
-      <div id="cardModalRarity" class="font-bold"></div>
-      <div id="cardModalStats" class="text-lg mt-2"></div>
-      <button class="btn bg-gray-700 mt-4" onclick="closeCardModal()">Cerrar</button>
+      <h2 id="cardModalName" class="text-3xl font-bold"></h2>
+      <div id="cardModalRarity" class="font-bold text-xl"></div>
+      <div id="cardModalLevel" class="font-bold text-lg mt-2"></div>
+      <div id="cardModalStats" class="text-xl mt-4"></div>
+      <button class="btn bg-gray-700 mt-6" onclick="closeCardModal()">Cerrar</button>
     </div>
   </div>
   <!-- Navegación inferior -->
-  <div class="fixed bottom-4 left-0 right-0 flex justify-center gap-2 z-10 flex-wrap px-2">
-    <button class="btn bg-gray-800 text-xs" onclick="showView('battle')">Batalla</button>
-    <button class="btn bg-gray-800 text-xs" onclick="showView('deck')">Mazo</button>
-    <button class="btn bg-gray-800 text-xs" onclick="showView('shop')">Tienda</button>
-    <button class="btn bg-gray-800 text-xs" onclick="showView('ranking')">Ranking</button>
-    <button class="btn bg-gray-800 text-xs" onclick="showView('cupMode')">COPAS</button>
-    <button class="btn bg-gray-800 text-xs" onclick="showView('tournament')">Torneo</button>
+  <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-3 z-10 flex-wrap px-4 py-4 bg-black/50 backdrop-blur-md rounded-t-2xl shadow-lg">
+    <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('battle')">Batalla</button>
+    <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('deck')">Mazo</button>
+    <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('shop')">Tienda</button>
+    <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('ranking')">Ranking</button>
+    <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('cupMode')">COPAS</button>
+    <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('tournament')">Torneo</button>
   </div>
   <script>
     // ✅ CONFIGURACIÓN DE OFERTA
@@ -712,6 +746,7 @@
       const rarityClass = `rarity-tag-${card.rarity}`;
       document.getElementById('cardModalRarity').textContent = rarityText;
       document.getElementById('cardModalRarity').className = `font-bold ${rarityClass}`;
+      document.getElementById('cardModalLevel').textContent = `Nivel: ${card.level}`;
       document.getElementById('cardModalStats').textContent = `⚔️ ${card.atk} 🛡️ ${card.def}`;
       document.getElementById('cardModal').style.display = 'flex';
     }
@@ -738,10 +773,11 @@
           <div class="card-base">
             <div class="card-glow"></div>
             <div class="card-content">
-              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:170px; object-fit:cover; border-radius:6px;">
-              <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
-              <div class="text-[10px]">⚔️${card.atk} 🛡️${card.def}</div>
-              <button class="btn bg-${inDeck ? 'red' : 'green'}-600 text-xs mt-2" onclick="${buttonAction}" ${buttonDisabled}>${buttonText}</button>
+              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:190px; object-fit:cover; border-radius:8px;">
+              <div class="font-bold text-sm mt-2 truncate">${card.name}</div>
+              <div class="text-xs">⚔️${card.atk} 🛡️${card.def}</div>
+              <div class="upgrade-badge">Nivel ${card.level}</div>
+              <button class="btn bg-${inDeck ? 'red' : 'green'}-600 text-sm mt-3" onclick="${buttonAction}" ${buttonDisabled}>${buttonText}</button>
             </div>
           </div>
         `;
@@ -763,10 +799,11 @@
           <div class="card-base">
             <div class="card-glow"></div>
             <div class="card-content">
-              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:170px; object-fit:cover; border-radius:6px;">
-              <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
-              <div class="text-[10px]">⚔️${card.atk} 🛡️${card.def}</div>
-              <div class="text-[10px] text-yellow-400">💎 ${card.shopPrice}</div>
+              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:190px; object-fit:cover; border-radius:8px;">
+              <div class="font-bold text-sm mt-2 truncate">${card.name}</div>
+              <div class="text-xs">⚔️${card.atk} 🛡️${card.def}</div>
+              <div class="upgrade-badge">Nivel ${card.level}</div>
+              <div class="text-xs text-yellow-400 mt-1">💎 ${card.shopPrice}</div>
             </div>
           </div>
         `;
@@ -775,7 +812,7 @@
       });
       // Si no hay cartas, mostrar mensaje
       if (buyableCards.length === 0) {
-        container.innerHTML = '<p class="text-center text-xl font-bold text-yellow-400 col-span-full">¡Tienda vacía! Has comprado todo 🎉</p>';
+        container.innerHTML = '<p class="text-center text-2xl font-bold text-yellow-400 col-span-full">¡Tienda vacía! Has comprado todo 🎉</p>';
       }
     }
     // ✅ FUNCIÓN PARA COMPRAR CARTA
@@ -839,7 +876,7 @@
             <div class="ranking-name">${player.name}</div>
             <div class="ranking-trophies">🪙 ${player.trophies} trofeos</div>
           </div>
-          <div class="ranking-pos text-2xl font-bold">${i + 1}</div>
+          <div class="ranking-pos text-3xl font-bold">${i + 1}</div>
         `;
         container.appendChild(item);
       });
@@ -853,35 +890,35 @@
         if (gameState.completedTournaments.includes(tournament.id)) {
           return; // No mostrar si ya completado
         }
-        let buttonHtml = `<button class="btn bg-gradient-to-r from-red-700 to-green-700" onclick="startSpecificTournament(${tournament.id})">🎁 ENTRAR AL TORNEO</button>`;
+        let buttonHtml = `<button class="btn bg-gradient-to-r from-red-700 to-green-700 text-lg px-8 py-4" onclick="startSpecificTournament(${tournament.id})">🎁 ENTRAR AL TORNEO</button>`;
         if (tournament.id === 6) {
           const tournamentStart = SABRINA_START;
           if (now < tournamentStart) {
-            buttonHtml = `<button class="btn bg-gray-600" disabled>Disponible en: <span id="sabrinaCountdown">--h --m --s</span></button>`;
+            buttonHtml = `<button class="btn bg-gray-600 text-lg px-8 py-4" disabled>Disponible en: <span id="sabrinaCountdown">--h --m --s</span></button>`;
           }
         }
         const tournamentEl = document.createElement('div');
-        tournamentEl.className = 'bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 animate-pulse';
+        tournamentEl.className = 'bg-gradient-to-r from-red-900/80 via-green-800/80 to-yellow-900/80 border-2 border-yellow-500 rounded-2xl p-6 mb-8 animate-pulse shadow-2xl';
         tournamentEl.innerHTML = `
-          <div class="flex items-center justify-center gap-3 mb-2">
-            <i class="fas fa-star text-yellow-300 text-xl"></i>
-            <span class="text-xl font-bold text-white">${tournament.name}</span>
-            <i class="fas fa-star text-yellow-300 text-xl"></i>
+          <div class="flex items-center justify-center gap-4 mb-4">
+            <i class="fas fa-star text-yellow-300 text-2xl"></i>
+            <span class="text-2xl font-bold text-white">${tournament.name}</span>
+            <i class="fas fa-star text-yellow-300 text-2xl"></i>
           </div>
-          <p class="text-center text-yellow-100 font-semibold">
+          <p class="text-center text-yellow-100 font-semibold text-lg">
             ${tournament.description}
           </p>
-          <p class="text-center text-gray-300 mb-4">
+          <p class="text-center text-gray-200 mb-6 text-md">
             Necesitas <strong>${tournament.cost} copas</strong> para entrar. Recompensas: ${tournament.trophies} trofeos, ${tournament.diamonds} gemas y cartas exclusivas.
           </p>
-          <div class="text-center mt-3">
+          <div class="text-center mb-6">
             <img
               src="${tournament.image}"
               alt="${tournament.name}"
-              class="inline-block w-24 h-24 rounded-lg border-2 border-yellow-400 shadow-lg mx-auto"
+              class="inline-block w-32 h-32 rounded-xl border-4 border-yellow-400 shadow-xl mx-auto"
             />
           </div>
-          <div class="text-center mt-4">
+          <div class="text-center">
             ${buttonHtml}
           </div>
         `;
@@ -974,6 +1011,7 @@
             <span>⚔️ ${card.atk}</span>
             <span>🛡️ ${card.def}</span>
           </div>
+          <div class="upgrade-badge">Nivel ${card.level}</div>
           <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
           <div class="hp-text">HP: ${card.def}/${card.def}</div>
         `;
@@ -993,7 +1031,7 @@
         });
       });
       if (playerCards.length === 0) {
-        container.innerHTML = '<p class="text-center">¡Añade cartas a tu mazo para batallar!</p>';
+        container.innerHTML = '<p class="text-center text-xl">¡Añade cartas a tu mazo para batallar!</p>';
       }
     }
     function updateHpBars() {
