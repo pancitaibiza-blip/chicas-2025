@@ -571,23 +571,25 @@
     }
     const GEMS_OFFER_END = getGemsOfferEndTime();
     const GEMS_OFFER_ACTIVE = true; // Siempre activa hasta la 1 AM
-    // ✅ CARTAS (con nivel de mejora)
-    const ALL_CARDS = [
-      { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
-      { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
-      { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
-      { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
-      { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
-      { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
-      { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-      { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
-      { id: 8, name: "Rey del Trueno", rarity: "ultra", baseAtk: 130, baseDef: 80, level: 1, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
-      { id: 9, name: "Diosa Cósmica", rarity: "exotic", baseAtk: 150, baseDef: 90, level: 1, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
-      { id: 10, name: "Aria Ídolo", rarity: "idolos", baseAtk: 140, baseDef: 85, level: 1, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
-      { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
-      { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
-      { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null }
-    ];
+    // ✅ CARTAS (con la nueva carta de Sabrina Carpenter)
+const ALL_CARDS = [
+  { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
+  { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
+  { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
+  { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
+  { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
+  { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
+  { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
+  { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
+  { id: 8, name: "Rey del Trueno", rarity: "ultra", baseAtk: 130, baseDef: 80, level: 1, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
+  { id: 9, name: "Diosa Cósmica", rarity: "exotic", baseAtk: 150, baseDef: 90, level: 1, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
+  { id: 10, name: "Aria Ídolo", rarity: "idolos", baseAtk: 140, baseDef: 85, level: 1, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
+  { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
+  { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
+  { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
+  // ✅ NUEVA CARTA: SABRINA CARPENTER (COLABORACIÓN ESPECIAL)
+  { id: 14, name: "Sabrina Carpenter", rarity: "idolos", baseAtk: 160, baseDef: 90, level: 1, img: "https://i.pinimg.com/1200x/83/04/89/830489cc4a4b206b76e9b3948d1b512d.jpg", shopPrice: 1000 }
+];
     const IA_CARDS = [
       { id: 100, name: "IA Básica", rarity: "common", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
       { id: 101, name: "IA Élite", rarity: "legendary", atk: 95, def: 60, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" },
