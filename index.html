@@ -95,7 +95,6 @@
       margin: 4px;
       cursor: pointer;
       transition: transform 0.3s ease;
-      perspective: 1000px;
     }
     .card-container:hover {
       transform: translateY(-5px);
@@ -108,10 +107,9 @@
       background: rgba(10, 15, 25, 0.95);
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       transition: transform 0.5s ease;
-      transform-style: preserve-3d;
     }
     .card-container:hover .card-base {
-      transform: rotateY(10deg) rotateX(5deg);
+      transform: scale(1.05);
     }
     .card-glow {
       position: absolute;
@@ -148,13 +146,14 @@
       text-align: center;
       position: relative;
       z-index: 2;
-      transform-style: preserve-3d;
     }
     .card-content img {
       transition: transform 0.5s ease;
+      visibility: visible;
+      opacity: 1;
     }
     .card-container:hover .card-content img {
-      transform: translateZ(50px);
+      transform: scale(1.05);
     }
     .upgrade-badge {
       position: absolute;
@@ -167,7 +166,6 @@
       border-radius: 6px;
       font-weight: bold;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      transform: translateZ(20px);
     }
     .stats-bar {
       background: rgba(10, 20, 10, 0.9);
@@ -206,8 +204,8 @@
       border-radius: 8px;
       margin-left: 10px;
     }
-    #deck, #shop, #tournament, #cupMode, #ranking { display: none; }
-    #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active { display: block; }
+    #deck, #shop, #tournament, #cupMode, #ranking, #achievements { display: none; }
+    #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active, #achievements.active { display: block; }
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -521,6 +519,37 @@
       0% { transform: scale(0); opacity: 1; }
       100% { transform: scale(2); opacity: 0; }
     }
+    /* Achievements */
+    .achievement-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: rgba(30, 30, 50, 0.8);
+      border-radius: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .achievement-icon {
+      font-size: 32px;
+    }
+    .achievement-info {
+      flex: 1;
+    }
+    .achievement-name {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .achievement-description {
+      font-size: 14px;
+    }
+    .achievement-unlocked {
+      color: green;
+    }
+    .achievement-locked {
+      color: gray;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
@@ -612,6 +641,11 @@
         <button class="btn bg-yellow-600 text-lg px-8 py-4" onclick="startCupBattle()">Iniciar Batalla por Copas</button>
       </div>
     </div>
+    <!-- Logros -->
+    <div id="achievements" class="section-container">
+      <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600">🏅 LOGROS</h2>
+      <div id="achievementsList" class="max-h-96 overflow-y-auto"></div>
+    </div>
   </div>
   <!-- MODAL DE CARTA -->
   <div id="cardModal" onclick="closeCardModal()">
@@ -638,6 +672,7 @@
     <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('ranking')">Ranking</button>
     <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('cupMode')">COPAS</button>
     <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('tournament')">Torneo</button>
+    <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('achievements')">Logros</button>
   </div>
   <script>
     // ✅ CONFIGURACIÓN DE OFERTA
@@ -746,6 +781,14 @@
         iaDeck: [20,21,0]
       }
     ];
+    // ✅ LOGROS
+    const ACHIEVEMENTS = [
+      { id: 1, name: "Primera Victoria", description: "Gana tu primera batalla", icon: "🏆" },
+      { id: 2, name: "Coleccionista Principiante", description: "Colecciona 5 cartas", icon: "🃏" },
+      { id: 3, name: "Mejorador", description: "Sube una carta al nivel 5", icon: "⬆️" },
+      { id: 4, name: "Campeón de Torneo", description: "Gana un torneo", icon: "👑" },
+      { id: 5, name: "Maestro de Gemas", description: "Gasta 500 gemas", icon: "💎" }
+    ];
     let gameState = {
       playerName: localStorage.getItem('playerName') || 'Jugador',
       trophies: parseInt(localStorage.getItem('trophies') || '0'),
@@ -755,7 +798,9 @@
       ownedCardIds: JSON.parse(localStorage.getItem('ownedCardIds') || '[0,1,2]'),
       cardUpgrades: JSON.parse(localStorage.getItem('cardUpgrades') || '{}'),
       currentDeck: JSON.parse(localStorage.getItem('currentDeck') || '[0,1,2]'),
-      completedTournaments: JSON.parse(localStorage.getItem('completedTournaments') || '[]') // Para rastrear torneos completados
+      completedTournaments: JSON.parse(localStorage.getItem('completedTournaments') || '[]'), // Para rastrear torneos completados
+      achievements: JSON.parse(localStorage.getItem('achievements') || '[]'), // Logros desbloqueados
+      spentDiamonds: parseInt(localStorage.getItem('spentDiamonds') || '0') // Para rastrear gemas gastadas
     };
     // Aplicar mejoras
     function applyCardUpgrades() {
@@ -860,6 +905,7 @@
       }
       if (confirm(`¿Subir ${card.name} al nivel ${currentLevel + 1} por ${cost} gemas?`)) {
         gameState.diamonds -= cost;
+        gameState.spentDiamonds += cost;
         gameState.cardUpgrades[cardId] = currentLevel + 1;
         saveGame();
         applyCardUpgrades();
@@ -867,6 +913,7 @@
         renderDeck();
         renderShop();
         renderBattleCards();
+        checkAchievements();
         alert(`¡${card.name} subida al nivel ${currentLevel + 1}! 🎉`);
       }
     }
@@ -1007,6 +1054,7 @@
       }
       if (confirm(`¿Comprar ${card.name} por ${card.shopPrice} gemas? 💎`)) {
         gameState.diamonds -= card.shopPrice;
+        gameState.spentDiamonds += card.shopPrice;
         if (!gameState.ownedCardIds.includes(cardId)) {
           gameState.ownedCardIds.push(cardId);
         }
@@ -1015,6 +1063,7 @@
         updateUI();
         renderShop(); // Actualiza la tienda
         renderDeck(); // Actualiza el mazo
+        checkAchievements();
         alert(`¡${card.name} comprada exitosamente! 🎉 Ve al mazo para añadirla.`);
       }
     }
@@ -1026,6 +1075,8 @@
       localStorage.setItem('cardUpgrades', JSON.stringify(gameState.cardUpgrades));
       localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
       localStorage.setItem('completedTournaments', JSON.stringify(gameState.completedTournaments));
+      localStorage.setItem('achievements', JSON.stringify(gameState.achievements));
+      localStorage.setItem('spentDiamonds', gameState.spentDiamonds);
  
       // ✅ Guardar en ranking
       let rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
@@ -1143,7 +1194,7 @@
       showView('battle');
     }
     function showView(view) {
-      ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking'].forEach(id => {
+      ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking', 'achievements'].forEach(id => {
         document.getElementById(id).classList.remove('active');
       });
       document.getElementById(view).classList.add('active');
@@ -1155,6 +1206,7 @@
         renderIaCards();
         renderBattleCards();
       }
+      if (view === 'achievements') renderAchievements();
       updateCountdowns();
     }
     // Battle logic
@@ -1348,9 +1400,11 @@
           gameState.trophies += tournament.trophies;
           gameState.diamonds += tournament.diamonds;
           gameState.completedTournaments.push(tournament.id);
+          unlockAchievement(4); // Campeón de Torneo
         } else if (isCupBattle) {
           gameState.cups += 1;
         }
+        unlockAchievement(1); // Primera Victoria
         saveGame();
         updateUI();
         renderDeck();
@@ -1443,9 +1497,51 @@
       targetEl.classList.add('defended');
       setTimeout(() => targetEl.classList.remove('defended'), 1000);
     }
+    // ✅ SISTEMA DE LOGROS
+    function unlockAchievement(achievementId) {
+      if (!gameState.achievements.includes(achievementId)) {
+        gameState.achievements.push(achievementId);
+        saveGame();
+        alert(`¡Logro desbloqueado: ${ACHIEVEMENTS.find(a => a.id === achievementId).name}!`);
+      }
+    }
+    function checkAchievements() {
+      // Coleccionista Principiante
+      if (gameState.ownedCardIds.length >= 5) {
+        unlockAchievement(2);
+      }
+      // Mejorador (nivel 5)
+      Object.entries(gameState.cardUpgrades).forEach(([id, level]) => {
+        if (level >= 5) {
+          unlockAchievement(3);
+        }
+      });
+      // Maestro de Gemas
+      if (gameState.spentDiamonds >= 500) {
+        unlockAchievement(5);
+      }
+    }
+    function renderAchievements() {
+      const container = document.getElementById('achievementsList');
+      container.innerHTML = '';
+      ACHIEVEMENTS.forEach(ach => {
+        const isUnlocked = gameState.achievements.includes(ach.id);
+        const item = document.createElement('div');
+        item.className = `achievement-item ${isUnlocked ? 'achievement-unlocked' : 'achievement-locked'}`;
+        item.innerHTML = `
+          <div class="achievement-icon">${ach.icon}</div>
+          <div class="achievement-info">
+            <div class="achievement-name">${ach.name}</div>
+            <div class="achievement-description">${ach.description}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
     updateUI();
     showView('battle');
     createSnowflakes(); // Llama a la función para generar la nieve
+    checkAchievements(); // Verificar logros al cargar
   </script>
 </body>
 </html>
