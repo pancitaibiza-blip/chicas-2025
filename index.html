@@ -59,7 +59,7 @@
       box-shadow: 0 0 15px rgba(255, 200, 200, 0.8);
     }
 
-    /* ✅ 7 RAREZAS CON BRILLO ÉPICO */
+    /* 7 RAREZAS CON BRILLO */
     .card-container {
       position: relative;
       display: inline-block;
@@ -89,7 +89,7 @@
     .rarity-legendary .card-glow { background: #d4a017; }
     .rarity-ultra .card-glow { background: #00bcd4; }
     .rarity-exotic .card-glow { background: #e91e63; }
-    .rarity-idolos .card-glow { background: #ff9800; } /* Naranja brillante para Ídolos */
+    .rarity-idolos .card-glow { background: #ff9800; }
     .rarity-tournament .card-glow { background: #f44336; }
 
     .card-content {
@@ -170,7 +170,6 @@
       z-index: 2;
     }
 
-    /* BANNER */
     #chestsBanner {
       background: linear-gradient(to right, #d42020, #228b22);
       color: white;
@@ -205,7 +204,6 @@
       font-weight: bold;
     }
 
-    /* STATS */
     #statsBar {
       background: rgba(10, 20, 10, 0.85);
       border-radius: 16px;
@@ -230,7 +228,6 @@
     .gem { color: #4FC3F7; text-shadow: 0 0 10px #4fc3f7; }
     .crown { color: #d4a017; text-shadow: 0 0 10px #d4a017; }
 
-    /* MODAL DE CARTA */
     #cardModal {
       position: fixed;
       top: 0;
@@ -273,7 +270,6 @@
     .rarity-tag-idolos { color: #ff9800; }
     .rarity-tag-tournament { color: #f44336; }
 
-    /* MAZO EDITABLE */
     #currentDeck {
       min-height: 140px;
       background: rgba(0,0,0,0.3);
@@ -302,7 +298,6 @@
       z-index: 3;
     }
 
-    /* RESTO */
     .overlay-effect {
       position: fixed;
       top: 0;
@@ -366,7 +361,7 @@
   </style>
 </head>
 <body>
-  <!-- MODAL DE CARTA GRANDE -->
+  <!-- MODAL DE CARTA -->
   <div id="cardModal" onclick="closeCardModal()">
     <div id="cardModalContent" onclick="event.stopPropagation()">
       <img id="cardModalImage" src="" alt="Carta" />
@@ -445,7 +440,7 @@
         </div>
       </div>
 
-      <!-- ✅ MAZO EDITABLE -->
+      <!-- Mazo -->
       <div id="deck" class="view hidden">
         <h2 class="text-2xl text-center mb-4">🎴 TU MAZO (máx. 3 cartas)</h2>
         <div id="currentDeck"></div>
@@ -518,8 +513,9 @@
   </div>
 
   <script>
-    // ✅ 7 RAREZAS + ÍDOLOS
+    // ✅ TODAS LAS CARTAS + CARTAS DE TORNEO INCLUIDAS
     const ALL_CARDS = [
+      // Cartas normales
       { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
       { id: 2, name: "Escudera", rarity: "common", atk: 55, def: 65, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
@@ -530,14 +526,22 @@
       { id: 7, name: "Francine Smith", rarity: "legendary", atk: 110, def: 70, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
       { id: 8, name: "Rey del Trueno", rarity: "ultra", atk: 130, def: 80, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
       { id: 9, name: "Diosa Cósmica", rarity: "exotic", atk: 150, def: 90, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
-      // ✅ NUEVA RAREZA: ÍDOLOS
-      { id: 10, name: "Aria Ídolo", rarity: "idolos", atk: 140, def: 85, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 }
+      { id: 10, name: "Aria Ídolo", rarity: "idolos", atk: 140, def: 85, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
+      
+      // ✅ CARTAS DE TORNEO (AHORA VISIBLES Y CON MODAL)
+      { id: 11, name: "Campeón Sombra", rarity: "tournament", atk: 140, def: 100, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
+      { id: 12, name: "Maestro del Fuego", rarity: "tournament", atk: 150, def: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
+      { id: 13, name: "Rey del Hielo", rarity: "tournament", atk: 135, def: 110, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null }
     ];
 
     const IA_CARDS = [
       { id: 100, name: "IA Básica", rarity: "common", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
       { id: 101, name: "IA Élite", rarity: "legendary", atk: 95, def: 60, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" },
-      { id: 102, name: "IA Débil", rarity: "common", atk: 40, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" }
+      { id: 102, name: "IA Débil", rarity: "common", atk: 40, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
+      // ✅ IA del torneo (con imágenes reales)
+      { id: 103, name: "Campeón Sombra", rarity: "tournament", atk: 140, def: 100, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892" },
+      { id: 104, name: "Maestro del Fuego", rarity: "tournament", atk: 150, def: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395" },
+      { id: 105, name: "Rey del Hielo", rarity: "tournament", atk: 135, def: 110, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026" }
     ];
 
     let gameState = {
@@ -551,6 +555,7 @@
       tournament: { active: false, round: 0, wins: 0 }
     };
 
+    // === FUNCIONES PRINCIPALES ===
     function updateUI() {
       document.getElementById('playerName').textContent = gameState.playerName;
       document.getElementById('profileAvatar').src = gameState.avatar;
@@ -568,7 +573,6 @@
       }
     }
 
-    // === MODAL DE CARTA ===
     function showCardModal(card) {
       document.getElementById('cardModalImage').src = card.img;
       document.getElementById('cardModalName').textContent = card.name;
@@ -600,7 +604,6 @@
 
     // === MAZO EDITABLE ===
     function renderDeck() {
-      // Mazo actual (máx 3 cartas)
       const currentDeckEl = document.getElementById('currentDeck');
       currentDeckEl.innerHTML = '';
       gameState.currentDeck.forEach(id => {
@@ -622,7 +625,6 @@
         }
       });
 
-      // Todas las cartas para añadir
       const allCardsEl = document.getElementById('deckCards');
       allCardsEl.innerHTML = ALL_CARDS.filter(c => gameState.ownedCardIds.includes(c.id))
         .map(c => `
@@ -665,7 +667,64 @@
       alert("¡Mazo guardado!");
     }
 
-    // === RESTO DEL CÓDIGO ===
+    // === TIENDA: SOLO CARTAS CON shopPrice > 0 ===
+    function renderShop() {
+      const time = calculateTimeLeft();
+      const container = document.getElementById('shopCards');
+      container.innerHTML = ALL_CARDS.filter(c => c.shopPrice && c.shopPrice > 0 && !gameState.ownedCardIds.includes(c.id)).map(c => `
+        <div class="card-container ${c.rarity} relative" onclick="showCardModal(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+          <div class="timer-badge">${formatTime(time)}</div>
+          <div class="card-base">
+            <div class="card-glow"></div>
+            <div class="card-content">
+              <img src="${c.img}" onerror="this.src='https://via.placeholder.com/150/ff0000/ffffff?text=Error'" style="width:100%; height:130px; object-fit:cover;">
+              <div class="font-bold text-xs mt-1 truncate">${c.name}</div>
+              <div class="text-yellow-400 text-[11px]">💎${c.shopPrice}</div>
+            </div>
+          </div>
+          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="event.stopPropagation(); buyCard(${c.id})">Comprar</button>
+        </div>
+      `).join('');
+    }
+
+    // === BATALLA ===
+    let battleState = {
+      playerCards: [],
+      enemyCard: null,
+      playerTurn: true,
+      inTournament: false,
+      inCupMode: false
+    };
+
+    function renderBattle() {
+      const enemy = battleState.enemyCard;
+      const eHp = Math.max(0, Math.round((enemy.currentHp / enemy.def) * 100));
+      document.getElementById('enemyCard').innerHTML = `
+        <div class="card-battle ${enemy.rarity}" onclick="showCardModal(${JSON.stringify(enemy).replace(/"/g,'&quot;')})">
+          <img src="${enemy.img}" onerror="this.src='https://via.placeholder.com/150/ff0000/ffffff?text=Error'" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
+          <div class="font-bold">${enemy.name}</div>
+          <div class="text-sm">⚔️${enemy.atk} 🛡️${enemy.def}</div>
+          <div class="hp-bar"><div class="hp-fill" style="width:${eHp}%"></div></div>
+          <div class="text-xs">HP: ${enemy.currentHp}/${enemy.def}</div>
+        </div>
+      `;
+      const playerContainer = document.getElementById('playerCards');
+      playerContainer.innerHTML = battleState.playerCards.map((card, i) => {
+        const hp = Math.max(0, Math.round((card.currentHp / card.def) * 100));
+        return `
+          <div class="card-battle ${card.rarity}" style="${!card.alive?'opacity:0.4;filter:grayscale(1);':''}" 
+               onclick="selectPlayerCard(${i}); showCardModal(${JSON.stringify(card).replace(/"/g,'&quot;')})">
+            <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/ff0000/ffffff?text=Error'" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
+            <div class="font-bold">${card.name}</div>
+            <div class="text-sm">⚔️${card.atk} 🛡️${card.def}</div>
+            <div class="hp-bar"><div class="hp-fill" style="width:${hp}%"></div></div>
+            <div class="text-xs">HP: ${card.currentHp}/${card.def}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // === UTILIDADES ===
     let lastShopUpdate = localStorage.getItem('lastShopUpdate') || new Date().toISOString();
     localStorage.setItem('lastShopUpdate', lastShopUpdate);
     function calculateTimeLeft() {
@@ -688,63 +747,6 @@
     setInterval(updateAllTimers, 1000);
     updateAllTimers();
 
-    // ✅ Render de tienda, batalla, etc. (igual que antes, compatible con brillo)
-    function renderShop() {
-      const time = calculateTimeLeft();
-      const container = document.getElementById('shopCards');
-      container.innerHTML = ALL_CARDS.filter(c => c.shopPrice && !gameState.ownedCardIds.includes(c.id)).map(c => `
-        <div class="card-container ${c.rarity} relative" onclick="showCardModal(${JSON.stringify(c).replace(/"/g,'&quot;')})">
-          <div class="timer-badge">${formatTime(time)}</div>
-          <div class="card-base">
-            <div class="card-glow"></div>
-            <div class="card-content">
-              <img src="${c.img}" style="width:100%; height:130px; object-fit:cover;">
-              <div class="font-bold text-xs mt-1 truncate">${c.name}</div>
-              <div class="text-yellow-400 text-[11px]">💎${c.shopPrice}</div>
-            </div>
-          </div>
-          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="event.stopPropagation(); buyCard(${c.id})">Comprar</button>
-        </div>
-      `).join('');
-    }
-
-    let battleState = {
-      playerCards: [],
-      enemyCard: null,
-      playerTurn: true,
-      inTournament: false,
-      inCupMode: false
-    };
-
-    function renderBattle() {
-      const enemy = battleState.enemyCard;
-      const eHp = Math.max(0, Math.round((enemy.currentHp / enemy.def) * 100));
-      document.getElementById('enemyCard').innerHTML = `
-        <div class="card-battle ${enemy.rarity}" onclick="showCardModal(${JSON.stringify(enemy).replace(/"/g,'&quot;')})">
-          <img src="${enemy.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
-          <div class="font-bold">${enemy.name}</div>
-          <div class="text-sm">⚔️${enemy.atk} 🛡️${enemy.def}</div>
-          <div class="hp-bar"><div class="hp-fill" style="width:${eHp}%"></div></div>
-          <div class="text-xs">HP: ${enemy.currentHp}/${enemy.def}</div>
-        </div>
-      `;
-      const playerContainer = document.getElementById('playerCards');
-      playerContainer.innerHTML = battleState.playerCards.map((card, i) => {
-        const hp = Math.max(0, Math.round((card.currentHp / card.def) * 100));
-        return `
-          <div class="card-battle ${card.rarity}" style="${!card.alive?'opacity:0.4;filter:grayscale(1);':''}" 
-               onclick="selectPlayerCard(${i}); showCardModal(${JSON.stringify(card).replace(/"/g,'&quot;')})">
-            <img src="${card.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
-            <div class="font-bold">${card.name}</div>
-            <div class="text-sm">⚔️${card.atk} 🛡️${card.def}</div>
-            <div class="hp-bar"><div class="hp-fill" style="width:${hp}%"></div></div>
-            <div class="text-xs">HP: ${card.currentHp}/${card.def}</div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // === FUNCIONES DE JUEGO ===
     function buyCard(cardId) {
       const card = ALL_CARDS.find(c => c.id === cardId);
       if (card && gameState.diamonds >= card.shopPrice) {
@@ -768,8 +770,7 @@
       localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
     }
 
-    // (resto de funciones: playerAttack, executeIATurn, etc. igual que antes)
-
+    // === BATALLA Y TORNEO ===
     let selectedPlayerIndex = 0;
     function selectPlayerCard(index) {
       if (!battleState.playerCards[index].alive || !battleState.playerTurn) return;
@@ -796,9 +797,14 @@
     }
 
     function startBattle(isTournament = false) {
-      const enemy = isTournament 
-        ? { ...IA_CARDS[1], currentHp: 120, alive: true } 
-        : { ...IA_CARDS[0], currentHp: 70, alive: true };
+      let enemy;
+      if (isTournament) {
+        const tournamentIA = IA_CARDS.slice(3, 6); // IA de torneo
+        const randomIA = tournamentIA[Math.floor(Math.random() * tournamentIA.length)];
+        enemy = { ...randomIA, currentHp: randomIA.def + 20, alive: true };
+      } else {
+        enemy = { ...IA_CARDS[0], currentHp: 70, alive: true };
+      }
       
       battleState = {
         playerCards: gameState.currentDeck.map(id => {
@@ -813,6 +819,9 @@
       renderBattle();
       addToLog(isTournament ? "⚔️ ¡Ronda " + (gameState.tournament.round + 1) + " del torneo navideño!" : "⏳ ¡Elige una carta y ataca!", 'system');
     }
+
+    // (playerAttack, playerDefend, executeIATurn, startTournament, showView, showVictory, showDefeat, addToLog)
+    // ... [igual que antes, omitido por espacio, pero incluido en lógica completa] ...
 
     function playerAttack() {
       if (!battleState.playerTurn) return;
@@ -846,9 +855,12 @@
             gameState.tournament.wins++;
             if (gameState.tournament.wins >= 5) {
               gameState.cups -= 1;
-              if (!gameState.ownedCardIds.includes(7)) gameState.ownedCardIds.push(7);
+              // Desbloquear cartas del torneo
+              [11,12,13].forEach(id => {
+                if (!gameState.ownedCardIds.includes(id)) gameState.ownedCardIds.push(id);
+              });
               gameState.trophies += 500;
-              alert("¡FELICIDADES! 🎄 Has ganado el evento navideño y desbloqueado a FRANCINE SMITH.");
+              alert("¡FELICIDADES! 🎄 Has ganado el evento navideño y desbloqueado las cartas del torneo.");
               gameState.tournament = { active: false, round: 0, wins: 0 };
             } else {
               gameState.tournament.round++;
