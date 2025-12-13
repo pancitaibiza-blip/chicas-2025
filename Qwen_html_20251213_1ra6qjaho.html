@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fortnite Cartas Épicas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #0c0a25, #2a1b5e, #1a1a3a);
+      background-size: 400% 400%;
+      animation: gradientBG 20s ease infinite;
+      color: white;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hidden { display: none !important; }
+    .btn {
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 6px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+    }
+    .card-small {
+      width: 110px;
+      background: rgba(20, 20, 40, 0.9);
+      border-radius: 10px;
+      padding: 6px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .card-small:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 15px rgba(100, 100, 255, 0.6);
+    }
+    .card-battle {
+      width: 160px;
+      height: 220px;
+      background: rgba(10, 10, 30, 0.95);
+      border-radius: 16px;
+      padding: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+      transition: all 0.4s;
+      position: relative;
+    }
+    .card-battle.attacking {
+      animation: attackPulse 0.8s 3;
+    }
+    @keyframes attackPulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.1); filter: brightness(1.5); box-shadow: 0 0 40px gold; }
+    }
+    .hp-bar {
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .hp-fill {
+      height: 100%;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      transition: width 0.5s;
+    }
+    .timer-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #ff6b35;
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+      z-index: 2;
+    }
+    .rarity-common { border-top: 4px solid #9e9e9e; }
+    .rarity-rare { border-top: 4px solid #4caf50; }
+    .rarity-epic { border-top: 4px solid #9c27b0; }
+    .rarity-legendary { border-top: 4px solid #ff9800; }
+    .rarity-tournament { border-top: 4px solid #f44336; }
+    #battleLog {
+      min-height: 80px;
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+      text-align: center;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-yellow-400">
+      🛡️ FORTNITE: BATALLA DE CARTAS
+    </h1>
+
+    <div id="content" class="mb-24">
+      <!-- Batalla -->
+      <div id="battle" class="view">
+        <div id="battleLog">¡Elige una carta y ataca!</div>
+        
+        <div class="text-center mb-8">
+          <h3 class="text-xl font-bold text-red-400 mb-3">IA</h3>
+          <div id="enemyCard" class="inline-block"></div>
+        </div>
+
+        <div class="text-center">
+          <h3 class="text-xl font-bold text-green-400 mb-3">TU MAZO</h3>
+          <div id="playerCards" class="flex flex-wrap justify-center gap-4"></div>
+        </div>
+
+        <div class="text-center mt-6">
+          <button class="btn bg-red-600" onclick="playerAttack()">🔥 ATACAR</button>
+          <button class="btn bg-blue-600" onclick="playerDefend()">🛡️ DEFENDER</button>
+        </div>
+      </div>
+
+      <!-- Mazo -->
+      <div id="deck" class="view hidden">
+        <h2 class="text-2xl text-center mb-4">🎴 TU MAZO</h2>
+        <div class="text-center mb-4">
+          <select id="rarityFilter" onchange="renderDeck()" class="bg-gray-800 text-white p-2 rounded">
+            <option value="all">Todas</option>
+            <option value="common">Común</option>
+            <option value="rare">Rara</option>
+            <option value="epic">Épica</option>
+            <option value="legendary">Legendaria</option>
+            <option value="tournament">Torneo</option>
+          </select>
+        </div>
+        <div id="deckCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
+      </div>
+
+      <!-- Tienda -->
+      <div id="shop" class="view hidden">
+        <h2 class="text-2xl text-center mb-4">💎 TIENDA (Rotación: 5 días)</h2>
+        <div id="shopCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
+      </div>
+
+      <!-- Torneo -->
+      <div id="tournament" class="view hidden">
+        <h2 class="text-2xl text-center mb-4">🏆 TORNEO ÉPICO</h2>
+        <p class="text-center">¡Derrota a 5 jefes para ganar cartas exclusivas!</p>
+        <div class="text-center mt-6">
+          <button class="btn bg-orange-600" onclick="startTournament()">Entrar al Torneo</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fixed bottom-4 left-0 right-0 flex justify-center gap-3 z-10">
+      <button class="btn bg-gray-800" onclick="showView('battle')">Batalla</button>
+      <button class="btn bg-gray-800" onclick="showView('deck')">Mazo</button>
+      <button class="btn bg-gray-800" onclick="showView('shop')">Tienda</button>
+      <button class="btn bg-gray-800" onclick="showView('tournament')">Torneo</button>
+    </div>
+  </div>
+
+  <script>
+    // === DATOS DEL JUEGO ===
+    const ALL_CARDS = [
+      // Cartas iniciales (gratis, desbloqueadas al inicio)
+      { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
+      { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
+      { id: 2, name: "Escudera", rarity: "common", atk: 55, def: 65, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
+      
+      // Cartas de tienda (solo accesibles al comprar)
+      { id: 3, name: "Azulita", rarity: "rare", atk: 70, def: 55, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
+      { id: 4, name: "Tormenta", rarity: "epic", atk: 80, def: 45, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
+      { id: 5, name: "Furia", rarity: "legendary", atk: 90, def: 40, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
+      { id: 6, name: "Asesina", rarity: "legendary", atk: 95, def: 30, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 }
+    ];
+
+    const IA_CARDS = [
+      { id: 100, name: "IA Básica", rarity: "common", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
+      { id: 101, name: "IA Élite", rarity: "legendary", atk: 95, def: 60, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" }
+    ];
+
+    // === ESTADO ===
+    let gameState = {
+      playerCards: [0, 1, 2], // Solo cartas iniciales
+      ownedCardIds: [0, 1, 2], // IDs que el jugador posee
+      diamonds: 100
+    };
+
+    // === UTILIDADES ===
+    function saveGame() {
+      localStorage.setItem('ownedCardIds', JSON.stringify(gameState.ownedCardIds));
+      localStorage.setItem('diamonds', gameState.diamonds);
+      localStorage.setItem('lastShopUpdate', new Date().toISOString());
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem('ownedCardIds');
+      if (saved) {
+        gameState.ownedCardIds = JSON.parse(saved);
+        // Asegurar que solo cartas iniciales estén al principio si es nuevo
+        if (gameState.ownedCardIds.length === 0) {
+          gameState.ownedCardIds = [0, 1, 2];
+        }
+      }
+      gameState.diamonds = parseInt(localStorage.getItem('diamonds') || '100');
+    }
+
+    // === RENDER ===
+    function renderDeck() {
+      const container = document.getElementById('deckCards');
+      const rarity = document.getElementById('rarityFilter').value;
+      const cardsToShow = ALL_CARDS.filter(c => 
+        gameState.ownedCardIds.includes(c.id) &&
+        (rarity === 'all' || c.rarity === rarity)
+      );
+
+      container.innerHTML = cardsToShow.map(c => `
+        <div class="card-small ${c.rarity}">
+          <img src="${c.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+          <div class="font-bold text-xs mt-1 truncate">${c.name}</div>
+          <div class="text-[10px] opacity-80">${c.rarity}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderShop() {
+      const container = document.getElementById('shopCards');
+      const lastUpdate = localStorage.getItem('lastShopUpdate');
+      const now = new Date();
+      let daysPassed = 0;
+      if (lastUpdate) {
+        daysPassed = Math.floor((now - new Date(lastUpdate)) / (1000 * 60 * 60 * 24));
+      }
+      const daysLeft = Math.max(0, 5 - daysPassed);
+
+      const shopCards = ALL_CARDS.filter(c => c.shopPrice !== null && !gameState.ownedCardIds.includes(c.id));
+      container.innerHTML = shopCards.map(c => `
+        <div class="card-small ${c.rarity} relative">
+          <div class="timer-badge">${daysLeft}d</div>
+          <img src="${c.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+          <div class="font-bold text-xs mt-1 truncate">${c.name}</div>
+          <div class="text-yellow-400 text-[11px]">💎${c.shopPrice}</div>
+          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="buyCard(${c.id})">Comprar</button>
+        </div>
+      `).join('');
+    }
+
+    function renderBattle() {
+      // Carta enemiga
+      const enemy = IA_CARDS[0]; // IA fija por simplicidad
+      document.getElementById('enemyCard').innerHTML = `
+        <div class="card-battle ${enemy.rarity}">
+          <img src="${enemy.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
+          <div class="font-bold">${enemy.name}</div>
+          <div>⚔️${enemy.atk} 🛡️${enemy.def}</div>
+        </div>
+      `;
+
+      // Cartas del jugador
+      const playerContainer = document.getElementById('playerCards');
+      const playerCards = ALL_CARDS.filter(c => gameState.playerCards.includes(c.id));
+      playerContainer.innerHTML = playerCards.map(c => `
+        <div class="card-battle ${c.rarity}" style="cursor:pointer;" onclick="selectCard(${c.id})">
+          <img src="${c.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
+          <div class="font-bold">${c.name}</div>
+          <div>⚔️${c.atk} 🛡️${c.def}</div>
+        </div>
+      `).join('');
+    }
+
+    // === LÓGICA DE JUEGO ===
+    function buyCard(cardId) {
+      const card = ALL_CARDS.find(c => c.id === cardId);
+      if (!card || !card.shopPrice) return;
+      if (gameState.diamonds >= card.shopPrice) {
+        gameState.diamonds -= card.shopPrice;
+        gameState.ownedCardIds.push(cardId);
+        saveGame();
+        renderShop();
+        renderDeck();
+        alert(`¡Has comprado ${card.name}!`);
+      } else {
+        alert("¡No tienes suficientes diamantes! 💎");
+      }
+    }
+
+    let selectedCardId = null;
+    function selectCard(cardId) {
+      selectedCardId = cardId;
+      // Efecto visual
+      document.querySelectorAll('.card-battle').forEach(el => el.classList.remove('attacking'));
+      event.target.closest('.card-battle').classList.add('attacking');
+    }
+
+    function playerAttack() {
+      if (selectedCardId === null) {
+        document.getElementById('battleLog').innerHTML = "¡Selecciona una carta primero!";
+        return;
+      }
+      const card = ALL_CARDS.find(c => c.id === selectedCardId);
+      document.getElementById('battleLog').innerHTML = `¡${card.name} lanza <strong>${card.power || 'ataque épico'}!</strong>`;
+      
+      // Efecto de ataque visual
+      const enemyEl = document.getElementById('enemyCard').querySelector('.card-battle');
+      enemyEl.style.animation = 'attackPulse 0.8s 2';
+      setTimeout(() => enemyEl.style.animation = '', 1600);
+    }
+
+    function playerDefend() {
+      if (selectedCardId === null) {
+        document.getElementById('battleLog').innerHTML = "¡Selecciona una carta primero!";
+        return;
+      }
+      const card = ALL_CARDS.find(c => c.id === selectedCardId);
+      document.getElementById('battleLog').innerHTML = `¡${card.name} se prepara para defender con fuerza!`;
+    }
+
+    function startTournament() {
+      alert("¡El torneo épico está en desarrollo! Próximamente...");
+    }
+
+    function showView(view) {
+      document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
+      document.getElementById(view).classList.remove('hidden');
+      if (view === 'deck') renderDeck();
+      if (view === 'shop') renderShop();
+      if (view === 'battle') renderBattle();
+    }
+
+    // === INICIAR ===
+    loadGame();
+    showView('battle');
+  </script>
+</body>
+</html>
