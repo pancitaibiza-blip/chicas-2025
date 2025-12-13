@@ -111,10 +111,53 @@
       font-size: 18px;
       line-height: 1.4;
     }
+
+    /* === CONTADOR DE COFRES === */
+    #chestsBanner {
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      overflow: hidden;
+      white-space: nowrap;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    #tickerText {
+      display: inline-block;
+      animation: scrollLeft 25s linear infinite;
+    }
+    @keyframes scrollLeft {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    #countdownTimer {
+      display: inline-block;
+      background: #000;
+      color: gold;
+      padding: 2px 10px;
+      border-radius: 6px;
+      margin: 0 8px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <div class="container mx-auto px-4 py-6">
+  <!-- CONTADOR DE COFRES -->
+  <div id="chestsBanner">
+    <span id="tickerText">
+      🔔 ¡LLEGAN LOS COFRES! 🔔 ¿Qué carta nueva te tocará? 
+      <span id="countdownTimer">Cargando...</span>
+    </span>
+  </div>
+
+  <div class="container mx-auto px-4 py-6 pt-20">
     <h1 class="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-yellow-400">
       🛡️ FORTNITE: BATALLA DE CARTAS
     </h1>
@@ -206,6 +249,35 @@
   </div>
 
   <script>
+    // === CONTADOR DE COFRES ===
+    function updateChestCountdown() {
+      const lastUpdate = localStorage.getItem('lastShopUpdate') || new Date().toISOString();
+      const nextUpdate = new Date(new Date(lastUpdate).getTime() + 5 * 24 * 60 * 60 * 1000);
+      const now = new Date();
+      let diff = nextUpdate - now;
+
+      if (diff <= 0) {
+        // Rotar cofres
+        localStorage.setItem('lastShopUpdate', new Date().toISOString());
+        document.getElementById('countdownTimer').textContent = '¡AHORA!';
+        setTimeout(() => location.reload(), 3000);
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('countdownTimer').textContent = 
+        `${days}d ${hours}h ${mins}m ${secs}s`;
+    }
+
+    // Actualizar cada segundo
+    setInterval(updateChestCountdown, 1000);
+    updateChestCountdown();
+
+    // === RESTO DEL JUEGO ===
     const ALL_CARDS = [
       { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
@@ -289,7 +361,6 @@
     }
 
     function renderBattle() {
-      // Enemigo
       const enemy = gameState.enemyCard;
       const enemyHpPercent = Math.max(0, Math.min(100, Math.round((enemy.currentHp / enemy.def) * 100)));
       document.getElementById('enemyCard').innerHTML = `
@@ -302,7 +373,6 @@
         </div>
       `;
 
-      // Jugador
       const playerContainer = document.getElementById('playerCards');
       playerContainer.innerHTML = gameState.playerCards.map((card, i) => {
         const hpPercent = Math.max(0, Math.min(100, Math.round((card.currentHp / card.def) * 100)));
@@ -337,7 +407,7 @@
     function selectPlayerCard(index) {
       selectedPlayerIndex = index;
       document.querySelectorAll('.card-battle').forEach(el => el.classList.remove('attacking'));
-      document.querySelectorAll('.card-battle')[index + 1]?.classList.add('attacking'); // +1 por la carta enemiga
+      document.querySelectorAll('.card-battle')[index + 1]?.classList.add('attacking');
     }
 
     function playerAttack() {
@@ -354,12 +424,10 @@
 
       document.getElementById('battleLog').innerHTML = `¡${playerCard.name} ataca a ${enemy.name} por <strong>${damage} daño</strong>!`;
 
-      // Efecto visual
       const enemyEl = document.getElementById('enemyCard').querySelector('.card-battle');
       enemyEl.style.animation = 'attackPulse 0.8s 1';
       setTimeout(() => enemyEl.style.animation = '', 800);
 
-      // Actualizar vista
       setTimeout(() => {
         renderBattle();
         if (enemy.currentHp <= 0) {
