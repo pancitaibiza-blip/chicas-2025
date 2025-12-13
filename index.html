@@ -95,6 +95,7 @@
       margin: 4px;
       cursor: pointer;
       transition: transform 0.3s ease;
+      perspective: 1000px;
     }
     .card-container:hover {
       transform: translateY(-5px);
@@ -106,6 +107,11 @@
       width: 160px;
       background: rgba(10, 15, 25, 0.95);
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.5s ease;
+      transform-style: preserve-3d;
+    }
+    .card-container:hover .card-base {
+      transform: rotateY(10deg) rotateX(5deg);
     }
     .card-glow {
       position: absolute;
@@ -140,6 +146,13 @@
       text-align: center;
       position: relative;
       z-index: 2;
+      transform-style: preserve-3d;
+    }
+    .card-content img {
+      transition: transform 0.5s ease;
+    }
+    .card-container:hover .card-content img {
+      transform: translateZ(50px);
     }
     .upgrade-badge {
       position: absolute;
@@ -152,6 +165,7 @@
       border-radius: 6px;
       font-weight: bold;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transform: translateZ(20px);
     }
     .stats-bar {
       background: rgba(10, 20, 10, 0.9);
@@ -230,6 +244,7 @@
       text-align: center;
       border: 4px solid rgba(255,215,0,0.5);
       box-shadow: 0 0 50px rgba(255,215,0,0.3);
+      perspective: 1000px;
     }
     #cardModalImage {
       width: 100%;
@@ -238,6 +253,11 @@
       border-radius: 16px;
       margin-bottom: 24px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      transition: transform 0.5s ease;
+      transform: rotateY(0deg);
+    }
+    #cardModal:hover #cardModalImage {
+      transform: rotateY(10deg) translateZ(50px);
     }
     /* RANKING */
     .ranking-item {
@@ -280,6 +300,7 @@
       display: flex;
       justify-content: center;
       margin-bottom: 40px;
+      perspective: 1000px;
     }
     .battle-ia-card {
       background: rgba(0, 0, 0, 0.6);
@@ -289,10 +310,11 @@
       text-align: center;
       width: 180px;
       box-shadow: 0 0 25px rgba(212, 32, 32, 0.6);
-      transition: transform 0.3s ease;
+      transition: transform 0.5s ease;
+      transform-style: preserve-3d;
     }
     .battle-ia-card:hover {
-      transform: scale(1.02);
+      transform: rotateY(10deg) rotateX(5deg);
     }
     .battle-ia-card img {
       width: 100%;
@@ -300,6 +322,10 @@
       object-fit: cover;
       border-radius: 12px;
       margin-bottom: 12px;
+      transition: transform 0.5s ease;
+    }
+    .battle-ia-card:hover img {
+      transform: translateZ(50px);
     }
     .battle-ia-card .name {
       font-weight: bold;
@@ -337,6 +363,7 @@
       gap: 24px;
       flex-wrap: wrap;
       margin-bottom: 24px;
+      perspective: 1000px;
     }
     .player-card {
       background: rgba(0, 0, 0, 0.6);
@@ -346,10 +373,11 @@
       text-align: center;
       width: 180px;
       box-shadow: 0 0 25px rgba(0, 188, 212, 0.6);
-      transition: transform 0.3s ease;
+      transition: transform 0.5s ease;
+      transform-style: preserve-3d;
     }
     .player-card:hover {
-      transform: scale(1.02);
+      transform: rotateY(10deg) rotateX(5deg);
     }
     .player-card img {
       width: 100%;
@@ -357,6 +385,10 @@
       object-fit: cover;
       border-radius: 12px;
       margin-bottom: 12px;
+      transition: transform 0.5s ease;
+    }
+    .player-card:hover img {
+      transform: translateZ(50px);
     }
     .player-card .name {
       font-weight: bold;
