@@ -6,42 +6,6 @@
   <title>FORTNITE SKIN BATTLE: ¡DERROTA A LA IA!</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oxanium:wght@600&display=swap" rel="stylesheet">
   <style>
-    /* Pantalla de carga */
-    .loading-screen {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #0a0a1a;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      color: white;
-    }
-    .loading-screen h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 3em;
-      color: #ff6b6b;
-      text-shadow: 0 0 20px rgba(255,107,107,0.8);
-      margin-bottom: 30px;
-    }
-    .loading-bar {
-      width: 300px;
-      height: 10px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    .loading-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(to right, #ff6b6b, #4ecdc4);
-      animation: load 2s forwards;
-    }
-    @keyframes load {
-      to { width: 100%; }
-    }
-
     body {
       font-family: 'Oxanium', sans-serif;
       color: white;
@@ -64,13 +28,7 @@
     .particle { position: absolute; border-radius: 50%; animation: float 15s infinite linear; }
     @keyframes float { to { transform: translate(var(--tx), var(--ty)) rotate(360deg); opacity: 0; } }
 
-    .content { 
-      position: relative; 
-      z-index: 10; 
-      opacity: 0; 
-      animation: fadeIn 1.5s 0.5s forwards; 
-    }
-    @keyframes fadeIn { to { opacity: 1; } }
+    .content { position: relative; z-index: 10; }
 
     /* Barra de jugador y trofeos */
     .player-bar {
@@ -477,22 +435,12 @@
       .battle-table, .store-section, .collection-grid { padding: 15px; }
       .nav-btn { padding: 8px 14px; font-size: 0.95em; }
       .card-preview { width: 90%; padding: 15px; }
-      .loading-screen h2 { font-size: 2.2em; }
     }
   </style>
 </head>
 <body>
-  <!-- 🎮 PANTALLA DE CARGA -->
-  <div class="loading-screen" id="loadingScreen">
-    <h2>FORTNITE SKIN BATTLE</h2>
-    <div class="loading-bar">
-      <div class="loading-fill"></div>
-    </div>
-    <p style="margin-top:20px; color:#4ecdc4;">Cargando experiencia épica...</p>
-  </div>
-
   <div class="particles" id="particles"></div>
-  <div class="content" id="mainContent" style="display:none;">
+  <div class="content" id="mainContent">
     <h1>FORTNITE SKIN BATTLE: ¡DERROTA A LA IA!</h1>
     
     <!-- ✅ BARRA DE JUGADOR, TROFEOS Y DIAMANTES -->
@@ -641,7 +589,7 @@
   </div>
 
   <script>
-    // ==== PANTALLA DE CARGA CORREGIDA ====
+    // ==== INICIALIZAR SIN PANTALLA DE CARGA ====
     function initGame() {
       let playerName = localStorage.getItem('playerName');
       if (!playerName) {
@@ -650,9 +598,6 @@
       }
       document.getElementById('playerName').innerText = playerName;
 
-      document.getElementById('loadingScreen').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'block';
-      
       createParticles();
       updateUI();
       renderCollection();
@@ -685,7 +630,7 @@
       { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: false },
       { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: false },
       { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
-      { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: }
+      { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
     ];
 
     const LEAGUES = [
@@ -852,111 +797,67 @@
     };
 
     function renderCollection() {
-  const grid = document.getElementById('collectionGrid');
-  grid.innerHTML = '';
-  CARDS.slice(0, -1).forEach(card => {
-    const isLocked = (card.id === 10) ? true : !card.unlocked;
-    const div = document.createElement('div');
-    div.className = `collection-card ${isLocked ? 'locked' : 'unlocked'}`;
-    
-    if (card.id === 10) {
-      // 🌟 ¡SELLAMARA GEMELAS CON EFECTO ÉPICO!
-      const img = document.createElement('img');
-      img.src = card.img;
-      img.alt = card.name;
-      img.style.cursor = 'pointer';
-      div.appendChild(img);
-      
-      // Añadir partículas si está desbloqueada
-      if (!isLocked) {
-        div.className += ' sellamara-glow';
-        // Partículas flotantes
-        for (let i = 0; i < 5; i++) {
-          const particle = document.createElement('div');
-          particle.className = 'sellamara-particle';
-          particle.style.left = `${Math.random() * 100}%`;
-          particle.style.animationDelay = `${Math.random() * 3}s`;
-          div.appendChild(particle);
-        }
-      } else {
-        // Candado para bloqueada
-        div.className += ' locked';
-        div.innerHTML += '<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2em; color:#ff6b6b;">🔒</div>';
-      }
-      div.onclick = () => showCardPreview(card);
-    } else if (!isLocked) {
-      const img = document.createElement('img');
-      img.src = card.img;
-      img.alt = card.name;
-      img.style.cursor = 'pointer';
-      img.onclick = () => showCardPreview(card);
-      div.appendChild(img);
-    } else {
-      const img = document.createElement('img');
-      img.src = card.img;
-      img.alt = card.name;
-      img.style.filter = 'grayscale(100%)';
-      img.style.cursor = 'not-allowed';
-      div.appendChild(img);
-      div.onclick = () => showCardPreview(card);
-    }
-    grid.appendChild(div);
-  });
-
-  // Mazo actual
-  const deckEl = document.getElementById('currentDeck');
-  deckEl.innerHTML = '';
-  currentDeck.forEach(id => {
-    const card = CARDS.find(c => c.id === id);
-    if (card) {
-      const cardEl = document.createElement('div');
-      cardEl.style.width = '100px';
-      cardEl.style.margin = '5px';
-      
-      if (card.id === 10) {
-        // 🌟 SELLAMARA EN EL MAZO
-        const img = document.createElement('img');
-        img.src = card.img;
-        img.style.width = '100%';
-        img.style.borderRadius = '8px';
-        cardEl.appendChild(img);
-        
-        if (card.unlocked) {
-          cardEl.className = 'sellamara-glow';
-          // Partículas
-          for (let i = 0; i < 3; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'sellamara-particle';
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.animationDelay = `${Math.random() * 2}s`;
-            particle.style.width = '3px';
-            particle.style.height = '3px';
-            cardEl.appendChild(particle);
-          }
+      const grid = document.getElementById('collectionGrid');
+      grid.innerHTML = '';
+      CARDS.slice(0, -1).forEach(card => {
+        const isLocked = (card.id === 10) ? true : !card.unlocked;
+        const div = document.createElement('div');
+        div.className = `collection-card ${isLocked ? 'locked' : 'unlocked'}`;
+        if (card.id === 10) {
+          const img = document.createElement('img');
+          img.src = card.img;
+          img.alt = card.name;
+          img.style.cursor = 'pointer';
+          div.appendChild(img);
+          div.onclick = () => showCardPreview(card);
+        } else if (!isLocked) {
+          const img = document.createElement('img');
+          img.src = card.img;
+          img.alt = card.name;
+          img.style.cursor = 'pointer';
+          img.onclick = () => showCardPreview(card);
+          div.appendChild(img);
         } else {
+          const img = document.createElement('img');
+          img.src = card.img;
+          img.alt = card.name;
           img.style.filter = 'grayscale(100%)';
-          cardEl.innerHTML += '<div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>';
-          cardEl.onclick = () => alert('¡Sellamara Gemelas se desbloqueará mañana a las 15:00!');
+          img.style.cursor = 'not-allowed';
+          div.appendChild(img);
+          div.onclick = () => showCardPreview(card);
         }
-      } else if (card.unlocked) {
-        cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;" onclick="showCardPreview(${JSON.stringify(card).replace(/"/g, '&quot;')})">`;
-      } else {
-        cardEl.innerHTML = `
-          <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
-          <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
-        `;
-        cardEl.onclick = () => alert('¡Esta carta se desbloquea ganando batallas!');
-      }
-      deckEl.appendChild(cardEl);
+        grid.appendChild(div);
+      });
+
+      const deckEl = document.getElementById('currentDeck');
+      deckEl.innerHTML = '';
+      currentDeck.forEach(id => {
+        const card = CARDS.find(c => c.id === id);
+        if (card) {
+          const cardEl = document.createElement('div');
+          cardEl.style.width = '100px';
+          cardEl.style.margin = '5px';
+          if (card.id === 10) {
+            cardEl.innerHTML = `
+              <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
+              <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
+            `;
+            cardEl.onclick = () => alert('¡Sellamara Gemelas se desbloqueará mañana a las 15:00!');
+          } else if (card.unlocked) {
+            cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;" onclick="showCardPreview(${JSON.stringify(card).replace(/"/g, '&quot;')})">`;
+          } else {
+            cardEl.innerHTML = `
+              <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
+              <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
+            `;
+            cardEl.onclick = () => alert('¡Esta carta se desbloquea ganando batallas!');
+          }
+          deckEl.appendChild(cardEl);
+        }
+      });
     }
-  });
-}
 
     function addToDeck(cardId) {
-      if (cardId === 10) {
-        alert('¡Sellamara Gemelas se desbloqueará mañana a las 15:00!');
-        return;
-      }
       if (currentDeck.length >= 3) {
         alert('Tu mazo solo puede tener 3 cartas.');
         return;
@@ -968,7 +869,6 @@
     }
 
     function saveDeck() {
-      currentDeck = currentDeck.filter(id => id !== 10);
       if (currentDeck.length !== 3) {
         alert('¡Tu mazo debe tener exactamente 3 cartas!');
         return;
@@ -999,7 +899,7 @@
 
     function startBattle() {
       const savedDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
-      currentDeck = savedDeck.filter(id => id !== 10);
+      currentDeck = savedDeck;
 
       playerCards = [];
       currentDeck.forEach(id => {
@@ -1178,23 +1078,4 @@
         }
         const diff = target - now;
         const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
-        if (diff <= 0) {
-          document.getElementById('updateTimer').innerText = '¡La actualización ya está disponible! 🎁';
-        } else {
-          document.getElementById('updateTimer').innerText = 
-            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-      }
-      updateTimer();
-      setInterval(updateTimer, 1000);
-    }
-
-    function startLegendaryCountdown() {
-      // No se necesita aquí, porque el contador se muestra en la vista detallada
-    }
-  </script>
-</body>
-</html>
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 6
