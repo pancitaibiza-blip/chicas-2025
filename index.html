@@ -1,408 +1,1321 @@
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
-import { Card, League, Player, GameView } from '@/types/fortnite-game';
-
-// Cartas especiales para la IA con más vida
-const IA_CARDS = [
-  { id:101, name:"IA Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:80, power:"Paso Firme Mejorado", attackType:"wind", unlocked: true },
-  { id:102, name:"IA Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:85, power:"Confeti Ácido Doble", attackType:"fire", unlocked: true },
-  { id:103, name:"IA Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:75, power:"Torbellino Destructor", attackType:"wind", unlocked: true },
-  { id:104, name:"IA Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:100, power:"Muralla Imbatible", attackType:"ice", unlocked: true },
-  { id:105, name:"IA Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:80, power:"Baile Mortal", attackType:"wind", unlocked: true },
-  { id:106, name:"IA Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:70, power:"Ira Absoluta", attackType:"fire", unlocked: true },
-  { id:107, name:"IA Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:95, power:"Protección Total", attackType:"ice", unlocked: true },
-  { id:108, name:"IA Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:60, power:"Golpe Aniquilador", attackType:"fire", unlocked: true },
-  { id:109, name:"IA Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:110, power:"Escudo Divino", attackType:"ice", unlocked: true },
-  { id:110, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:65, power:"Tirano Supremo", attackType:"arcane", unlocked: true }
-];
-
-export const useFortniteGame = () => {
-  const [player, setPlayer] = useState<Player>({
-    name: '',
-    trophies: 0,
-    diamonds: 100,
-    league: {
-      name: 'Bronce',
-      min: 0,
-      max: 199,
-      badgeClass: 'league-bronze',
-      iaMod: -20
-    }
-  });
-  
-  const [currentDeck, setCurrentDeck] = useState<number[]>([0, 3, 6]);
-  const [playerCards, setPlayerCards] = useState<Card[]>([]);
-  const [enemyCard, setEnemyCard] = useState<Card | null>(null);
-  const [gameActive, setGameActive] = useState(false);
-  const [playerTurn, setPlayerTurn] = useState(false);
-  const [selectedPlayerCard, setSelectedPlayerCard] = useState<Card | null>(null);
-  const [currentView, setCurrentView] = useState<GameView>('battle');
-  const [battleLog, setBattleLog] = useState<string>('¡Elige una carta de tu mazo para atacar!');
-  
-  // Timer para el turno
-  const [turnTime, setTurnTime] = useState<number>(30);
-  const [timerActive, setTimerActive] = useState<boolean>(false);
-
-  const LEAGUES: League[] = [
-    { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze", iaMod: -20 },
-    { name: "Plata", min: 200, max: 399, badgeClass: "league-silver", iaMod: 0 },
-    { name: "Oro", min: 400, max: 599, badgeClass: "league-gold", iaMod: 20 },
-    { name: "Élite", min: 600, max: 799, badgeClass: "league-elite", iaMod: 40 },
-    { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend", iaMod: 60 }
-  ];
-
-  const CARDS: Card[] = [
-    { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
-    { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
-    { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind", unlocked: true },
-    { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:70, power:"Muralla", attackType:"ice", unlocked: true },
-    { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind", unlocked: true },
-    { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire", unlocked: true },
-    { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
-    { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: true },
-    { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: true },
-    { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
-    { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
-  ];
-
-  const [cards, setCards] = useState<Card[]>([]);
-
-  // Inicializar juego
-  useEffect(() => {
-    const savedPlayerName = localStorage.getItem('playerName');
-    const savedTrophies = parseInt(localStorage.getItem('trophies') || '0');
-    const savedDiamonds = parseInt(localStorage.getItem('diamonds') || '100');
-    const savedDeck = JSON.parse(localStorage.getItem('currentDeck') || '[0, 3, 6]');
-    
-    const playerName = savedPlayerName || prompt("¿Cómo te llamas, jugador/a?") || "Jugador";
-    if (!savedPlayerName) {
-      localStorage.setItem('playerName', playerName);
-    }
-    
-    // Resetear diamantes diarios
-    const today = new Date().toDateString();
-    const lastDiamondClaim = localStorage.getItem('lastDiamondClaim');
-    if (lastDiamondClaim !== today) {
-      localStorage.setItem('diamonds', '100');
-      localStorage.setItem('lastDiamondClaim', today);
-    }
-    
-    // Crear copia de las cartas y cargar estado
-    const savedCards = JSON.parse(localStorage.getItem('cards') || '{}');
-    const initialCards = CARDS.map(card => {
-      const unlocked = savedCards[card.id] !== undefined ? savedCards[card.id] : (card.id === 10 ? false : true);
-      return { ...card, unlocked };
-    });
-    
-    setCards(initialCards);
-    
-    const league = LEAGUES.find(l => savedTrophies >= l.min && savedTrophies <= l.max) || LEAGUES[0];
-    
-    setPlayer({
-      name: playerName,
-      trophies: savedTrophies,
-      diamonds: savedDiamonds,
-      league
-    });
-    
-    setCurrentDeck(savedDeck);
-  }, []);
-
-  // Actualizar liga cuando cambian los trofeos
-  useEffect(() => {
-    const newLeague = LEAGUES.find(l => player.trophies >= l.min && player.trophies <= l.max) || LEAGUES[0];
-    if (newLeague.name !== player.league.name) {
-      setPlayer(prev => ({ ...prev, league: newLeague }));
-    }
-  }, [player.trophies, player.league.name, LEAGUES]);
-
-  // Timer del turno - REESCRITO COMPLETAMENTE
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    
-    if (timerActive && turnTime > 0) {
-      interval = setInterval(() => {
-        setTurnTime(prev => {
-          if (prev <= 1) {
-            // Cuando el tiempo llega a 0
-            setTimerActive(false);
-            if (playerTurn) {
-              // Si es el turno del jugador y se acabó el tiempo, pierde el turno
-              setBattleLog('¡Se acabó el tiempo! Pierdes tu turno.');
-              setTimeout(() => {
-                executeIATurn();
-              }, 1500);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortnite Skin Battle</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            to {
+                transform: translate(var(--tx), var(--ty)) rotate(360deg);
+                opacity: 0;
             }
-            return 30;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timerActive, playerTurn]);
-
-  const updatePlayer = (updates: Partial<Player>) => {
-    setPlayer(prev => {
-      const newPlayer = { ...prev, ...updates };
-      localStorage.setItem('trophies', newPlayer.trophies.toString());
-      localStorage.setItem('diamonds', newPlayer.diamonds.toString());
-      return newPlayer;
-    });
-  };
-
-  const saveCollection = () => {
-    const state: Record<number, boolean> = {};
-    cards.forEach(card => {
-      state[card.id] = card.unlocked;
-    });
-    state[10] = false;
-    localStorage.setItem('cards', JSON.stringify(state));
-  };
-
-  const startBattle = () => {
-    const newPlayerCards: Card[] = [];
-    currentDeck.forEach(id => {
-      const card = cards.find(c => c.id === id && c.unlocked);
-      if (card) {
-        newPlayerCards.push({ ...card, currentHp: card.def, alive: true });
-      }
-    });
-
-    if (newPlayerCards.length === 0) {
-      alert('¡Tu mazo está vacío! Ve a "Mazo" y arma tu mazo.');
-      return;
-    }
-
-    // Seleccionar una carta aleatoria de la IA con más vida
-    const randomIACard = IA_CARDS[Math.floor(Math.random() * IA_CARDS.length)];
-    const iaCard = { ...randomIACard, currentHp: randomIACard.def, alive: true };
-    
-    setPlayerCards(newPlayerCards);
-    setEnemyCard(iaCard);
-    setGameActive(true);
-    setPlayerTurn(false); // La IA ataca primero
-    setSelectedPlayerCard(newPlayerCards[0]);
-    setBattleLog('¡La IA ataca primero! Preparando ataque...');
-    setTurnTime(30);
-    setTimerActive(false); // No activar timer al inicio
-    
-    // La IA ataca inmediatamente
-    setTimeout(() => {
-      executeIATurn();
-    }, 2000);
-  };
-
-  const executePlayerAttack = (card: Card) => {
-    if (!gameActive || !playerTurn || !enemyCard) return;
-    
-    // Detener el timer cuando el jugador ataca
-    setTimerActive(false);
-    
-    setBattleLog(`¡${card.name} usa <strong>${card.power}</strong>!`);
-
-    const damage = Math.max(5, card.atk - Math.floor(enemyCard.def * 0.3));
-    
-    setTimeout(() => {
-      const newEnemyCard = { ...enemyCard, currentHp: Math.max(0, (enemyCard.currentHp || 0) - damage) };
-      setEnemyCard(newEnemyCard);
-
-      if (newEnemyCard.currentHp <= 0) {
-        setBattleLog(`¡${card.name} derrotó a la IA!`);
-        setTimeout(() => {
-          updatePlayer({ trophies: player.trophies + 30 });
-          const msg = `¡Ganaste 30 trofeos!<br>Total: ${player.trophies + 30} trofeos.`;
-          showEndScreen(true, msg);
-        }, 1500);
-      } else {
-        setBattleLog(prev => prev + `<br>¡Turno de la IA!`);
-        setTimeout(() => {
-          executeIATurn();
-        }, 1500);
-      }
-    }, 1000);
-  };
-
-  const executeIATurn = () => {
-    if (!gameActive || !selectedPlayerCard || !enemyCard) return;
-    
-    setPlayerTurn(false);
-    setTimerActive(false);
-    
-    setBattleLog(`¡La IA ataca a ${selectedPlayerCard.name}!`);
-
-    const baseDamage = Math.max(5, enemyCard.atk - Math.floor(selectedPlayerCard.def * 0.3));
-    const modifier = player.league.iaMod / 100;
-    const damage = Math.round(baseDamage * (1 + modifier));
-
-    setTimeout(() => {
-      const newSelectedCard = { ...selectedPlayerCard, currentHp: Math.max(0, (selectedPlayerCard.currentHp || 0) - damage) };
-      setSelectedPlayerCard(newSelectedCard);
-      
-      // Actualizar la carta en el array de playerCards
-      const updatedPlayerCards = playerCards.map(card => 
-        card.id === selectedPlayerCard.id ? newSelectedCard : card
-      );
-      setPlayerCards(updatedPlayerCards);
-
-      if (newSelectedCard.currentHp <= 0) {
-        newSelectedCard.alive = false;
-        setBattleLog(`¡${selectedPlayerCard.name} fue eliminada!`);
-        
-        const aliveCards = updatedPlayerCards.filter(c => c.alive);
-        if (aliveCards.length === 0) {
-          updatePlayer({ trophies: Math.max(0, player.trophies - 15) });
-          const msg = `Perdiste 15 trofeos.<br>Total: ${Math.max(0, player.trophies - 15)} trofeos.`;
-          showEndScreen(false, msg);
-          return;
         }
-        setSelectedPlayerCard(aliveCards[0]);
-      }
+        .league-bronze { background: linear-gradient(to right, #cd7f32, #b8860b); }
+        .league-silver { background: linear-gradient(to right, silver, #c0c0c0); color: #333; }
+        .league-gold { background: linear-gradient(to right, gold, #daa520); }
+        .league-elite { background: linear-gradient(to right, #4b0082, #8a2be2); }
+        .league-legend { background: linear-gradient(45deg, red, gold, blue); animation: rainbow 3s linear infinite; }
+        @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+        .battle-table {
+            background: rgba(5, 5, 15, 0.9);
+            border: 3px solid gold;
+            box-shadow: 0 0 30px rgba(255,215,0,0.5);
+        }
+        .battle-table::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+        }
+        .timer-bar {
+            transition: width 1s linear;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <div id="root"></div>
 
-      // Preparar turno del jugador
-      setTimeout(() => {
-        setPlayerTurn(true);
-        setTurnTime(30);
-        setTimerActive(true);
-        setBattleLog('¡Tu turno! Elige una carta para atacar:');
-      }, 1000);
-    }, 1000);
-  };
+    <script type="text/babel">
+        // Tipos y Interfaces
+        const CardTypes = {
+            COMMON: 'common',
+            RARE: 'rare',
+            EPIC: 'epic',
+            LEGENDARY: 'legendary'
+        };
 
-  // Función simplificada para el ataque del jugador
-  const attackWithSelected = () => {
-    if (selectedPlayerCard) {
-      executePlayerAttack(selectedPlayerCard);
-    }
-  };
+        const AttackTypes = {
+            WIND: 'wind',
+            FIRE: 'fire',
+            ICE: 'ice',
+            ARCANE: 'arcane'
+        };
 
-  // Función para seleccionar una carta y atacar
-  const selectCardAndAttack = (card: Card) => {
-    if (playerTurn && timerActive && gameActive) {
-      setSelectedPlayerCard(card);
-      executePlayerAttack(card);
-    }
-  };
+        const GameViews = {
+            BATTLE: 'battle',
+            COLLECTION: 'collection',
+            STORE: 'store',
+            RANKING: 'ranking',
+            TOURNAMENT: 'tournament'
+        };
 
-  const showEndScreen = (isWin: boolean, message: string) => {
-    setGameActive(false);
-    setTimerActive(false);
-    if (isWin) {
-      setBattleLog(`
-        <div class="text-center">
-          <div class="text-4xl mb-4">🎉</div>
-          <h3 class="text-3xl font-bold text-yellow-400 mb-4">¡VICTORIA!</h3>
-          <div class="text-xl text-green-400 mb-4">¡Has derrotado a la IA!</div>
-          <p class="text-lg text-white mb-4">${message}</p>
-          <div class="animate-bounce text-2xl">🏆</div>
-        </div>
-      `);
-    } else {
-      setBattleLog(`
-        <div class="text-center">
-          <div class="text-4xl mb-4">💀</div>
-          <h3 class="text-3xl font-bold text-red-500 mb-4">DERROTA</h3>
-          <div class="text-xl text-red-400 mb-4">La IA te ha derrotado</div>
-          <p class="text-lg text-white mb-4">${message}</p>
-          <div class="text-2xl">💔</div>
-        </div>
-      `);
-    }
-  };
+        // Cartas especiales para la IA con más vida
+        const IA_CARDS = [
+            { id:101, name:"IA Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:80, power:"Paso Firme Mejorado", attackType:"wind", unlocked: true },
+            { id:102, name:"IA Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:85, power:"Confeti Ácido Doble", attackType:"fire", unlocked: true },
+            { id:103, name:"IA Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:75, power:"Torbellino Destructor", attackType:"wind", unlocked: true },
+            { id:104, name:"IA Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:100, power:"Muralla Imbatible", attackType:"ice", unlocked: true },
+            { id:105, name:"IA Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:80, power:"Baile Mortal", attackType:"wind", unlocked: true },
+            { id:106, name:"IA Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:70, power:"Ira Absoluta", attackType:"fire", unlocked: true },
+            { id:107, name:"IA Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:95, power:"Protección Total", attackType:"ice", unlocked: true },
+            { id:108, name:"IA Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:60, power:"Golpe Aniquilador", attackType:"fire", unlocked: true },
+            { id:109, name:"IA Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:110, power:"Escudo Divino", attackType:"ice", unlocked: true },
+            { id:110, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:65, power:"Tirano Supremo", attackType:"arcane", unlocked: true }
+        ];
 
-  const exitBattle = () => {
-    setGameActive(false);
-    setTimerActive(false);
-    setPlayerCards([]);
-    setEnemyCard(null);
-    setSelectedPlayerCard(null);
-    setTurnTime(30);
-    setPlayerTurn(false);
-  };
+        const CARDS = [
+            { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
+            { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
+            { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind", unlocked: true },
+            { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:70, power:"Muralla", attackType:"ice", unlocked: true },
+            { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind", unlocked: true },
+            { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire", unlocked: true },
+            { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
+            { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: true },
+            { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: true },
+            { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
+            { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
+        ];
 
-  const addToDeck = (cardId: number) => {
-    if (currentDeck.length >= 3) {
-      alert('Tu mazo solo puede tener 3 cartas.');
-      return;
-    }
-    if (!currentDeck.includes(cardId)) {
-      const newDeck = [...currentDeck, cardId];
-      setCurrentDeck(newDeck);
-      localStorage.setItem('currentDeck', JSON.stringify(newDeck));
-    }
-  };
+        const LEAGUES = [
+            { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze", iaMod: -20 },
+            { name: "Plata", min: 200, max: 399, badgeClass: "league-silver", iaMod: 0 },
+            { name: "Oro", min: 400, max: 599, badgeClass: "league-gold", iaMod: 20 },
+            { name: "Élite", min: 600, max: 799, badgeClass: "league-elite", iaMod: 40 },
+            { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend", iaMod: 60 }
+        ];
 
-  const removeFromDeck = (cardId: number) => {
-    const newDeck = currentDeck.filter(id => id !== cardId);
-    setCurrentDeck(newDeck);
-    localStorage.setItem('currentDeck', JSON.stringify(newDeck));
-  };
+        // Hook personalizado para el juego
+        const useFortniteGame = () => {
+            const [player, setPlayer] = React.useState({
+                name: '',
+                trophies: 0,
+                diamonds: 100,
+                league: {
+                    name: 'Bronce',
+                    min: 0,
+                    max: 199,
+                    badgeClass: 'league-bronze',
+                    iaMod: -20
+                }
+            });
 
-  const saveDeck = () => {
-    if (currentDeck.length !== 3) {
-      alert('¡Tu mazo debe tener exactamente 3 cartas!');
-      return;
-    }
-    localStorage.setItem('currentDeck', JSON.stringify(currentDeck));
-    alert('¡Mazo guardado!');
-  };
+            const [currentDeck, setCurrentDeck] = React.useState([0, 3, 6]);
+            const [playerCards, setPlayerCards] = React.useState([]);
+            const [enemyCard, setEnemyCard] = React.useState(null);
+            const [gameActive, setGameActive] = React.useState(false);
+            const [playerTurn, setPlayerTurn] = React.useState(false);
+            const [selectedPlayerCard, setSelectedPlayerCard] = React.useState(null);
+            const [currentView, setCurrentView] = React.useState('battle');
+            const [battleLog, setBattleLog] = React.useState('¡Elige una carta de tu mazo para atacar!');
 
-  const buyItem = (itemId: string, cost: number) => {
-    if (player.diamonds >= cost) {
-      updatePlayer({ diamonds: player.diamonds - cost });
-      localStorage.setItem(`owned_${itemId}`, 'true');
-      return true;
-    }
-    return false;
-  };
+            // Timer para el turno
+            const [turnTime, setTurnTime] = React.useState(30);
+            const [timerActive, setTimerActive] = React.useState(false);
 
-  const updateRanking = () => {
-    let rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
-    
-    const existingIndex = rankings.findIndex((r: any) => r.name === player.name);
-    if (existingIndex >= 0) {
-      rankings[existingIndex].trophies = player.trophies;
-    } else {
-      rankings.push({ name: player.name, trophies: player.trophies });
-    }
-    
-    rankings.sort((a: any, b: any) => b.trophies - a.trophies);
-    rankings = rankings.slice(0, 10);
-    localStorage.setItem('rankings', JSON.stringify(rankings));
-    
-    return rankings;
-  };
+            const [cards, setCards] = React.useState([]);
 
-  return {
-    player,
-    currentDeck,
-    playerCards,
-    enemyCard,
-    gameActive,
-    playerTurn,
-    selectedPlayerCard,
-    currentView,
-    battleLog,
-    cards,
-    LEAGUES,
-    turnTime,
-    timerActive,
-    setCurrentView,
-    startBattle,
-    attackWithSelected,
-    exitBattle,
-    addToDeck,
-    removeFromDeck,
-    saveDeck,
-    buyItem,
-    updateRanking,
-    saveCollection,
-    setSelectedPlayerCard,
-    setBattleLog,
-    selectCardAndAttack
-  };
-};
+            // Inicializar juego
+            React.useEffect(() => {
+                const savedPlayerName = localStorage.getItem('playerName');
+                const savedTrophies = parseInt(localStorage.getItem('trophies') || '0');
+                const savedDiamonds = parseInt(localStorage.getItem('diamonds') || '100');
+                const savedDeck = JSON.parse(localStorage.getItem('currentDeck') || '[0, 3, 6]');
+
+                const playerName = savedPlayerName || prompt("¿Cómo te llamas, jugador/a?") || "Jugador";
+                if (!savedPlayerName) {
+                    localStorage.setItem('playerName', playerName);
+                }
+
+                // Resetear diamantes diarios
+                const today = new Date().toDateString();
+                const lastDiamondClaim = localStorage.getItem('lastDiamondClaim');
+                if (lastDiamondClaim !== today) {
+                    localStorage.setItem('diamonds', '100');
+                    localStorage.setItem('lastDiamondClaim', today);
+                }
+
+                // Crear copia de las cartas y cargar estado
+                const savedCards = JSON.parse(localStorage.getItem('cards') || '{}');
+                const initialCards = CARDS.map(card => {
+                    const unlocked = savedCards[card.id] !== undefined ? savedCards[card.id] : (card.id === 10 ? false : true);
+                    return { ...card, unlocked };
+                });
+
+                setCards(initialCards);
+
+                const league = LEAGUES.find(l => savedTrophies >= l.min && savedTrophies <= l.max) || LEAGUES[0];
+
+                setPlayer({
+                    name: playerName,
+                    trophies: savedTrophies,
+                    diamonds: savedDiamonds,
+                    league
+                });
+
+                setCurrentDeck(savedDeck);
+            }, []);
+
+            // Actualizar liga cuando cambian los trofeos
+            React.useEffect(() => {
+                const newLeague = LEAGUES.find(l => player.trophies >= l.min && player.trophies <= l.max) || LEAGUES[0];
+                if (newLeague.name !== player.league.name) {
+                    setPlayer(prev => ({ ...prev, league: newLeague }));
+                }
+            }, [player.trophies, player.league.name]);
+
+            // Timer del turno
+            React.useEffect(() => {
+                let interval = null;
+
+                if (timerActive && turnTime > 0) {
+                    interval = setInterval(() => {
+                        setTurnTime(prev => {
+                            if (prev <= 1) {
+                                // Cuando el tiempo llega a 0
+                                setTimerActive(false);
+                                if (playerTurn) {
+                                    // Si es el turno del jugador y se acabó el tiempo, pierde el turno
+                                    setBattleLog('¡Se acabó el tiempo! Pierdes tu turno.');
+                                    setTimeout(() => {
+                                        executeIATurn();
+                                    }, 1500);
+                                }
+                                return 30;
+                            }
+                            return prev - 1;
+                        });
+                    }, 1000);
+                }
+
+                return () => {
+                    if (interval) clearInterval(interval);
+                };
+            }, [timerActive, playerTurn]);
+
+            const updatePlayer = (updates) => {
+                setPlayer(prev => {
+                    const newPlayer = { ...prev, ...updates };
+                    localStorage.setItem('trophies', newPlayer.trophies.toString());
+                    localStorage.setItem('diamonds', newPlayer.diamonds.toString());
+                    return newPlayer;
+                });
+            };
+
+            const saveCollection = () => {
+                const state = {};
+                cards.forEach(card => {
+                    state[card.id] = card.unlocked;
+                });
+                state[10] = false;
+                localStorage.setItem('cards', JSON.stringify(state));
+            };
+
+            const startBattle = () => {
+                const newPlayerCards = [];
+                currentDeck.forEach(id => {
+                    const card = cards.find(c => c.id === id && c.unlocked);
+                    if (card) {
+                        newPlayerCards.push({ ...card, currentHp: card.def, alive: true });
+                    }
+                });
+
+                if (newPlayerCards.length === 0) {
+                    alert('¡Tu mazo está vacío! Ve a "Mazo" y arma tu mazo.');
+                    return;
+                }
+
+                // Seleccionar una carta aleatoria de la IA con más vida
+                const randomIACard = IA_CARDS[Math.floor(Math.random() * IA_CARDS.length)];
+                const iaCard = { ...randomIACard, currentHp: randomIACard.def, alive: true };
+
+                setPlayerCards(newPlayerCards);
+                setEnemyCard(iaCard);
+                setGameActive(true);
+                setPlayerTurn(false); // La IA ataca primero
+                setSelectedPlayerCard(newPlayerCards[0]);
+                setBattleLog('¡La IA ataca primero! Preparando ataque...');
+                setTurnTime(30);
+                setTimerActive(false); // No activar timer al inicio
+
+                // La IA ataca inmediatamente
+                setTimeout(() => {
+                    executeIATurn();
+                }, 2000);
+            };
+
+            const executePlayerAttack = (card) => {
+                if (!gameActive || !playerTurn || !enemyCard) return;
+
+                // Detener el timer cuando el jugador ataca
+                setTimerActive(false);
+
+                setBattleLog(`¡${card.name} usa <strong>${card.power}</strong>!`);
+
+                const damage = Math.max(5, card.atk - Math.floor(enemyCard.def * 0.3));
+
+                setTimeout(() => {
+                    const newEnemyCard = { ...enemyCard, currentHp: Math.max(0, (enemyCard.currentHp || 0) - damage) };
+                    setEnemyCard(newEnemyCard);
+
+                    if (newEnemyCard.currentHp <= 0) {
+                        setBattleLog(`¡${card.name} derrotó a la IA!`);
+                        setTimeout(() => {
+                            updatePlayer({ trophies: player.trophies + 30 });
+                            const msg = `¡Ganaste 30 trofeos!<br>Total: ${player.trophies + 30} trofeos.`;
+                            showEndScreen(true, msg);
+                        }, 1500);
+                    } else {
+                        setBattleLog(prev => prev + `<br>¡Turno de la IA!`);
+                        setTimeout(() => {
+                            executeIATurn();
+                        }, 1500);
+                    }
+                }, 1000);
+            };
+
+            const executeIATurn = () => {
+                if (!gameActive || !selectedPlayerCard || !enemyCard) return;
+
+                setPlayerTurn(false);
+                setTimerActive(false);
+
+                setBattleLog(`¡La IA ataca a ${selectedPlayerCard.name}!`);
+
+                const baseDamage = Math.max(5, enemyCard.atk - Math.floor(selectedPlayerCard.def * 0.3));
+                const modifier = player.league.iaMod / 100;
+                const damage = Math.round(baseDamage * (1 + modifier));
+
+                setTimeout(() => {
+                    const newSelectedCard = { ...selectedPlayerCard, currentHp: Math.max(0, (selectedPlayerCard.currentHp || 0) - damage) };
+                    setSelectedPlayerCard(newSelectedCard);
+
+                    // Actualizar la carta en el array de playerCards
+                    const updatedPlayerCards = playerCards.map(card =>
+                        card.id === selectedPlayerCard.id ? newSelectedCard : card
+                    );
+                    setPlayerCards(updatedPlayerCards);
+
+                    if (newSelectedCard.currentHp <= 0) {
+                        newSelectedCard.alive = false;
+                        setBattleLog(`¡${selectedPlayerCard.name} fue eliminada!`);
+
+                        const aliveCards = updatedPlayerCards.filter(c => c.alive);
+                        if (aliveCards.length === 0) {
+                            updatePlayer({ trophies: Math.max(0, player.trophies - 15) });
+                            const msg = `Perdiste 15 trofeos.<br>Total: ${Math.max(0, player.trophies - 15)} trofeos.`;
+                            showEndScreen(false, msg);
+                            return;
+                        }
+                        setSelectedPlayerCard(aliveCards[0]);
+                    }
+
+                    // Preparar turno del jugador
+                    setTimeout(() => {
+                        setPlayerTurn(true);
+                        setTurnTime(30);
+                        setTimerActive(true);
+                        setBattleLog('¡Tu turno! Elige una carta para atacar:');
+                    }, 1000);
+                }, 1000);
+            };
+
+            const attackWithSelected = () => {
+                if (selectedPlayerCard) {
+                    executePlayerAttack(selectedPlayerCard);
+                }
+            };
+
+            const selectCardAndAttack = (card) => {
+                if (playerTurn && timerActive && gameActive) {
+                    setSelectedPlayerCard(card);
+                    executePlayerAttack(card);
+                }
+            };
+
+            const showEndScreen = (isWin, message) => {
+                setGameActive(false);
+                setTimerActive(false);
+                if (isWin) {
+                    setBattleLog(`
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🎉</div>
+                            <h3 class="text-3xl font-bold text-yellow-400 mb-4">¡VICTORIA!</h3>
+                            <div class="text-xl text-green-400 mb-4">¡Has derrotado a la IA!</div>
+                            <p class="text-lg text-white mb-4">${message}</p>
+                            <div class="animate-bounce text-2xl">🏆</div>
+                        </div>
+                    `);
+                } else {
+                    setBattleLog(`
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">💀</div>
+                            <h3 class="text-3xl font-bold text-red-500 mb-4">DERROTA</h3>
+                            <div class="text-xl text-red-400 mb-4">La IA te ha derrotado</div>
+                            <p class="text-lg text-white mb-4">${message}</p>
+                            <div class="text-2xl">💔</div>
+                        </div>
+                    `);
+                }
+            };
+
+            const exitBattle = () => {
+                setGameActive(false);
+                setTimerActive(false);
+                setPlayerCards([]);
+                setEnemyCard(null);
+                setSelectedPlayerCard(null);
+                setTurnTime(30);
+                setPlayerTurn(false);
+            };
+
+            const addToDeck = (cardId) => {
+                if (currentDeck.length >= 3) {
+                    alert('Tu mazo solo puede tener 3 cartas.');
+                    return;
+                }
+                if (!currentDeck.includes(cardId)) {
+                    const newDeck = [...currentDeck, cardId];
+                    setCurrentDeck(newDeck);
+                    localStorage.setItem('currentDeck', JSON.stringify(newDeck));
+                }
+            };
+
+            const removeFromDeck = (cardId) => {
+                const newDeck = currentDeck.filter(id => id !== cardId);
+                setCurrentDeck(newDeck);
+                localStorage.setItem('currentDeck', JSON.stringify(newDeck));
+            };
+
+            const saveDeck = () => {
+                if (currentDeck.length !== 3) {
+                    alert('¡Tu mazo debe tener exactamente 3 cartas!');
+                    return;
+                }
+                localStorage.setItem('currentDeck', JSON.stringify(currentDeck));
+                alert('¡Mazo guardado!');
+            };
+
+            const buyItem = (itemId, cost) => {
+                if (player.diamonds >= cost) {
+                    updatePlayer({ diamonds: player.diamonds - cost });
+                    localStorage.setItem(`owned_${itemId}`, 'true');
+                    return true;
+                }
+                return false;
+            };
+
+            const updateRanking = () => {
+                let rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
+
+                const existingIndex = rankings.findIndex((r) => r.name === player.name);
+                if (existingIndex >= 0) {
+                    rankings[existingIndex].trophies = player.trophies;
+                } else {
+                    rankings.push({ name: player.name, trophies: player.trophies });
+                }
+
+                rankings.sort((a, b) => b.trophies - a.trophies);
+                rankings = rankings.slice(0, 10);
+                localStorage.setItem('rankings', JSON.stringify(rankings));
+
+                return rankings;
+            };
+
+            return {
+                player,
+                currentDeck,
+                playerCards,
+                enemyCard,
+                gameActive,
+                playerTurn,
+                selectedPlayerCard,
+                currentView,
+                battleLog,
+                cards,
+                LEAGUES,
+                turnTime,
+                timerActive,
+                setCurrentView,
+                startBattle,
+                attackWithSelected,
+                exitBattle,
+                addToDeck,
+                removeFromDeck,
+                saveDeck,
+                buyItem,
+                updateRanking,
+                saveCollection,
+                setSelectedPlayerCard,
+                setBattleLog,
+                selectCardAndAttack
+            };
+        };
+
+        // Componente principal del juego
+        const FortniteGame = () => {
+            const {
+                player,
+                currentDeck,
+                playerCards,
+                enemyCard,
+                gameActive,
+                playerTurn,
+                selectedPlayerCard,
+                currentView,
+                battleLog,
+                cards,
+                LEAGUES,
+                turnTime,
+                timerActive,
+                setCurrentView,
+                startBattle,
+                attackWithSelected,
+                exitBattle,
+                addToDeck,
+                removeFromDeck,
+                saveDeck,
+                buyItem,
+                updateRanking,
+                saveCollection,
+                setSelectedPlayerCard,
+                setBattleLog,
+                selectCardAndAttack
+            } = useFortniteGame();
+
+            const [ranking, setRanking] = React.useState([]);
+            const [selectedCard, setSelectedCard] = React.useState(null);
+            const [storeMessage, setStoreMessage] = React.useState('');
+            const [particles, setParticles] = React.useState([]);
+            const [battleEffect, setBattleEffect] = React.useState(null);
+            const [backgroundPosition, setBackgroundPosition] = React.useState({ x: 0, y: 0 });
+
+            // Crear partículas de fondo
+            React.useEffect(() => {
+                const createParticles = () => {
+                    const newParticles = [];
+                    const colors = ['rgba(255,107,107,0.7)', 'rgba(78,205,196,0.7)', 'rgba(254,202,87,0.7)'];
+
+                    for (let i = 0; i < 15; i++) {
+                        const size = Math.random() * 4 + 1;
+                        const left = Math.random() * 100;
+                        const top = Math.random() * 100;
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        const duration = 15 + Math.random() * 20;
+                        const tx = (Math.random() - 0.5) * 200;
+                        const ty = (Math.random() - 0.5) * 200;
+
+                        newParticles.push(
+                            React.createElement('div', {
+                                key: i,
+                                className: 'particle',
+                                style: {
+                                    width: `${size}px`,
+                                    height: `${size}px`,
+                                    left: `${left}%`,
+                                    top: `${top}%`,
+                                    background: color,
+                                    animation: `float ${duration}s infinite linear`,
+                                    '--tx': `${tx}px`,
+                                    '--ty': `${ty}px`,
+                                }
+                            })
+                        );
+                    }
+
+                    setParticles(newParticles);
+                };
+
+                createParticles();
+            }, []);
+
+            // Efecto de fondo animado
+            React.useEffect(() => {
+                const handleMouseMove = (e) => {
+                    const x = (e.clientX / window.innerWidth) * 100;
+                    const y = (e.clientY / window.innerHeight) * 100;
+                    setBackgroundPosition({ x, y });
+                };
+
+                window.addEventListener('mousemove', handleMouseMove);
+                return () => window.removeEventListener('mousemove', handleMouseMove);
+            }, []);
+
+            // Efectos de batalla
+            React.useEffect(() => {
+                if (battleEffect) {
+                    const timer = setTimeout(() => setBattleEffect(null), 1000);
+                    return () => clearTimeout(timer);
+                }
+            }, [battleEffect]);
+
+            // Actualizar ranking
+            React.useEffect(() => {
+                setRanking(updateRanking());
+            }, [player.trophies]);
+
+            // Temporizador de actualización
+            const [updateTime, setUpdateTime] = React.useState('');
+            React.useEffect(() => {
+                const updateTimer = () => {
+                    const now = new Date();
+                    const target = new Date(now);
+                    target.setHours(15, 0, 0, 0);
+                    if (now >= target) {
+                        target.setDate(target.getDate() + 1);
+                    }
+                    const diff = target - now;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    setUpdateTime(`${hours}h ${minutes}m`);
+                };
+
+                updateTimer();
+                const interval = setInterval(updateTimer, 60000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const handleBuyItem = (itemId, cost) => {
+                if (buyItem(itemId, cost)) {
+                    setStoreMessage('¡Compra exitosa! 🎉');
+                    setTimeout(() => setStoreMessage(''), 3000);
+                } else {
+                    setStoreMessage('❌ Diamantes insuficientes.');
+                    setTimeout(() => setStoreMessage(''), 3000);
+                }
+            };
+
+            const showCardPreview = (card) => {
+                setSelectedCard(card);
+            };
+
+            const closeCardPreview = () => {
+                setSelectedCard(null);
+            };
+
+            const getRarityClass = (rarity) => {
+                switch (rarity) {
+                    case 'common': return 'common';
+                    case 'rare': return 'rare';
+                    case 'epic': return 'epic';
+                    case 'legendary': return 'legendary';
+                    default: return 'common';
+                }
+            };
+
+            const getRarityColor = (rarity) => {
+                switch (rarity) {
+                    case 'common': return 'text-white';
+                    case 'rare': return 'text-orange-500';
+                    case 'epic': return 'text-purple-400';
+                    case 'legendary': return 'text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500';
+                    default: return 'text-white';
+                }
+            };
+
+            const getStoreItemClass = (type) => {
+                switch (type) {
+                    case 'gold': return 'border-l-yellow-500';
+                    case 'purple': return 'border-l-purple-400';
+                    case 'orange': return 'border-l-orange-500';
+                    default: return 'border-l-gray-500';
+                }
+            };
+
+            const getTimerColor = () => {
+                if (turnTime > 20) return 'text-green-400';
+                if (turnTime > 10) return 'text-yellow-400';
+                return 'text-red-400';
+            };
+
+            return React.createElement('div', {
+                className: 'min-h-screen relative overflow-hidden',
+                style: {
+                    background: `radial-gradient(circle at ${backgroundPosition.x}% ${backgroundPosition.y}%, #1a1a3e 0%, #0a0a1a 50%, #000 100%)`
+                }
+            }, [
+                // Partículas de fondo
+                React.createElement('div', {
+                    key: 'particles',
+                    className: 'fixed inset-0 pointer-events-none z-0'
+                }, particles),
+
+                // Contenido principal
+                React.createElement('div', {
+                    key: 'content',
+                    className: 'relative z-10 container mx-auto px-4 py-8'
+                }, [
+                    // Logo
+                    React.createElement('div', {
+                        key: 'logo',
+                        className: 'flex justify-center mb-8'
+                    }, React.createElement('img', {
+                        src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMjggMEwxMDYuNDM3IDQ4LjU2MjVDMTAyLjU2MiA1NC4yNSA5Ni41IDY0IDg4IDY0Qzc5LjUgNjQgNjEuNSA1NC4yNSA1NC41IDQ4LjU2MjVWMEg0OFY0OC41NjI1QzQ4IDU0LjI1IDQwLjUgNjQgMzIgNjRDMjMuNSA2NCAxNiA1NC4yNSAxNiA0OC41NjI1VjBIMEMwIDAgMCAxMS4yNSAwIDI1VjI1NkMwIDI2OS43NSAxMS4yNSAyODAgMjUgMjgwSDQ4VjI1NkM0OCAyODAgNTUuNSAyNjkuNzUgNjQgMjU2Qzc5LjUgMjU2IDg3IDI0Ny43NSA4NyAyMzYuNzVWMjI0SDg4VjIzNi43NzVDOC4yNSAyNDcuNzUgOTYuNSAyNTYgMTA2LjQzNyAyNTZMMTI4IDI1NloiIGZpbGw9IiNGRkY0MDAiLz4KPHBhdGggZD0iTTEyOCAzMkMxNDQuNSAzMiAxNjAgMzIuNSAxNjAgMzYuNzVWMTkyQzE2MCAxOTYuNSAxNDQuNSAyMDAgMTI4IDIwMEMxMTEuNSAyMDAgOTYgMTk2LjUgOTYgMTkyVjM2Ljc1Qzk2IDMyLjUgMTExLjUgMzIgMTI4IDMyWiIgZmlsbD0iI0ZGRjQwMCIvPgo8cGF0aCBkPSJNMTI4IDY0QzE0NC41IDY0IDE2MCA2OS41IDE2MCA3NlYxODBDMTYwIDE4Ni41IDE0NC41IDE5MiAxMjggMTkyQzExMS41IDE5MiA5NiAxODYuNSA5NiAxODBWNzZDOTYgNjkuNSAxMTEuNSA2NCAxMjggNjRaIiBmaWxsPSIjRkZGNDAwIi8+CjxwYXRoIGQ9Ik0xMjggMTI4QzE0NC41IDEyOCAxNjAgMTMzLjUgMTYwIDE0MFYxNjhDMTYwIDE3NC41IDE0NC41IDE4MCAxMjggMTgwQzExMS41IDE4MCA5NiAxNzQuNSA5NiAxNjhWMTQwQzk2IDEzMy41IDExMS41IDEyOCAxMjggMTI4WiIgZmlsbD0iI0ZGRjQwMCIvPgo8L3N2Zz4=',
+                        alt: 'Fortnite Skin Battle Logo',
+                        className: 'w-64 h-auto'
+                    })),
+
+                    // Barra de jugador
+                    React.createElement('div', {
+                        key: 'player-bar',
+                        className: 'bg-gray-800 bg-opacity-70 p-4 rounded-xl mb-6 flex justify-between items-center border-2 border-yellow-500'
+                    }, [
+                        React.createElement('div', {
+                            key: 'player-name',
+                            className: 'flex items-center gap-2'
+                        }, [
+                            React.createElement('span', { key: 'icon' }, '👤'),
+                            React.createElement('span', {
+                                key: 'name',
+                                className: 'font-bold'
+                            }, player.name)
+                        ]),
+                        React.createElement('div', {
+                            key: 'league',
+                            className: `px-4 py-1 rounded-full font-bold text-sm ${player.league.badgeClass}`
+                        }, player.league.name),
+                        React.createElement('div', {
+                            key: 'trophies',
+                            className: 'flex items-center gap-2'
+                        }, [
+                            React.createElement('span', { key: 'trophy-icon' }, '🏆'),
+                            React.createElement('span', {
+                                key: 'trophy-count',
+                                className: 'font-bold'
+                            }, player.trophies)
+                        ]),
+                        React.createElement('div', {
+                            key: 'diamonds',
+                            className: 'flex items-center gap-2'
+                        }, [
+                            React.createElement('span', { key: 'diamond-icon' }, '💎'),
+                            React.createElement('span', {
+                                key: 'diamond-count',
+                                className: 'font-bold'
+                            }, player.diamonds)
+                        ])
+                    ]),
+
+                    // Navegación
+                    React.createElement('div', {
+                        key: 'navigation',
+                        className: 'flex justify-center gap-2 mb-8 flex-wrap'
+                    }, ['battle', 'collection', 'store', 'ranking', 'tournament'].map((view) => 
+                            React.createElement('button', {
+                                key: view,
+                                className: `px-4 py-2 rounded-full font-bold transition-all ${
+                                    currentView === view 
+                                        ? 'bg-cyan-500 text-gray-900' 
+                                        : 'bg-cyan-500 bg-opacity-20 text-white border-cyan-500 hover:bg-cyan-500 hover:text-gray-900'
+                                }`,
+                                onClick: () => setCurrentView(view)
+                            }, {
+                                battle: '⚔️ Batalla',
+                                collection: '🃏 Mazo',
+                                store: '🛒 Tienda',
+                                ranking: '📊 Ranking',
+                                tournament: '🏆 Torneo'
+                            }[view])
+                        )),
+
+                    // Vista de Batalla - Inicio
+                    currentView === 'battle' && !gameActive && React.createElement('div', {
+                        key: 'battle-start',
+                        className: 'text-center'
+                    }, [
+                        React.createElement('button', {
+                            key: 'start-btn',
+                            className: 'bg-red-500 hover:bg-red-600 text-white font-bold text-xl px-8 py-4 rounded-full mb-4 transform transition hover:scale-105',
+                            onClick: startBattle
+                        }, '⚔️ ¡INICIAR BATALLA CONTRA LA IA!'),
+                        React.createElement('p', {
+                            key: 'battle-desc',
+                            className: 'text-cyan-400'
+                        }, 'Usa las cartas de tu mazo para derrotar a la IA.')
+                    ]),
+
+                    // Mesa de Batalla
+                    gameActive && React.createElement('div', {
+                        key: 'battle-table',
+                        className: 'battle-table rounded-2xl p-6 mb-8 relative max-w-4xl mx-auto'
+                    }, [
+                        React.createElement('div', {
+                            key: 'battle-header',
+                            className: 'battle-header text-cyan-400 text-xl font-bold mb-6 text-center'
+                        }, `BATALLA CONTRA LA IA - Arena: ${player.league.name}`),
+
+                        // Timer del turno
+                        React.createElement('div', {
+                            key: 'timer',
+                            className: 'mb-6'
+                        }, [
+                            React.createElement('div', {
+                                key: 'timer-info',
+                                className: 'flex justify-between items-center mb-2'
+                            }, [
+                                React.createElement('span', {
+                                    key: 'turn-label',
+                                    className: 'text-sm font-bold'
+                                }, playerTurn ? 'TU TURNO' : 'TURNO DE LA IA'),
+                                React.createElement('span', {
+                                    key: 'timer-display',
+                                    className: `text-sm font-bold ${getTimerColor()}`
+                                }, `⏱️ ${turnTime}s`)
+                            ]),
+                            React.createElement('div', {
+                                key: 'timer-bar-container',
+                                className: 'w-full bg-gray-700 rounded-full h-3 overflow-hidden'
+                            }, React.createElement('div', {
+                                className: `timer-bar h-full ${turnTime > 20 ? 'bg-green-500' : turnTime > 10 ? 'bg-yellow-500' : 'bg-red-500'}`,
+                                style: { width: `${(turnTime / 30) * 100}%` }
+                            }))
+                        ]),
+
+                        // Zonas de batalla
+                        React.createElement('div', {
+                            key: 'battle-zones',
+                            className: 'flex justify-between items-center mb-8'
+                        }, [
+                            // Zona del Enemigo
+                            React.createElement('div', {
+                                key: 'enemy-zone',
+                                className: 'text-center w-5/12'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'enemy-title',
+                                    className: 'zone-title text-red-500 font-bold mb-4'
+                                }, 'IA'),
+                                enemyCard && React.createElement('div', {
+                                    key: 'enemy-card',
+                                    className: 'relative'
+                                }, [
+                                    React.createElement('img', {
+                                        key: 'enemy-img',
+                                        src: enemyCard.img,
+                                        alt: 'IA',
+                                        className: 'w-40 h-56 object-cover rounded-xl border-4 border-gray-700 mx-auto shadow-lg'
+                                    }),
+                                    React.createElement('div', {
+                                        key: 'enemy-rarity',
+                                        className: `absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold bg-black bg-opacity-60 ${getRarityColor(enemyCard.rarity)}`
+                                    }, enemyCard.rarity),
+                                    React.createElement('div', {
+                                        key: 'enemy-hp-bar',
+                                        className: 'w-full h-3 bg-gray-700 rounded-full mt-2 overflow-hidden'
+                                    }, React.createElement('div', {
+                                        className: 'h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500',
+                                        style: { width: `${((enemyCard.currentHp || 0) / enemyCard.def) * 100}%` }
+                                    })),
+                                    React.createElement('div', {
+                                        key: 'enemy-hp-text',
+                                        className: 'text-yellow-400 text-sm mt-1'
+                                    }, `HP: ${enemyCard.currentHp || 0}`)
+                                ])
+                            ])
+                        ]),
+
+                            // Zona del Jugador
+                            React.createElement('div', {
+                                key: 'player-zone',
+                                className: 'text-center w-5/12'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'player-title',
+                                    className: 'zone-title text-cyan-400 font-bold mb-4'
+                                }, 'TÚ'),
+                                selectedPlayerCard && React.createElement('div', {
+                                    key: 'player-card',
+                                    className: 'relative'
+                                }, [
+                                    React.createElement('img', {
+                                        key: 'player-img',
+                                        src: selectedPlayerCard.img,
+                                        alt: 'Jugador',
+                                        className: 'w-40 h-56 object-cover rounded-xl border-4 border-gray-700 mx-auto shadow-lg'
+                                    }),
+                                    React.createElement('div', {
+                                        key: 'player-rarity',
+                                        className: `absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold bg-black bg-opacity-60 ${getRarityColor(selectedPlayerCard.rarity)}`
+                                    }, selectedPlayerCard.rarity),
+                                    React.createElement('div', {
+                                        key: 'player-hp-bar',
+                                        className: 'w-full h-3 bg-gray-700 rounded-full mt-2 overflow-hidden'
+                                    }, React.createElement('div', {
+                                        className: 'h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500',
+                                        style: { width: `${((selectedPlayerCard.currentHp || 0) / selectedPlayerCard.def) * 100}%` }
+                                    })),
+                                    React.createElement('div', {
+                                        key: 'player-hp-text',
+                                        className: 'text-yellow-400 text-sm mt-1'
+                                    }, `HP: ${selectedPlayerCard.currentHp || 0}`)
+                                ])
+                            ])
+                        ])
+                        ]),
+
+                        // Registro de Batalla
+                        React.createElement('div', {
+                            key: 'battle-log',
+                            className: 'bg-black bg-opacity-60 p-4 rounded-xl mb-6 min-h-20 text-yellow-400 border border-cyan-400',
+                            dangerouslySetInnerHTML: { __html: battleLog }
+                        }),
+
+                        // Mano del Jugador
+                        React.createElement('div', {
+                            key: 'player-hand',
+                            className: 'flex justify-center gap-4 mb-6 flex-wrap'
+                        }, playerCards.map((card) => 
+                            card.alive && React.createElement('div', {
+                                key: card.id,
+                                className: `bg-gray-800 bg-opacity-90 p-3 rounded-xl cursor-pointer transition-all hover:-translate-y-2 hover:shadow-lg hover:shadow-cyan-500/50 border-2 w-28 ${
+                                    playerTurn && timerActive ? 'border-cyan-500' : 'border-gray-500 opacity-50'
+                                }`,
+                                onClick: () => selectCardAndAttack(card)
+                            }, [
+                                React.createElement('img', {
+                                    key: `card-img-${card.id}`,
+                                    src: card.img,
+                                    alt: card.name,
+                                    className: 'w-full h-32 object-cover rounded-lg mb-2'
+                                }),
+                                React.createElement('div', {
+                                    key: `card-name-${card.id}`,
+                                    className: 'text-sm font-bold text-center'
+                                }, card.name)
+                            ])
+                        )),
+
+                        // Botón de salir
+                        React.createElement('button', {
+                            key: 'exit-btn',
+                            className: 'bg-red-500 hover:bg-red-600 px-4 py-2 rounded',
+                            onClick: exitBattle
+                        }, '🚪 Salir')
+                    ]),
+
+                    // Vista de Colección/Mazo
+                    currentView === 'collection' && React.createElement('div', {
+                        key: 'collection-view',
+                        className: 'max-w-4xl mx-auto'
+                    }, [
+                        React.createElement('h2', {
+                            key: 'collection-title',
+                            className: 'text-2xl font-bold text-cyan-400 mb-4'
+                        }, 'Mi Mazo (3 cartas)'),
+                        React.createElement('p', {
+                            key: 'collection-desc',
+                            className: 'mb-6'
+                        }, 'Selecciona cartas desbloqueadas para tu mazo. ¡Haz clic para ver detalles!'),
+
+                        // Grid de cartas
+                        React.createElement('div', {
+                            key: 'cards-grid',
+                            className: 'grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8'
+                        }, CARDS.map((card) => {
+                            const isInDeck = currentDeck.includes(card.id);
+                            
+                            return React.createElement('div', {
+                                key: `collection-card-${card.id}`,
+                                className: `relative rounded-lg overflow-hidden cursor-pointer transition-all ${
+                                    card.id === 10 ? 'opacity-60' : 'hover:scale-105'
+                                } ${isInDeck ? 'ring-2 ring-yellow-500' : ''}`,
+                                onClick: () => showCardPreview(card)
+                            }, [
+                                React.createElement('img', {
+                                    key: `collection-img-${card.id}`,
+                                    src: card.img,
+                                    alt: card.name,
+                                    className: `w-full h-32 object-cover ${card.id === 10 ? 'grayscale' : ''} ${card.id === 10 ? 'ring-2 ring-yellow-400' : ''}`
+                                }),
+                                card.id === 10 && React.createElement('div', {
+                                    key: `collection-lock-${card.id}`,
+                                    className: 'absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 border-2 border-yellow-400'
+                                }, React.createElement('span', {
+                                    className: 'text-4xl'
+                                }, '🔒')),
+                                isInDeck && React.createElement('div', {
+                                    key: `collection-deck-${card.id}`,
+                                    className: 'absolute top-1 right-1 bg-yellow-500 text-black text-xs px-2 py-1 rounded'
+                                }, 'En mazo'),
+                                React.createElement('div', {
+                                    key: `collection-id-${card.id}`,
+                                    className: 'absolute bottom-0 left-0 bg-red-500 text-white text-xs px-1'
+                                }, `ID: ${card.id}`)
+                            ]);
+                        })),
+
+                        // Mazo actual
+                        React.createElement('div', {
+                            key: 'current-deck',
+                            className: 'bg-gray-800 bg-opacity-60 border border-cyan-400 p-6 rounded-xl'
+                        }, [
+                            React.createElement('h3', {
+                                key: 'deck-title',
+                                className: 'text-xl font-bold mb-4 text-cyan-400'
+                            }, 'Tu Mazo Actual'),
+                            React.createElement('div', {
+                                key: 'deck-cards',
+                                className: 'flex justify-center flex-wrap gap-4 mb-4'
+                            }, currentDeck.map((cardId) => {
+                                const card = CARDS.find(c => c.id === cardId);
+                                if (!card) return null;
+                                
+                                return React.createElement('div', {
+                                    key: `deck-card-${cardId}`,
+                                    className: 'relative w-24'
+                                }, [
+                                    React.createElement('img', {
+                                        key: `deck-img-${cardId}`,
+                                        src: card.img,
+                                        alt: card.name,
+                                        className: `w-full h-32 object-cover rounded-lg ${card.id === 10 ? 'grayscale' : ''}`,
+                                        onClick: () => showCardPreview(card)
+                                    }),
+                                    card.id === 10 && React.createElement('div', {
+                                        key: `deck-lock-${cardId}`,
+                                        className: 'text-red-500 text-xs mt-1 text-center'
+                                    }, '🔒 Bloqueada'),
+                                    React.createElement('button', {
+                                        key: `deck-remove-${cardId}`,
+                                        className: 'bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded mt-2 w-full',
+                                        onClick: () => removeFromDeck(cardId)
+                                    }, 'Quitar')
+                                ]);
+                            })),
+                            React.createElement('button', {
+                                key: 'save-deck-btn',
+                                className: 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full',
+                                onClick: saveDeck
+                            }, '💾 Guardar Mazo')
+                        ])
+                    ]),
+
+                    // Vista de Tienda
+                    currentView === 'store' && React.createElement('div', {
+                        key: 'store-view',
+                        className: 'max-w-2xl mx-auto bg-gray-800 bg-opacity-50 p-6 rounded-xl border border-red-500'
+                    }, [
+                        React.createElement('h3', {
+                            key: 'store-title',
+                            className: 'text-2xl font-bold text-yellow-500 mb-6'
+                        }, '🛒 TIENDA DE BATALLA'),
+                        
+                        React.createElement('div', {
+                            key: 'store-items',
+                            className: 'grid grid-cols-1 md:grid-cols-3 gap-4'
+                        }, [
+                            React.createElement('div', {
+                                key: 'item-gold',
+                                className: `bg-gray-900 bg-opacity-80 p-4 rounded-lg border-l-4 ${getStoreItemClass('gold')}`
+                            }, [
+                                React.createElement('div', {
+                                    key: 'gold-name',
+                                    className: 'font-bold'
+                                }, 'Skin Dorada'),
+                                React.createElement('div', {
+                                    key: 'gold-desc',
+                                    className: 'text-sm'
+                                }, '+30 DEF'),
+                                React.createElement('div', {
+                                    key: 'gold-price',
+                                    className: 'text-yellow-500 font-bold'
+                                }, '50 💎'),
+                                React.createElement('button', {
+                                    key: 'gold-buy',
+                                    className: 'bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded mt-2 w-full text-sm',
+                                    onClick: () => handleBuyItem('golden_skin', 50)
+                                }, 'Comprar')
+                            ]),
+                            
+                            React.createElement('div', {
+                                key: 'item-purple',
+                                className: `bg-gray-900 bg-opacity-80 p-4 rounded-lg border-l-4 ${getStoreItemClass('purple')}`
+                            }, [
+                                React.createElement('div', {
+                                    key: 'purple-name',
+                                    className: 'font-bold'
+                                }, 'Confeti Épico'),
+                                React.createElement('div', {
+                                    key: 'purple-desc',
+                                    className: 'text-sm'
+                                }, 'Ataque Sorpresa'),
+                                React.createElement('div', {
+                                    key: 'purple-price',
+                                    className: 'text-yellow-500 font-bold'
+                                }, '30 💎'),
+                                React.createElement('button', {
+                                    key: 'purple-buy',
+                                    className: 'bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded mt-2 w-full text-sm',
+                                    onClick: () => handleBuyItem('epic_confetti', 30)
+                                }, 'Comprar')
+                            ]),
+                            
+                            React.createElement('div', {
+                                key: 'item-orange',
+                                className: `bg-gray-900 bg-opacity-80 p-4 rounded-lg border-l-4 ${getStoreItemClass('orange')}`
+                            }, [
+                                React.createElement('div', {
+                                    key: 'orange-name',
+                                    className: 'font-bold'
+                                }, 'Doble Voto'),
+                                React.createElement('div', {
+                                    key: 'orange-desc',
+                                    className: 'text-sm'
+                                }, 'Doble Ataque'),
+                                React.createElement('div', {
+                                    key: 'orange-price',
+                                    className: 'text-yellow-500 font-bold'
+                                }, '70 💎'),
+                                React.createElement('button', {
+                                    key: 'orange-buy',
+                                    className: 'bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded mt-2 w-full text-sm',
+                                    onClick: () => handleBuyItem('double_vote', 70)
+                                }, 'Comprar')
+                            ])
+                        ]),
+                        
+                        storeMessage && React.createElement('p', {
+                            key: 'store-message',
+                            className: 'mt-4 text-cyan-400 italic'
+                        }, storeMessage)
+                    ]),
+
+                    // Vista de Ranking
+                    currentView === 'ranking' && React.createElement('div', {
+                        key: 'ranking-view',
+                        className: 'max-w-2xl mx-auto bg-gray-800 bg-opacity-60 p-6 rounded-xl border border-cyan-400'
+                    }, [
+                        React.createElement('h2', {
+                            key: 'ranking-title',
+                            className: 'text-2xl font-bold text-cyan-400 mb-6'
+                        }, '📊 RANKING DE JUGADORES'),
+                        
+                        React.createElement('div', {
+                            key: 'ranking-list',
+                            className: 'space-y-2'
+                        }, ranking.map((player, index) => 
+                            React.createElement('div', {
+                                key: `ranking-${index}`,
+                                className: `flex justify-between items-center p-3 rounded-lg ${
+                                    index === 0 ? 'bg-yellow-500 bg-opacity-20 font-bold' : 'bg-gray-700 bg-opacity-30'
+                                } ${index === 0 ? 'text-yellow-400' : ''}`
+                            }, [
+                                React.createElement('span', {
+                                    key: `ranking-name-${index}`
+                                }, `${index + 1}. ${player.name}`),
+                                React.createElement('span', {
+                                    key: `ranking-trophies-${index}`
+                                }, `${player.trophies} 🏆`)
+                            ])
+                        ))
+                    ]),
+
+                    // Vista de Torneo
+                    currentView === 'tournament' && React.createElement('div', {
+                        key: 'tournament-view',
+                        className: 'max-w-4xl mx-auto'
+                    }, React.createElement('div', {
+                        key: 'tournament-content',
+                        className: 'bg-gradient-to-r from-purple-900 to-blue-900 bg-opacity-80 p-8 rounded-xl border-2 border-yellow-500 mb-8'
+                    }, [
+                        React.createElement('h2', {
+                            key: 'tournament-title',
+                            className: 'text-3xl font-bold text-yellow-400 mb-6 text-center'
+                        }, '🏆 TORNEO LEGENDARIO 🏆'),
+                        
+                        React.createElement('div', {
+                            key: 'tournament-prize',
+                            className: 'bg-black bg-opacity-50 p-6 rounded-lg mb-6'
+                        }, [
+                            React.createElement('h3', {
+                                key: 'prize-title',
+                                className: 'text-xl font-bold text-cyan-400 mb-4'
+                            }, 'PREMIO'),
+                            React.createElement('div', {
+                                key: 'prize-content',
+                                className: 'flex justify-center items-center gap-4'
+                            }, React.createElement('div', {
+                                key: 'prize-item',
+                                className: 'text-center'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'prize-icon',
+                                    className: 'text-4xl mb-2'
+                                }, '🏆'),
+                                React.createElement('div', {
+                                    key: 'prize-name',
+                                    className: 'text-yellow-400 font-bold'
+                                }, 'Sellamara Gemelas'),
+                                React.createElement('div', {
+                                    key: 'prize-desc',
+                                    className: 'text-sm text-gray-300'
+                                }, 'Carta Legendaria')
+                            ]))
+                        ]),
+
+                        React.createElement('div', {
+                            key: 'tournament-requirements',
+                            className: 'bg-black bg-opacity-50 p-6 rounded-lg mb-6'
+                        }, [
+                            React.createElement('h3', {
+                                key: 'requirements-title',
+                                className: 'text-xl font-bold text-cyan-400 mb-4'
+                            }, 'REQUISITOS'),
+                            React.createElement('ul', {
+                                key: 'requirements-list',
+                                className: 'space-y-2 text-white'
+                            }, [
+                                React.createElement('li', {
+                                    key: 'req-1',
+                                    className: 'flex items-center gap-2'
+                                }, [
+                                    React.createElement('span', { key: 'req-1-check' }, '✅'),
+                                    React.createElement('span', { key: 'req-1-text' }, 'Alcanzar la liga ORO (400+ trofeos)')
+                                ]),
+                                React.createElement('li', {
+                                    key: 'req-2',
+                                    className: 'flex items-center gap-2'
+                                }, [
+                                    React.createElement('span', { key: 'req-2-check' }, '✅'),
+                                    React.createElement('span', { key: 'req-2-text' }, 'Ganar 10 batallas consecutivas')
+                                ]),
+                                React.createElement('li', {
+                                    key: 'req-3',
+                                    className: 'flex items-center gap-2'
+                                }, [
+                                    React.createElement('span', { key: 'req-3-check' }, '✅'),
+                                    React.createElement('span', { key: 'req-3-text' }, 'Tener al menos 5 cartas épicas o legendarias en tu colección')
+                                ])
+                            ])
+                        ]),
+
+                        React.createElement('div', {
+                            key: 'tournament-join',
+                            className: 'text-center'
+                        }, [
+                            React.createElement('button', {
+                                key: 'join-btn',
+                                className: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold text-lg px-8 py-4 rounded-full mb-4 transform transition hover:scale-105',
+                                onClick: () => {
+                                    if (player.trophies < 400) {
+                                        alert('¡Necesitas al menos 400 trofeos para participar en el torneo!');
+                                    } else {
+                                        alert('¡Torneo en desarrollo! Próximamente podrás participar para ganar la carta legendaria.');
+                                    }
+                                }
+                            }, '🚀 PARTICIPAR EN EL TORNEO'),
+                            React.createElement('p', {
+                                key: 'tournament-desc',
+                                className: 'text-gray-300 text-sm'
+                            }, 'El torneo estará disponible próximamente')
+                        ])
+                    ])),
+
+                    // Próxima Actualización
+                    React.createElement('div', {
+                        key: 'update-notification',
+                        className: 'max-w-2xl mx-auto mt-12 bg-black bg-opacity-40 p-6 rounded-xl border-2 border-dashed border-yellow-500 text-center'
+                    }, [
+                        React.createElement('h3', {
+                            key: 'update-title',
+                            className: 'text-2xl font-bold text-yellow-500 mb-2'
+                        }, '🔔 ¡PRÓXIMA ACTUALIZACIÓN! 🔔'),
+                        React.createElement('p', {
+                            key: 'update-time',
+                            className: 'mb-2'
+                        }, React.createElement('strong', null, 'Hoy a las 15:00')),
+                        React.createElement('p', {
+                            key: 'update-desc',
+                            className: 'mb-4'
+                        }, '¡Modo Multijugador + Perfil + Ranking!'),
+                        React.createElement('div', {
+                            key: 'update-countdown',
+                            className: 'text-cyan-400 text-xl font-bold'
+                        }, updateTime)
+                    ])
+                ])
+            ]),
+
+            // Vista previa de carta
+            selectedCard && React.createElement('div', {
+                key: 'card-preview',
+                className: 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50',
+                onClick: closeCardPreview
+            }, React.createElement('div', {
+                key: 'preview-content',
+                className: 'bg-gray-900 p-6 rounded-xl max-w-sm w-full mx-4 border-3 border-yellow-500 shadow-2xl',
+                onClick: (e) => e.stopPropagation()
+            }, [
+                React.createElement('img', {
+                    key: 'preview-img',
+                    src: selectedCard.img,
+                    alt: selectedCard.name,
+                    className: 'w-full h-64 object-cover rounded-lg mb-4'
+                }),
+                React.createElement('h3', {
+                    key: 'preview-name',
+                    className: 'text-xl font-bold mb-2'
+                }, selectedCard.name),
+                React.createElement('div', {
+                    key: 'preview-rarity',
+                    className: `inline-block px-3 py-1 rounded-full text-sm font-bold mb-2 ${
+                        selectedCard.rarity === 'common' ? 'bg-gray-600 text-white' :
+                        selectedCard.rarity === 'rare' ? 'bg-orange-500 bg-opacity-30 text-orange-500' :
+                        selectedCard.rarity === 'epic' ? 'bg-purple-500 bg-opacity-30 text-purple-400' :
+                        'bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 text-transparent bg-clip-text'
+                    }`
+                }, {
+                    common: 'Común',
+                    rare: 'Rara',
+                    epic: 'Épica',
+                    legendary: 'Legendaria'
+                }[selectedCard.rarity]),
+                React.createElement('div', {
+                    key: 'preview-stats',
+                    className: 'mb-2'
+                }, `ATK: ${selectedCard.atk} | DEF: ${selectedCard.def}`),
+                React.createElement('div', {
+                    key: 'preview-power',
+                    className: 'text-yellow-400 italic mb-2'
+                }, selectedCard.power),
+                selectedCard.id === 10 && React.createElement('div', {
+                    key: 'preview-special',
+                    className: 'text-yellow-400 text-sm'
+                }, '¡Se consigue en un desafío especial!'),
+                selectedCard.unlocked && !currentDeck.includes(selectedCard.id) && currentDeck.length < 3 && React.createElement('button', {
+                    key: 'preview-add',
+                    className: 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full mt-4',
+                    onClick: () => {
+                        addToDeck(selectedCard.id);
+                        closeCardPreview();
+                    }
+                }, 'Añadir al mazo')
+            ]))
+            ]);
+        };
+
+        // Renderizar la aplicación
+        ReactDOM.render(React.createElement(FortniteGame), document.getElementById('root'));
+    </script>
+</body>
+</html>
