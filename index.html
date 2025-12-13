@@ -255,7 +255,7 @@
     <h1 class="text-3xl font-bold text-center mb-6">🎄 FORTNITE: BATALLA NAVIDEÑA</h1>
 
     <!-- Batalla -->
-    <div id="battle" class="active">
+    <div id="battle">
       <div class="battle-placeholder">
         <h2 class="text-2xl font-bold mb-4">⚔️ BATALLA</h2>
         <p>¡Añade cartas a tu mazo y entra a la batalla!</p>
@@ -396,7 +396,7 @@
     }
     const GEMS_OFFER_END = getGemsOfferEndTime();
 
-    // ✅ CARTAS (URLs limpias)
+    // ✅ CARTAS
     const ALL_CARDS = [
       { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
@@ -410,7 +410,7 @@
       { id: 9, name: "Diosa Cósmica", rarity: "exotic", baseAtk: 150, baseDef: 90, level: 1, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
       { id: 10, name: "Aria Ídolo", rarity: "idolos", baseAtk: 140, baseDef: 85, level: 1, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
       { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
-      { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
+      { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, level: 1, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
       { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
       { id: 14, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 300 }
     ];
@@ -426,7 +426,6 @@
       currentDeck: JSON.parse(localStorage.getItem('currentDeck') || '[0,1,2]')
     };
 
-    // Aplicar mejoras
     function applyCardUpgrades() {
       ALL_CARDS.forEach(card => {
         const level = gameState.cardUpgrades[card.id] || 1;
@@ -446,7 +445,6 @@
       updateRanking();
     }
 
-    // ✅ CONTADOR DE OFERTA
     function updateGemsCountdown() {
       const now = new Date();
       const diff = GEMS_OFFER_END - now;
@@ -465,7 +463,6 @@
     setInterval(updateGemsCountdown, 1000);
     updateGemsCountdown();
 
-    // ✅ COMPRA DE GEMAS
     function buyGemsPackage() {
       if (new Date() >= GEMS_OFFER_END) {
         alert("¡La oferta ha terminado!");
@@ -479,7 +476,6 @@
       }
     }
 
-    // ✅ FUNCIONES DE BATALLA
     let currentEnemy = { name: "IA Básica", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" };
     let playerCurrentHp = {};
     let enemyHp = 70;
@@ -490,7 +486,6 @@
         alert("¡Tu mazo está vacío! Añade cartas en el Mazo.");
         return;
       }
-      // Restablecer HP
       enemyHp = 70;
       playerCurrentHp = {};
       gameState.currentDeck.forEach(id => {
@@ -504,7 +499,6 @@
     }
 
     function renderBattle() {
-      // Carta enemiga
       document.getElementById('enemyCard').innerHTML = `
         <div class="card-battle">
           <img src="${currentEnemy.img}" style="width:100%; height:100px; object-fit:cover; border-radius:6px;">
@@ -513,7 +507,6 @@
         </div>
       `;
 
-      // Cartas del jugador
       const playerContainer = document.getElementById('playerCards');
       playerContainer.innerHTML = '';
       gameState.currentDeck.forEach(id => {
@@ -536,7 +529,7 @@
 
     function playerAttack() {
       if (!playerTurn) return;
-      const cardId = gameState.currentDeck[0]; // Usa la primera carta
+      const cardId = gameState.currentDeck[0];
       const card = ALL_CARDS.find(c => c.id === cardId);
       if (!card || (playerCurrentHp[cardId] || card.def) <= 0) {
         alert("¡No tienes cartas vivas!");
@@ -551,9 +544,8 @@
         saveGame();
         updateUI();
         alert("¡Victoria! +30 trofeos");
-        startBattle(); // Reiniciar
+        startBattle();
       } else {
-        // IA ataca
         playerTurn = false;
         setTimeout(() => {
           const aliveCards = gameState.currentDeck.filter(id => (playerCurrentHp[id] || ALL_CARDS.find(c => c.id === id)?.def || 0) > 0);
@@ -576,7 +568,6 @@
 
     function playerDefend() {
       alert("🛡️ ¡Te preparas para defender!");
-      // IA ataca igual
       playerTurn = false;
       setTimeout(() => {
         const aliveCards = gameState.currentDeck.filter(id => (playerCurrentHp[id] || ALL_CARDS.find(c => c.id === id)?.def || 0) > 0);
@@ -595,7 +586,7 @@
       }, 1000);
     }
 
-    // ✅ COMPRA DE CARTAS
+    // ✅ COMPRA DE CARTAS CORREGIDA
     function buyCard(cardId) {
       const card = ALL_CARDS.find(c => c.id === cardId);
       if (!card) return;
@@ -612,7 +603,6 @@
       }
     }
 
-    // ✅ SIN LÍMITE DE 3 CARTAS
     function addToDeck(cardId) {
       if (!gameState.currentDeck.includes(cardId)) {
         gameState.currentDeck.push(cardId);
@@ -632,7 +622,6 @@
       saveGame();
     }
 
-    // ✅ MODAL DE CARTA
     function showCardModal(card) {
       document.getElementById('cardModalImage').src = card.img;
       document.getElementById('cardModalName').textContent = card.name;
@@ -641,9 +630,7 @@
         ultra: "Ultra Raro", exotic: "Exótica", idolos: "Ídolos", tournament: "Torneo"
       };
       const rarityText = rarityLabels[card.rarity] || card.rarity;
-      const rarityClass = `rarity-tag-${card.rarity}`;
       document.getElementById('cardModalRarity').textContent = rarityText;
-      document.getElementById('cardModalRarity').className = `font-bold ${rarityClass}`;
       document.getElementById('cardModalStats').textContent = `⚔️ ${card.atk}  🛡️ ${card.def}`;
       document.getElementById('cardModal').style.display = 'flex';
     }
@@ -652,7 +639,6 @@
       document.getElementById('cardModal').style.display = 'none';
     }
 
-    // ✅ RENDER CON FILTRO
     function renderDeck() {
       const container = document.getElementById('deckCards');
       container.innerHTML = '';
@@ -668,7 +654,7 @@
           <div class="card-base">
             <div class="card-glow"></div>
             <div class="card-content">
-              <img src="${card.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+              <img src="${card.img.trim()}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
               <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
               <div class="text-[10px]">⚔️${card.atk} 🛡️${card.def}</div>
             </div>
@@ -679,25 +665,40 @@
       });
     }
 
+    // ✅ FUNCIÓN DE TIENDA CORREGIDA
     function renderShop() {
       const container = document.getElementById('shopCards');
       container.innerHTML = '';
-      ALL_CARDS.filter(c => c.shopPrice && !gameState.ownedCardIds.includes(c.id)).forEach(card => {
+
+      const shopCards = ALL_CARDS.filter(card =>
+        card.shopPrice !== null &&
+        !gameState.ownedCardIds.includes(card.id)
+      );
+
+      shopCards.forEach(card => {
         const cardEl = document.createElement('div');
         cardEl.className = `card-container ${card.rarity}`;
         cardEl.innerHTML = `
           <div class="card-base">
             <div class="card-glow"></div>
             <div class="card-content">
-              <img src="${card.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+              <img src="${card.img.trim()}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
               <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
               <div class="text-yellow-400 text-[11px]">💎${card.shopPrice}</div>
             </div>
           </div>
-          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="event.stopPropagation(); buyCard(${card.id})">Comprar</button>
+          <button class="btn w-full mt-1 py-1 text-[10px] buy-card-btn" data-card-id="${card.id}">Comprar</button>
         `;
-        cardEl.onclick = () => showCardModal(card);
+        cardEl.querySelector('.card-base').onclick = () => showCardModal(card);
         container.appendChild(cardEl);
+      });
+
+      document.querySelectorAll('.buy-card-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const cardId = parseInt(btn.dataset.cardId);
+          buyCard(cardId);
+        });
       });
     }
 
@@ -709,7 +710,6 @@
       localStorage.setItem('cardUpgrades', JSON.stringify(gameState.cardUpgrades));
       localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
       
-      // ✅ Guardar en ranking
       let rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
       const existingIndex = rankings.findIndex(r => r.name === gameState.playerName);
       const playerData = {
@@ -727,7 +727,6 @@
       localStorage.setItem('rankings', JSON.stringify(rankings));
     }
 
-    // ✅ RANKING EN TIEMPO REAL
     function updateRanking() {
       const rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
       const container = document.getElementById('rankingList');
