@@ -545,7 +545,9 @@
         { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
         { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: false },
         { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: false },
-        { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true }
+        { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
+        // 🎯 CARTA LEGENDARIA QUE SE DESBLOQUEARÁ MAÑANA A LAS 15:00
+        { id:10, name:"Carta del Desafío", img:"https://rule34.xxx/samples/457/sample_f9bc1e16c821e5923b37a699ea624f9c.jpg?15733609", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
       ];
 
       const LEAGUES = [
@@ -574,6 +576,24 @@
         localStorage.setItem('lastDiamondClaim', today);
       }
       diamonds = parseInt(localStorage.getItem('diamonds')) || 100;
+
+      // 🎯 DESBLOQUEO AUTOMÁTICO DE LA CARTA LEGENDARIA
+      const unlockTime = new Date();
+      unlockTime.setHours(15, 0, 0, 0); // Mañana a las 15:00
+      const unlockTimeStr = unlockTime.toISOString();
+      const lastUnlockTime = localStorage.getItem('lastUnlockTime') || null;
+
+      // Si no se ha desbloqueado aún y es mañana a las 15:00
+      if (lastUnlockTime === null || lastUnlockTime < unlockTimeStr) {
+        // Verificar si es mañana a las 15:00
+        const now = new Date();
+        if (now.getHours() === 15 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+          // Desbloquear la carta
+          localStorage.setItem('cards', JSON.stringify({ ...savedCards, 10: true }));
+          localStorage.setItem('lastUnlockTime', unlockTimeStr);
+          alert('🎉 ¡La carta legendaria ha sido desbloqueada! ¡Puedes usarla en tu mazo!');
+        }
+      }
 
       const savedCards = JSON.parse(localStorage.getItem('cards')) || {};
       CARDS.forEach(card => {
