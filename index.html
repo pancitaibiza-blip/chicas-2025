@@ -119,7 +119,12 @@
     .rarity-legendary .card-glow { background: #d4a017; }
     .rarity-ultra .card-glow { background: #00bcd4; }
     .rarity-exotic .card-glow { background: #e91e63; }
-    .rarity-idolos .card-glow { background: #ff9800; }
+    .rarity-idolos .card-glow { background: linear-gradient(45deg, #ff9800, #ff4081, #ffc107); opacity: 0.8; filter: blur(15px); animation: glowPulse 1.5s infinite alternate; }
+    @keyframes glowPulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(1.1); opacity: 1; }
+    }
+    .rarity-idolos .card-base { box-shadow: 0 0 20px #ff9800, 0 0 30px #ff4081; }
     .rarity-tournament .card-glow { background: #f44336; }
     .card-content {
       padding: 6px;
@@ -516,7 +521,8 @@
       { id: 17, name: "Cammy and Chun-Li", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590", shopPrice: 700 },
       { id: 18, name: "Briar", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2510/sample_ea2393689e00c9127748cc78a08ef6b5.jpg?15205865", shopPrice: 700 },
       { id: 19, name: "Torrenta", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1506/sample_b060c3279b1a9b0a7da0e19bb15fa2d5.jpg?15273482", shopPrice: 700 },
-      { id: 20, name: "Siren", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1766/sample_0e848cee467407d1da3fd407bbf6e484.jpg?15276598", shopPrice: 700 }
+      { id: 20, name: "Siren", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1766/sample_0e848cee467407d1da3fd407bbf6e484.jpg?15276598", shopPrice: 700 },
+      { id: 21, name: "Sabrina Carpente La Diva", rarity: "idolos", baseAtk: 120, baseDef: 80, level: 1, img: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg", shopPrice: null }
     ];
     // ✅ TORNEOS MÚLTIPLES
     const TOURNAMENTS = [
@@ -569,6 +575,16 @@
         cards: [17],
         description: "Gana cartas exóticas e ídolos.",
         image: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590"
+      },
+      {
+        id: 6,
+        name: "Torneo Sabrina",
+        cost: 5,
+        trophies: 800,
+        diamonds: 250,
+        cards: [21],
+        description: "¡Especial! Gana la carta épica Sabrina Carpente La Diva. Disponible mañana a las 15:00.",
+        image: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg"
       }
     ];
     let gameState = {
@@ -799,9 +815,16 @@
     function renderTournaments() {
       const container = document.getElementById('tournamentsList');
       container.innerHTML = '';
+      const now = new Date();
       TOURNAMENTS.forEach(tournament => {
         if (gameState.completedTournaments.includes(tournament.id)) {
           return; // No mostrar si ya completado
+        }
+        if (tournament.id === 6) {
+          const tournamentStart = new Date('2025-12-14T15:00:00');
+          if (now < tournamentStart) {
+            return; // No mostrar si no ha empezado
+          }
         }
         const tournamentEl = document.createElement('div');
         tournamentEl.className = 'bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 animate-pulse';
