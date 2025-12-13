@@ -51,6 +51,41 @@
       background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.7) 100%);
       pointer-events: none;
     }
+
+    /* Efectos de ataque en la mesa */
+    .attack-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0;
+    }
+    .fire-effect {
+      background: radial-gradient(circle, rgba(255,90,0,0.6) 0%, transparent 70%);
+      animation: fireBurst 1s forwards;
+    }
+    .ice-effect {
+      background: radial-gradient(circle, rgba(0,200,255,0.5) 0%, transparent 70%);
+      animation: iceShatter 1s forwards;
+    }
+    .wind-effect {
+      background: radial-gradient(circle, rgba(100,255,200,0.4) 0%, transparent 70%);
+      animation: windSwirl 1s forwards;
+    }
+    .arcane-effect {
+      background: radial-gradient(circle, rgba(200,100,255,0.6) 0%, transparent 70%);
+      animation: arcanePulse 1s forwards;
+    }
+
+    @keyframes fireBurst { 0% { opacity: 0.8; transform: scale(0.5); } 100% { opacity: 0; transform: scale(2); } }
+    @keyframes iceShatter { 0% { opacity: 0.9; transform: scale(0.3); } 50% { opacity: 0.9; } 100% { opacity: 0; transform: scale(1.5); } }
+    @keyframes windSwirl { 0% { opacity: 0.7; transform: rotate(0) scale(0.5); } 100% { opacity: 0; transform: rotate(180deg) scale(2); } }
+    @keyframes arcanePulse { 
+      0% { opacity: 0.9; transform: scale(0.4); box-shadow: 0 0 10px #c864ff; } 
+      50% { box-shadow: 0 0 20px #ff64c8, 0 0 30px #64c8ff; } 
+      100% { opacity: 0; transform: scale(1.8); } 
+    }
+
     .battle-header {
       margin-bottom: 25px;
       font-size: 1.4em;
@@ -58,7 +93,6 @@
       text-shadow: 0 0 10px rgba(78,205,196,0.7);
     }
 
-    /* Zonas de batalla */
     .battle-zone {
       display: flex;
       justify-content: space-between;
@@ -75,7 +109,6 @@
     .player-zone .zone-title { color: #4ecdc4; }
     .enemy-zone .zone-title { color: #ff6b6b; }
 
-    /* Carta en combate */
     .battle-card {
       position: relative;
       width: 160px;
@@ -108,7 +141,6 @@
       animation: rainbow 3s linear infinite;
     }
 
-    /* Barra de vida */
     .hp-bar {
       width: 100%;
       height: 12px;
@@ -129,7 +161,6 @@
       color: #feca57;
     }
 
-    /* Mazo de mano */
     .hand {
       display: flex;
       justify-content: center;
@@ -160,7 +191,6 @@
       border-radius: 8px;
     }
 
-    /* Botones y log */
     .battle-log {
       background: rgba(0,0,0,0.6);
       padding: 15px;
@@ -189,7 +219,6 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.5);
     }
 
-    /* Menú principal */
     .main-menu {
       text-align: center;
     }
@@ -211,6 +240,20 @@
       box-shadow: 0 8px 20px rgba(255,107,107,0.6);
     }
 
+    /* Pantalla de fin */
+    .end-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+    .win-screen { background: radial-gradient(circle, rgba(255,215,0,0.2), transparent); }
+    .lose-screen { background: radial-gradient(circle, rgba(255,107,107,0.2), transparent); }
+
     @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
     @media (max-width: 600px) {
@@ -225,13 +268,11 @@
   <div class="content">
     <h1>FORTNITE SKIN BATTLE: ¡DERROTA AL JEFÉ!</h1>
 
-    <!-- Menú principal -->
     <div class="main-menu" id="mainMenu">
       <button class="menu-btn" onclick="startBattle()">⚔️ ¡INICIAR BATALLA!</button>
       <p style="color:#4ecdc4; margin-top:20px;">Arma tu mazo en "Colección" antes de luchar.</p>
     </div>
 
-    <!-- Mesa de batalla -->
     <div class="battle-table" id="battleTable">
       <div class="battle-header">MESA DE BATALLA - Ronda <span id="roundNumber">1</span></div>
       
@@ -261,24 +302,37 @@
         </div>
       </div>
 
+      <!-- Capa para efectos de ataque -->
+      <div class="attack-overlay" id="attackOverlay"></div>
+
       <div class="battle-log" id="battleLog">
         ¡Elige una carta de tu mazo para atacar!
       </div>
 
       <div class="hand" id="playerHand">
-        <!-- Se llena con JS -->
       </div>
 
       <button class="action-btn" onclick="exitBattle()" style="background:#ff6b6b;">🚪 Salir</button>
     </div>
   </div>
 
+  <!-- Pantalla de fin -->
+  <div class="end-screen" id="endScreen">
+    <h2 id="endTitle" style="font-size:3em; margin-bottom:20px;"></h2>
+    <p id="endMessage" style="font-size:1.4em; margin-bottom:30px;"></p>
+    <button class="menu-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
+  </div>
+
+  <!-- Sonidos -->
+  <audio id="fireSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fire-magic-arcade-explosion-2445.mp3" preload="auto"></audio>
+  <audio id="iceSound" src="https://assets.mixkit.co/sfx/preview/mixkit-ice-impact-2446.mp3" preload="auto"></audio>
+  <audio id="windSound" src="https://assets.mixkit.co/sfx/preview/mixkit-whoosh-air-whoosh-2447.mp3" preload="auto"></audio>
+  <audio id="arcaneSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-arcade-whoosh-2448.mp3" preload="auto"></audio>
   <audio id="hitSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
   <audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3" preload="auto"></audio>
   <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
 
   <script>
-    // ==== CARTAS ====
     const CARDS = [
       { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
       { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
@@ -292,7 +346,6 @@
       { id:9, name:"JEFE FINAL", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: false }
     ];
 
-    // ==== Estado del juego ====
     let currentDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
     let playerCards = [];
     let enemyCard = null;
@@ -300,7 +353,6 @@
     let gameActive = true;
     let playerTurn = true;
 
-    // ==== Funciones ====
     function createParticles() {
       const c = document.getElementById('particles');
       const n = 15;
@@ -320,8 +372,28 @@
       }
     }
 
+    function playAttackEffect(type) {
+      const overlay = document.getElementById('attackOverlay');
+      overlay.className = 'attack-overlay';
+      overlay.classList.add(`${type}-effect`);
+      overlay.style.opacity = '1';
+      
+      // Sonido por tipo
+      const soundMap = {
+        fire: 'fireSound',
+        ice: 'iceSound',
+        wind: 'windSound',
+        arcane: 'arcaneSound'
+      };
+      const sound = document.getElementById(soundMap[type]);
+      if (sound) sound.play().catch(()=>{});
+      
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+      }, 1000);
+    }
+
     function startBattle() {
-      // Cargar mazo
       const savedDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0,3,6];
       currentDeck = savedDeck;
       
@@ -338,17 +410,14 @@
         return;
       }
 
-      // Enemigo: siempre el jefe final para prueba
       enemyCard = {...CARDS[9], currentHp: CARDS[9].def, alive: true};
-
-      // Reiniciar estado
       round = 1;
       gameActive = true;
       playerTurn = true;
 
-      // Mostrar mesa de batalla
       document.getElementById('mainMenu').style.display = 'none';
       document.getElementById('battleTable').style.display = 'block';
+      document.getElementById('endScreen').style.display = 'none';
       
       updateBattleUI();
     }
@@ -356,14 +425,12 @@
     function updateBattleUI() {
       document.getElementById('roundNumber').innerText = round;
       
-      // Carta enemiga
       document.getElementById('enemyCardImg').src = enemyCard.img;
       document.getElementById('enemyRarity').innerText = enemyCard.rarity;
       document.getElementById('enemyRarity').className = `card-rarity ${enemyCard.rarity}`;
       document.getElementById('enemyHp').innerText = enemyCard.currentHp;
       document.getElementById('enemyHpBar').style.width = `${(enemyCard.currentHp / enemyCard.def) * 100}%`;
       
-      // Carta del jugador (la primera viva)
       const activePlayerCard = playerCards.find(c => c.alive);
       if (activePlayerCard) {
         document.getElementById('playerCardImg').src = activePlayerCard.img;
@@ -373,7 +440,6 @@
         document.getElementById('playerHpBar').style.width = `${(activePlayerCard.currentHp / activePlayerCard.def) * 100}%`;
       }
 
-      // Mazo de mano
       const handEl = document.getElementById('playerHand');
       handEl.innerHTML = '';
       playerCards.forEach(card => {
@@ -406,16 +472,16 @@
       if (!playerCard) return;
       
       const log = document.getElementById('battleLog');
-      log.innerHTML = `¡${playerCard.name} ataca con <strong>${playerCard.power}</strong>!`;
+      log.innerHTML = `¡${playerCard.name} usa <strong>${playerCard.power}</strong>!`;
 
-      // Calcular daño
-      const damage = Math.max(5, playerCard.atk - Math.floor(enemyCard.def * 0.3)); // Daño parcial para mostrar HP
+      // Mostrar efecto de ataque
+      playAttackEffect(playerCard.attackType);
 
-      // Aplicar daño al enemigo
+      const damage = Math.max(5, playerCard.atk - Math.floor(enemyCard.def * 0.3));
+
       setTimeout(() => {
         enemyCard.currentHp = Math.max(0, enemyCard.currentHp - damage);
         updateBattleUI();
-        document.getElementById('hitSound').play().catch(()=>{});
 
         if (enemyCard.currentHp <= 0) {
           log.innerHTML = `¡${playerCard.name} derrotó a ${enemyCard.name}!`;
@@ -424,7 +490,6 @@
             if (round > 3) {
               endBattle(true);
             } else {
-              // Nuevo enemigo
               enemyCard = {...CARDS[round + 5], currentHp: CARDS[round + 5].def, alive: true};
               playerTurn = true;
               updateBattleUI();
@@ -436,27 +501,27 @@
           setTimeout(() => iaAttack(playerCard), 1500);
         }
         playerTurn = false;
-      }, 800);
+      }, 1000);
     }
 
     function iaAttack(playerCard) {
       if (!gameActive) return;
       
       const log = document.getElementById('battleLog');
-      const damage = Math.max(5, enemyCard.atk - Math.floor(playerCard.def * 0.3));
-
       log.innerHTML = `¡${enemyCard.name} ataca a ${playerCard.name}!`;
+
+      playAttackEffect(enemyCard.attackType);
+
+      const damage = Math.max(5, enemyCard.atk - Math.floor(playerCard.def * 0.3));
 
       setTimeout(() => {
         playerCard.currentHp = Math.max(0, playerCard.currentHp - damage);
         updateBattleUI();
-        document.getElementById('hitSound').play().catch(()=>{});
 
         if (playerCard.currentHp <= 0) {
           playerCard.alive = false;
           log.innerHTML = `¡${playerCard.name} fue eliminada!`;
           
-          // Verificar si hay más cartas
           const aliveCards = playerCards.filter(c => c.alive);
           if (aliveCards.length === 0) {
             endBattle(false);
@@ -466,18 +531,19 @@
 
         playerTurn = true;
         log.innerHTML = `¡Tu turno! Elige una carta para atacar:`;
-      }, 800);
+      }, 1000);
     }
 
     function endBattle(isWin) {
       gameActive = false;
-      const log = document.getElementById('battleLog');
-      log.innerHTML = `
-        <h3 style="color:${isWin ? 'gold' : '#ff6b6b'};">
-          ${isWin ? '🎉 ¡VICTORIA ROYALE!' : '💀 DERROTA'}
-        </h3>
-        <p style="margin-top:15px;">${isWin ? '¡Has derrotado al Jefe Final!' : 'Todas tus cartas fueron eliminadas.'}</p>
-      `;
+      document.getElementById('endTitle').innerText = isWin ? '🎉 ¡VICTORIA ROYALE!' : '💀 DERROTA';
+      document.getElementById('endMessage').innerText = isWin 
+        ? '¡Has derrotado al Jefe Final!' 
+        : 'Todas tus cartas fueron eliminadas.';
+      
+      document.getElementById('endScreen').className = `end-screen ${isWin ? 'win-screen' : 'lose-screen'}`;
+      document.getElementById('endScreen').style.display = 'flex';
+      
       document.getElementById(isWin ? 'winSound' : 'loseSound').play();
     }
 
@@ -486,7 +552,6 @@
       document.getElementById('mainMenu').style.display = 'block';
     }
 
-    // Iniciar
     createParticles();
   </script>
 </body>
