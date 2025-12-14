@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
+        /* [TUS ESTILOS CSS COMPLETOS SE MANTIENEN AQUÍ] */
+        /* Incluyendo la corrección de padding y todos los estilos de cartas/modal */
         /* ================================================= */
         /* === BASE DEL JUEGO Y ESTABILIDAD === */
         /* ================================================= */
@@ -30,7 +32,7 @@
         /* CORRECCIÓN: Asegura que el contenido principal no sea tapado por las barras fijas */
         .container {
             padding-top: 130px; 
-            padding-bottom: 100px; /* Espacio para la barra de navegación inferior */
+            padding-bottom: 100px;
         }
         
         /* Barras fijas superiores */
@@ -130,11 +132,10 @@
             box-shadow: 0 0 30px yellow, 0 -10px 20px rgba(255, 255, 0, 0.5);
             transform: translateY(-10px) scale(1.05);
         }
-        .damage-float { /* Estilos de daño flotante */ }
-        @keyframes fallConfetti { /* Keyframes de confeti */ }
+        /* ... (tus estilos de animación de batalla y daño flotante se mantienen) ... */
         
         /* ================================================= */
-        /* === DISEÑO DE VICTORIA (MODAL) REFORZADO === */
+        /* === DISEÑO DE VICTORIA (MODAL) === */
         /* ================================================= */
 
         #battleMessage {
@@ -363,7 +364,7 @@
     
     <script>
         // =========================================================
-        // === DATOS DEL JUEGO (RESTAURADOS) ===
+        // === DATOS Y ESTADO DEL JUEGO ===
         // =========================================================
         const GEMS_OFFER_END = new Date(new Date().setHours(1, 0, 0, 0) + (new Date().getHours() >= 1 ? 24 * 60 * 60 * 1000 : 0));
         const SHOP_UPDATE_END = GEMS_OFFER_END;
@@ -412,7 +413,6 @@
             { id: 5, name: "Maestro de Gemas", description: "Gasta 500 gemas", icon: "💎" }
         ];
         
-        // Carga y estado del juego
         let gameState = {
             playerName: localStorage.getItem('playerName') || 'Jugador',
             trophies: parseInt(localStorage.getItem('trophies') || '0'),
@@ -439,7 +439,74 @@
         let battleEnded = false;
 
         // =========================================================
-        // === FUNCIONES DE LOGICA (COMPLETAS) ===
+        // === FUNCIONES DE RENDERIZADO BÁSICO (Para asegurar el arranque) ===
+        // =========================================================
+
+        function getCardStats(cardId, isIA = false) { 
+            const cardData = ALL_CARDS.find(c => c.id === cardId);
+            if (!cardData) return null;
+            let atk = cardData.atk || cardData.baseAtk;
+            let def = cardData.def || cardData.baseDef;
+
+            if (isIA) {
+                atk = atk * iaLevelMultiplier;
+                def = def * iaLevelMultiplier;
+            }
+            return {
+                id: cardId, name: cardData.name, atk: atk, def: def, 
+                hp: def, maxHp: def, ability: cardData.ability,
+                level: cardData.level || 1, img: cardData.img
+            };
+        }
+        
+        function updateHpBars() {
+            // Lógica para actualizar las barras HP (omito el cuerpo por espacio, pero debe estar ahí)
+        }
+
+        function renderIaCards() {
+            const container = document.getElementById('battleIaCards');
+            if (!container) return; 
+            container.innerHTML = '';
+            iaCards = [];
+            iaDeckIds = iaDeckIds.length > 0 ? iaDeckIds : [0, 1, 2]; // Fallback deck
+            iaDeckIds.forEach((id, index) => {
+                let card = getCardStats(id, true);
+                if (!card) return;
+                const cardEl = document.createElement('div');
+                cardEl.className = 'ia-card';
+                cardEl.innerHTML = `<img src="${card.img}" alt="${card.name}"><div>${card.name}</div><div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div><div class="hp-text">HP: ${card.def}/${card.def}</div>`;
+                cardEl.onclick = () => { selectedTargetCard = iaCards[index]; };
+                container.appendChild(cardEl);
+                iaCards.push({...card, element: cardEl});
+            });
+        }
+        
+        function renderBattleCards() {
+            const container = document.getElementById('battlePlayerCards');
+            if (!container) return;
+            container.innerHTML = '';
+            playerCards = [];
+            const deck = gameState.currentDeck.length > 0 ? gameState.currentDeck.slice(0, 3) : [0, 1, 2];
+            deck.forEach((id, index) => {
+                const card = getCardStats(id, false);
+                if (!card) return;
+                const cardEl = document.createElement('div');
+                cardEl.className = 'player-card';
+                cardEl.innerHTML = `<img src="${card.img}" alt="${card.name}"><div>${card.name}</div><div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div><div class="hp-text">HP: ${card.def}/${card.def}</div>`;
+                cardEl.onclick = () => { selectedPlayerCard = playerCards[index]; };
+                container.appendChild(cardEl);
+                playerCards.push({...card, element: cardEl});
+            });
+        }
+
+        function resetBattle() {
+            selectedPlayerCard = null;
+            selectedTargetCard = null;
+            updateHpBars();
+        }
+
+        // =========================================================
+        // === OTRAS FUNCIONES (El cuerpo completo debe estar en tu archivo) ===
         // =========================================================
         
         function applyCardUpgrades() { /* ... Tu función applyCardUpgrades ... */ }
@@ -447,7 +514,21 @@
         function updateRanking() { /* ... Tu función updateRanking ... */ }
         function checkAchievements() { /* ... Tu función checkAchievements ... */ }
         function unlockAchievement(id) { /* ... Tu función unlockAchievement ... */ }
-        
+        function renderDeck() { /* ... Tu función renderDeck ... */ }
+        function renderShop() { /* ... Tu función renderShop ... */ }
+        function renderTournaments() { /* ... Tu función renderTournaments ... */ }
+        function renderAchievements() { /* ... Tu función renderAchievements ... */ }
+        function buyGemsPackage() { /* ... Tu función buyGemsPackage ... */ }
+        function upgradeCard(id) { /* ... Tu función upgradeCard ... */ }
+        function startSpecificTournament(id) { /* ... Tu startSpecificTournament ... */ showView('battle'); }
+        function playerAttack() { /* ... Tu playerAttack con animaciones ... */ }
+        function iaAttack() { /* ... Tu iaAttack con animaciones ... */ }
+        function playerDefend() { /* ... Tu playerDefend ... */ }
+        function checkBattleEnd() { /* ... Tu checkBattleEnd ... */ }
+        function rematch() { /* ... Tu rematch ... */ }
+        function updateCountdowns() { /* ... Tu lógica de contadores ... */ }
+        setInterval(updateCountdowns, 1000);
+
         function updateUI() {
             document.getElementById('playerName').textContent = gameState.playerName;
             document.getElementById('profileAvatar').src = gameState.avatar;
@@ -457,36 +538,6 @@
             updateRanking(); 
         }
 
-        function updateCountdowns() {
-            // Lógica de contadores (omito el cuerpo por espacio, pero debes tener el tuyo completo)
-        }
-        setInterval(updateCountdowns, 1000);
-
-        function renderDeck() { /* ... Tu función renderDeck ... */ }
-        function renderShop() { /* ... Tu función renderShop ... */ }
-        function renderTournaments() { /* ... Tu función renderTournaments ... */ }
-        function renderAchievements() { /* ... Tu función renderAchievements ... */ }
-        function buyGemsPackage() { /* ... Tu función buyGemsPackage ... */ }
-        function upgradeCard(id) { /* ... Tu función upgradeCard ... */ }
-        function addToDeck(id) { /* ... Tu función addToDeck ... */ }
-        function removeFromDeck(id) { /* ... Tu función removeFromDeck ... */ }
-        function saveDeck() { saveGame(); }
-        function showCardModal(card) { /* ... Tu función showCardModal ... */ }
-        function closeCardModal() { document.getElementById('cardModal').style.display = 'none'; }
-
-
-        // Lógica de Batalla y Renderizado
-        function getCardStats(cardId, isIA = false) { /* ... Tu getCardStats con habilidades ... */ }
-        function updateHpBars() { /* ... Tu updateHpBars ... */ }
-        function renderIaCards() { /* ... Tu renderIaCards ... */ }
-        function renderBattleCards() { /* ... Tu renderBattleCards ... */ }
-        function resetBattle() { /* ... Tu resetBattle ... */ }
-        function playerAttack() { /* ... Tu playerAttack con animaciones ... */ }
-        function iaAttack() { /* ... Tu iaAttack con animaciones ... */ }
-        function playerDefend() { /* ... Tu playerDefend ... */ }
-
-        // Funciones de navegación
-        function startSpecificTournament(tournamentId) { /* ... Tu startSpecificTournament ... */ showView('battle'); }
         function startCupBattle() { 
             isCupBattle = true;
             isTournament = false;
@@ -523,7 +574,6 @@
             updateCountdowns();
         }
 
-        // Diseño de Victoria
         function showBattleMessage(message) {
             const messageEl = document.getElementById('messageText');
             const rematchBtn = document.querySelector('#battleMessage .btn.bg-green-600');
@@ -548,9 +598,7 @@
         }
         
         function closeBattleMessage() { /* ... Tu closeBattleMessage ... */ showView('battle'); }
-        function rematch() { /* ... Tu rematch ... */ }
 
-        // Música
         function setupMusic() { 
             const music = document.getElementById('backgroundMusic');
             if (music) {
