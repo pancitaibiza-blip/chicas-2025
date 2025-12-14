@@ -1066,43 +1066,61 @@
             currentTournamentId = tournamentId;
             iaDeckIds = tournament.iaDeck || [0,1,2];
             iaLevelMultiplier = tournament.id; // Increase IA strength based on tournament id
+            
             renderIaCards();
             renderBattleCards();
             resetBattle();
             showView('battle');
         }
-        // ✅ INICIAR BATALLA POR COPAS
+
+        // ✅ INICIAR BATALLA POR COPAS (CORREGIDO)
         function startCupBattle() {
+            // 1. Establecer el estado del modo de batalla
             isCupBattle = true;
             isTournament = false;
             currentTournamentId = null;
-            iaDeckIds = [0,1,2]; // Simple deck for cup battles
-            iaLevelMultiplier = 1;
+            iaDeckIds = [0,1,2]; // Mazo simple para batallas de copa
+            iaLevelMultiplier = 1; // IA con nivel base
+
+            // 2. Renderizar las cartas con las nuevas configuraciones (esto inicializa iaCards y playerCards)
             renderIaCards();
             renderBattleCards();
-            resetBattle();
+            
+            // 3. Resetear las HP y seleccionar las cartas por defecto (si es necesario)
+            resetBattle(); 
+
+            // 4. Mostrar la vista de batalla
             showView('battle');
         }
+
+        // ✅ Función de vista con corrección para el botón de navegación
         function showView(view) {
             ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking', 'achievements'].forEach(id => {
                 document.getElementById(id).classList.remove('active');
             });
             document.getElementById(view).classList.add('active');
+            
             // Quitar clase 'selected' de todos los botones y añadir al actual
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.nav-btn[onclick*="showView('${view}')"]`).classList.add('active');
+            
+            const navButton = document.querySelector(`.nav-btn[onclick*="showView('${view}')"]`);
+            if (navButton) {
+                navButton.classList.add('active');
+            }
 
             if (view === 'deck') renderDeck();
             if (view === 'shop') renderShop();
             if (view === 'ranking') updateRanking();
             if (view === 'tournament') renderTournaments();
             if (view === 'battle') {
+                // Si se entra en batalla, re-renderizar para asegurar que las referencias estén frescas
                 renderIaCards();
                 renderBattleCards();
             }
             if (view === 'achievements') renderAchievements();
             updateCountdowns();
         }
+
         // Battle logic
         let iaCards = [];
         let playerCards = [];
@@ -1142,6 +1160,40 @@
                 level: level
             };
         }
+        
+        // CORREGIDO: Función de actualización de barras de HP para reflejar el estado actual
+        function updateHpBars() {
+            // Actualizar cartas del jugador
+            playerCards.forEach(card => {
+                const percentage = (card.hp / card.maxHp) * 100;
+                const hpFill = card.element.querySelector('.hp-fill');
+                const hpText = card.element.querySelector('.hp-text');
+                hpFill.style.width = `${Math.max(0, percentage)}%`;
+                hpText.textContent = `HP: ${Math.max(0, Math.floor(card.hp))}/${card.maxHp}`;
+                if (card.hp <= 0) {
+                    card.element.style.opacity = '0.5';
+                    card.element.classList.remove('selected');
+                } else {
+                    card.element.style.opacity = '1';
+                }
+            });
+
+            // Actualizar cartas de la IA
+            iaCards.forEach(card => {
+                const percentage = (card.hp / card.maxHp) * 100;
+                const hpFill = card.element.querySelector('.hp-fill');
+                const hpText = card.element.querySelector('.hp-text');
+                hpFill.style.width = `${Math.max(0, percentage)}%`;
+                hpText.textContent = `HP: ${Math.max(0, Math.floor(card.hp))}/${card.maxHp}`;
+                if (card.hp <= 0) {
+                    card.element.style.opacity = '0.5';
+                    card.element.classList.remove('selected');
+                } else {
+                    card.element.style.opacity = '1';
+                }
+            });
+        }
+
 
         function renderIaCards() {
             const container = document.getElementById('battleIaCards');
@@ -1195,7 +1247,7 @@
                     <div class="hp-text">HP: ${card.def}/${card.def}</div>
                 `;
                 cardEl.onclick = () => {
-                    if (card.def <= 0) return; 
+                    if (card.hp <= 0) return; 
                     selectedPlayerCard = playerCards[index];
                     document.querySelectorAll('.player-card').forEach(e => e.classList.remove('selected'));
                     cardEl.classList.add('selected');
@@ -1395,20 +1447,40 @@
         function closeBattleMessage() {
             document.getElementById('battleMessage').style.display = 'none';
             battleEnded = false;
-            if (isTournament) {
-                isTournament = false;
-                currentTournamentId = null;
-            }
-            if (isCupBattle) {
-                isCupBattle = false;
-            }
-            showView('battle'); // Or back to main
+            // Se asume que el usuario quiere volver a la pantalla principal después de cerrar el mensaje
+            showView('battle'); 
         }
         function rematch() {
             document.getElementById('battleMessage').style.display = 'none';
             battleEnded = false;
-            resetBattle();
+            
+            // Volver a iniciar el modo en el que se estaba
+            if (isTournament) {
+                startSpecificTournament(currentTournamentId);
+            } else if (isCupBattle) {
+                startCupBattle();
+            } else {
+                resetBattle();
+            }
         }
+        
+        // CORREGIDO: Función de reseteo para asegurar que las referencias se limpien.
+        function resetBattle() {
+            playerCards.forEach(card => {
+                card.hp = card.maxHp;
+                card.element.classList.remove('selected');
+                card.element.style.opacity = '1';
+            });
+            iaCards.forEach(card => {
+                card.hp = card.maxHp;
+                card.element.classList.remove('selected');
+                card.element.style.opacity = '1';
+            });
+            updateHpBars();
+            selectedPlayerCard = null; // Reiniciar la selección del jugador
+            selectedTargetCard = null; // Reiniciar la selección del objetivo
+        }
+
         // Función para mostrar nueva carta con fuegos artificiales
         function showNewCard(card) {
             showCardModal(card);
@@ -1442,9 +1514,6 @@
             }
         }
         // Nuevas funciones para animaciones
-        function animateAttack(attackerEl, targetEl) {
-            // Ya no se usa directamente, la animación de shake se activa en playerAttack/iaAttack
-        }
         function animateDefend(targetEl) {
             targetEl.classList.add('defended');
             setTimeout(() => targetEl.classList.remove('defended'), 1000);
