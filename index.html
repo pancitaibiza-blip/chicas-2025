@@ -26,13 +26,28 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+        
         /* CORRECCIÓN: Asegura que el contenido principal no sea tapado por las barras fijas */
         .container {
-            padding-top: 130px; /* Suficiente espacio para OfferBanner (50px) + Announcement (50px) */
+            padding-top: 130px; 
+            padding-bottom: 100px; /* Espacio para la barra de navegación inferior */
         }
         
-        /* Ocultar elementos */
-        .hidden { display: none !important; }
+        /* Barras fijas superiores */
+        #offerBanner {
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+        #announcementBanner {
+            position: fixed;
+            top: 50px; 
+            z-index: 1000;
+        }
+
+        /* Ocultar elementos que no son la vista activa */
+        #deck, #shop, #tournament, #cupMode, #ranking, #achievements { display: none; }
+        #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active, #achievements.active { display: block; }
         
         /* Estilos de Botones Generales */
         .btn {
@@ -51,24 +66,24 @@
             transform: scale(1.05);
             box-shadow: 0 6px 12px rgba(255, 200, 200, 0.8);
         }
-        
-        /* Barras fijas superiores */
-        #offerBanner {
-            position: fixed;
-            top: 0;
-            z-index: 1000;
+        /* [Tus estilos de cartas y batalla se mantienen] */
+        .card-container {
+            position: relative;
+            display: inline-block;
+            margin: 4px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            will-change: transform; 
         }
-        #announcementBanner {
-            position: fixed;
-            top: 50px; /* Posicionado debajo de offerBanner */
-            z-index: 1000;
+        .card-base {
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            width: 160px;
+            background: rgba(10, 15, 25, 0.95);
         }
+        /* ... (tus estilos de .rarity-*, .ia-card, .player-card, .damage-float, etc. se mantienen) ... */
 
-        /* Estilos de Cartas (Se mantienen) */
-        /* ... (tus estilos de .card-container, .card-base, .rarity-*, etc.) ... */
-        
-        /* Estilos de Batalla (Se mantienen) */
-        /* ... (tus estilos de .ia-card, .player-card, .damage-float, etc.) ... */
 
         /* ================================================= */
         /* === DISEÑO DE VICTORIA (MODAL) REFORZADO === */
@@ -83,14 +98,14 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 5000; /* Alto Z-index para asegurar que está encima de todo */
+            z-index: 5000; 
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(5px);
             padding: 20px;
         }
 
         #battleMessageContent {
-            background: url('https://i.imgur.com/k9bT67J.png') no-repeat center center; /* Fondo de escena invernal */
+            background: url('https://i.imgur.com/k9bT67J.png') no-repeat center center; 
             background-size: cover;
             border-radius: 20px;
             padding: 20px;
@@ -105,7 +120,6 @@
             position: relative;
         }
         
-        /* Contenedor de Perfil (Barra Dorada Superior) */
         .victory-profile-bar {
             background: rgba(50, 50, 50, 0.9);
             border: 4px solid #FFD700; 
@@ -118,7 +132,30 @@
             box-shadow: 0 0 15px #FFD700; 
         }
 
-        /* TÍTULO VICTORIA */
+        .victory-profile-bar img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #D4AF37;
+        }
+
+        .victory-trophy-text {
+            text-align: left;
+            flex-grow: 1;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+        }
+
+        .victory-trophy-text span {
+            display: block;
+            font-size: 14px;
+            font-weight: normal;
+            color: #FFD700;
+        }
+
         #messageText {
             background: linear-gradient(to right, #DAA520, #FFD700, #DAA520);
             color: #B22222; 
@@ -133,7 +170,6 @@
             animation: pulse 1.5s infinite alternate;
         }
 
-        /* Botones del Modal */
         #battleMessage .modal-buttons {
             display: flex;
             justify-content: space-around;
@@ -171,9 +207,19 @@
             100% { transform: scale(1.03); box-shadow: 0 0 35px rgba(255, 215, 0, 1); }
         }
         
-        /* Estilos de cartas, glows, navegación, etc. se mantienen igual */
-        /* ... */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: gold;
+            border-radius: 50%;
+            animation: fallConfetti 2s ease-out forwards;
+        }
 
+        @keyframes fallConfetti {
+            0% { transform: translateY(-500px) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotateZ(360deg); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -214,8 +260,55 @@
                 <button class="defend-button" onclick="playerDefend()">🛡️ DEFENDER</button>
             </div>
         </div>
-        
+
+        <div id="deck" class="section-container">
+            <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">🎴 TU MAZO</h2>
+            <div class="filter-bar">
+                <select id="rarityFilter" onchange="renderDeck()">
+                    <option value="all">Todas las rarezas</option>
+                    </select>
+            </div>
+            <div class="card-grid" id="deckCards"></div>
+            <div class="text-center mt-6">
+                <button class="btn bg-purple-700" onclick="saveDeck()">💾 Guardar Mazo</button>
+            </div>
         </div>
+
+        <div id="shop" class="section-container">
+            <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">💎 TIENDA NAVIDEÑA</h2>
+            <div id="gemsOffer" class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-2xl text-center mb-8 mx-auto max-w-3xl animate-pulse shadow-xl">
+                <h3 class="text-2xl font-bold text-yellow-300">🔥 ¡OFERTA ÚNICA! 🔥</h3>
+                <p class="text-xl">¡1000 GEMAS por tiempo limitado!</p>
+                <p class="text-md text-yellow-200">Oferta termina en: <span id="shopGemsCountdown">--h --m --s</span></p>
+                <button class="btn bg-yellow-500 text-black mt-4" onclick="buyGemsPackage()">Comprar por $4.99</button>
+            </div>
+            <div class="card-grid" id="shopCards"></div>
+        </div>
+        
+        <div id="tournament" class="section-container">
+            <h2 class="text-3xl font-bold text-center mb-6 text-yellow-400">🏆 TORNEOS DISPONIBLES</h2>
+            <div id="tournamentsList" class="flex flex-col gap-8 mx-auto max-w-3xl"></div>
+        </div>
+
+        <div id="ranking" class="section-container">
+            <h2 class="text-3xl font-bold text-center mb-6">🏆 RANKING GLOBAL</h2>
+            <div id="rankingList" class="max-h-96 overflow-y-auto"></div>
+        </div>
+
+        <div id="cupMode" class="section-container">
+            <h2 class="text-3xl font-bold text-center mb-6 text-yellow-500">🏅 CONSEGUIR COPAS</h2>
+            <p class="text-center text-lg mb-6">¡Gana batallas fáciles para obtener copas y desbloquear torneos!</p>
+            <div class="text-center">
+                <button class="btn bg-yellow-600 text-lg px-8 py-4" onclick="startCupBattle()">Iniciar Batalla por Copas</button>
+            </div>
+        </div>
+        
+        <div id="achievements" class="section-container">
+            <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600">🏅 LOGROS</h2>
+            <div id="achievementsList" class="max-h-96 overflow-y-auto"></div>
+        </div>
+        
+    </div>
     
     <div id="battleMessage">
         <div id="battleMessageContent">
@@ -248,17 +341,12 @@
     
     <script>
         // === JS LÓGICA DE JUEGO Y ESTADO ===
-        // [Tus variables y constantes se mantienen]
+        // Las constantes y variables de juego se mantienen. (DEBES ASEGURARTE DE RELLENAR ESTOS ARRAYS COMPLETOS EN TU ARCHIVO)
         const DECK_MAX_SIZE = 3;
-        // ... (resto de constantes) ...
+        const ALL_CARDS = [ /* ... (Tu array ALL_CARDS COMPLETO) ... */ ];
+        const TOURNAMENTS = [ /* ... (Tu array TOURNAMENTS COMPLETO) ... */ ];
+        const ACHIEVEMENTS = [ /* ... (Tu array ACHIEVEMENTS COMPLETO) ... */ ];
         
-        // Simulación de tu data (DEBES ASEGURARTE DE RELLENAR ESTOS ARRAYS COMPLETOS EN TU ARCHIVO)
-        const ALL_CARDS = [
-            { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null, ability: null },
-            { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null, ability: 'escudo_azul' },
-            // ... (Asegúrate de que tus 22 cartas estén aquí) ...
-        ];
-
         let gameState = {
             playerName: localStorage.getItem('playerName') || 'Jugador',
             trophies: parseInt(localStorage.getItem('trophies') || '0'),
@@ -273,17 +361,27 @@
             spentDiamonds: parseInt(localStorage.getItem('spentDiamonds') || '0')
         };
         
-        // ... (Tus funciones principales se mantienen) ...
-        function updateUI() {
-            document.getElementById('playerName').textContent = gameState.playerName;
-            document.getElementById('profileAvatar').src = gameState.avatar;
-            document.getElementById('trophies').textContent = gameState.trophies;
-            document.getElementById('diamonds').textContent = gameState.diamonds;
-            document.getElementById('cups').textContent = gameState.cups;
-            // updateRanking(); 
+        // Función placeholder para las que faltan (DEBES REEMPLAZAR ESTAS POR TUS FUNCIONES REALES)
+        function applyCardUpgrades() { console.log('applyCardUpgrades executed (placeholder)'); }
+        function renderDeck() { console.log('renderDeck executed (placeholder)'); }
+        function renderShop() { console.log('renderShop executed (placeholder)'); }
+        function renderTournaments() { console.log('renderTournaments executed (placeholder)'); }
+        function updateRanking() { console.log('updateRanking executed (placeholder)'); }
+        function renderAchievements() { console.log('renderAchievements executed (placeholder)'); }
+        function renderIaCards() { console.log('renderIaCards executed (placeholder)'); }
+        function renderBattleCards() { console.log('renderBattleCards executed (placeholder)'); }
+        function resetBattle() { console.log('resetBattle executed (placeholder)'); }
+        function setupMusic() { 
+            const music = document.getElementById('backgroundMusic');
+            if (music) {
+                music.volume = 0.3; 
+                music.play().catch(error => {});
+            }
         }
-        
-        // La función showView es crucial para la estabilidad
+        function startCupBattle() { /* ... Tu lógica de startCupBattle va aquí ... */ showView('battle'); }
+        function updateCountdowns() { /* ... Tu lógica de contadores va aquí ... */ }
+
+        // La función showView es crucial para la navegación
         function showView(view) {
             ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking', 'achievements'].forEach(id => {
                 const el = document.getElementById(id);
@@ -299,18 +397,16 @@
                 navButton.classList.add('active');
             }
 
-            // Estas funciones deben estar definidas en tu código completo.
-            // if (view === 'deck') renderDeck();
-            // if (view === 'shop') renderShop();
-            // if (view === 'ranking') updateRanking();
-            // if (view === 'tournament') renderTournaments();
+            if (view === 'deck') renderDeck();
+            if (view === 'shop') renderShop();
+            if (view === 'ranking') updateRanking();
+            if (view === 'tournament') renderTournaments();
             if (view === 'battle') {
-                // Estas funciones deben estar definidas en tu código completo.
-                // renderIaCards();
-                // renderBattleCards();
+                renderIaCards();
+                renderBattleCards();
             }
-            // if (view === 'achievements') renderAchievements();
-            // updateCountdowns();
+            if (view === 'achievements') renderAchievements();
+            updateCountdowns();
         }
 
         // Función de BATALLA con el nuevo diseño
@@ -318,17 +414,14 @@
             const messageEl = document.getElementById('messageText');
             const rematchBtn = document.querySelector('#battleMessage .btn.bg-green-600');
             
-            // 1. Actualizar la barra de perfil dentro del modal
             document.getElementById('modalProfileAvatar').src = gameState.avatar;
             document.getElementById('modalPlayerName').textContent = gameState.playerName;
             document.getElementById('modalTrophies').textContent = `${gameState.trophies} trofeos`;
             
-            // 2. Estilizado y efectos
             if (message.includes("VICTORIA")) {
                 messageEl.style.background = 'linear-gradient(to right, #DAA520, #FFD700, #DAA520)';
                 messageEl.style.color = '#B22222';
                 messageEl.innerHTML = '🎉 ' + "VICTORIA" + ' 🎉';
-                // startConfettiEffect(); // Desactivado por ahora si causa problemas
                 rematchBtn.style.display = 'inline-block';
             } else {
                 messageEl.style.background = 'linear-gradient(to right, #555, #888, #555)';
@@ -337,19 +430,10 @@
                 rematchBtn.style.display = 'inline-block';
             }
             
-            // 3. Mostrar el modal
             document.getElementById('battleMessage').style.display = 'flex';
         }
         
-        function setupMusic() {
-            const music = document.getElementById('backgroundMusic');
-            if (music) {
-                music.volume = 0.3; 
-                music.play().catch(error => {
-                    // Manejo del bloqueo de autoplay
-                });
-            }
-        }
+        // ... (resto de funciones de batalla, ataque, defensa, etc. que deben estar en tu código) ...
 
         updateUI();
         showView('battle');
