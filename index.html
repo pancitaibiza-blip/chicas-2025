@@ -272,11 +272,11 @@
         .ranking-name { font-weight: bold; font-size: 18px; }
         .ranking-trophies { color: gold; }
 
-        /* NUEVO DISEÑO DE BATALLA - ARREGLO DEL PROBLEMA DE SOLAPAMIENTO */
+        /* NUEVO DISEÑO DE BATALLA - CORRECCIÓN DE SOLAPAMIENTO */
         #battle {
             display: none;
             padding: 24px;
-            padding-bottom: 150px; /* **CORRECCIÓN:** Añadimos padding inferior para evitar solapamiento con la barra fija */
+            padding-bottom: 150px; /* CORRECCIÓN: Padding inferior para evitar solapamiento con la barra fija */
             background: rgba(0, 0, 0, 0.4);
             border-radius: 20px;
             margin-top: 24px;
@@ -289,7 +289,7 @@
             text-align: center;
             margin-bottom: 24px;
         }
-        .battle-ia-cards {
+        .battle-ia-cards, .battle-player-cards {
             display: flex;
             justify-content: center;
             gap: 24px;
@@ -297,111 +297,92 @@
             margin-bottom: 40px;
             perspective: 1000px;
         }
-        .ia-card {
+        /* Estilos base para cartas de batalla */
+        .ia-card, .player-card {
+            position: relative;
             background: rgba(0, 0, 0, 0.6);
-            border: 3px solid #d42020;
             border-radius: 20px;
             padding: 20px;
             text-align: center;
             width: 180px;
-            box-shadow: 0 0 25px rgba(212, 32, 32, 0.6);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
             transition: transform 0.5s ease, border-color 0.3s ease;
             transform-style: preserve-3d;
         }
-        .ia-card.selected {
+        .ia-card { border: 3px solid #d42020; }
+        .player-card { border: 3px solid #00bcd4; }
+
+        /* MEJORA 1: EFECTO VISUAL DE CARTA SELECCIONADA */
+        .ia-card.selected, .player-card.selected {
             border-color: yellow;
+            box-shadow: 0 0 30px yellow, 0 -10px 20px rgba(255, 255, 0, 0.5);
+            transform: translateY(-10px) scale(1.05);
         }
-        .ia-card:hover {
-            transform: rotateY(10deg) rotateX(5deg);
+        
+        /* MEJORA 1: ANIMACIÓN DE ATAQUE (DESPLAZAMIENTO) */
+        .attacking-player {
+            animation: attackPlayer 0.5s ease-in-out;
         }
-        .ia-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            transition: transform 0.5s ease;
+        .attacking-ia {
+            animation: attackIA 0.5s ease-in-out;
         }
-        .ia-card:hover img {
-            transform: translateZ(50px);
+
+        @keyframes attackPlayer {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(0, -50px) scale(1.1); } /* Se acerca al centro */
+            100% { transform: translate(0, 0); }
         }
-        .ia-card .name {
+        @keyframes attackIA {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(0, 50px) scale(1.1); } /* Se acerca al centro */
+            100% { transform: translate(0, 0); }
+        }
+        
+        /* MEJORA 2: FEEDBACK DE DAÑO FLOTANTE */
+        .damage-float {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
             font-weight: bold;
-            margin: 12px 0;
-            font-size: 18px;
+            color: red;
+            text-shadow: 0 0 5px black;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 100;
+            pointer-events: none;
         }
-        .ia-card .stats {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            font-size: 16px;
-            margin: 12px 0;
+        .critical-damage {
+            color: yellow;
+            font-size: 30px;
+            text-shadow: 0 0 10px red;
         }
-        .hp-bar {
-            height: 10px;
-            background: #333;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 12px 0;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        @keyframes floatUp {
+            0% { opacity: 1; top: 50%; }
+            100% { opacity: 0; top: 0%; transform: translate(-50%, -100%); }
         }
-        .hp-fill {
-            height: 100%;
-            background: linear-gradient(to right, #d42020, #ff4545);
-            transition: width 0.5s ease;
+
+        /* Otras animaciones de batalla */
+        .attacked {
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 0 30px red;
         }
-        .hp-text {
-            font-size: 14px;
-            text-align: center;
-            margin-top: 6px;
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
         }
-        .battle-player-cards {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-            perspective: 1000px;
+        .defended {
+            animation: glow 1s ease-in-out;
+            box-shadow: 0 0 30px rgba(0, 188, 212, 1);
         }
-        .player-card {
-            background: rgba(0, 0, 0, 0.6);
-            border: 3px solid #00bcd4;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            width: 180px;
-            box-shadow: 0 0 25px rgba(0, 188, 212, 0.6);
-            transition: transform 0.5s ease, border-color 0.3s ease;
-            transform-style: preserve-3d;
-        }
-        .player-card.selected {
-            border-color: yellow;
-        }
-        .player-card:hover {
-            transform: rotateY(10deg) rotateX(5deg);
-        }
-        .player-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            transition: transform 0.5s ease;
-        }
-        .player-card:hover img {
-            transform: translateZ(50px);
-        }
-        .player-card .name {
-            font-weight: bold;
-            margin: 12px 0;
-            font-size: 18px;
-        }
-        .player-card .stats {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            font-size: 16px;
-            margin: 12px 0;
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px rgba(0, 188, 212, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(0, 188, 212, 1); }
+            100% { box-shadow: 0 0 10px rgba(0, 188, 212, 0.5); }
         }
         .attack-button {
             background: linear-gradient(to right, #d42020, #ff4545);
@@ -435,115 +416,7 @@
             transform: scale(1.05);
             box-shadow: 0 6px 18px rgba(0, 255, 255, 0.9);
         }
-        /* Fireworks */
-        .firework {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: radial-gradient(circle, yellow, orange, red);
-            border-radius: 50%;
-            animation: burst 1s ease-out forwards;
-        }
-        @keyframes burst {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-        /* Glassmorphism for sections */
-        .section-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-        /* Victory/Defeat Message */
-        #battleMessage {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 2000;
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
-        }
-        #battleMessage h2 {
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-        #battleMessage button {
-            margin-top: 20px;
-        }
-        /* Mejoras en animaciones de batalla */
-        .attacked {
-            animation: shake 0.5s ease-in-out;
-            background-color: rgba(255, 0, 0, 0.5);
-        }
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(-10px); }
-            40% { transform: translateX(10px); }
-            60% { transform: translateX(-10px); }
-            80% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
-        }
-        .defended {
-            animation: glow 1s ease-in-out;
-            box-shadow: 0 0 30px rgba(0, 188, 212, 1);
-        }
-        @keyframes glow {
-            0% { box-shadow: 0 0 10px rgba(0, 188, 212, 0.5); }
-            50% { box-shadow: 0 0 50px rgba(0, 188, 212, 1); }
-            100% { box-shadow: 0 0 10px rgba(0, 188, 212, 0.5); }
-        }
-        .attack-particle {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #ff4545, transparent);
-            border-radius: 50%;
-            animation: explode 0.8s ease-out forwards;
-        }
-        @keyframes explode {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-        /* Achievements */
-        .achievement-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            background: rgba(30, 30, 50, 0.8);
-            border-radius: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .achievement-icon {
-            font-size: 32px;
-        }
-        .achievement-info {
-            flex: 1;
-        }
-        .achievement-name {
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .achievement-description {
-            font-size: 14px;
-        }
-        .achievement-unlocked {
-            color: green;
-        }
-        .achievement-locked {
-            color: gray;
-            opacity: 0.7;
-        }
-        /* Announcement Banner */
+        /* Announcements */
         #announcementBanner {
             background: linear-gradient(to right, #ffd700, #ff8c00);
             color: #333;
@@ -558,16 +431,16 @@
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
-        /* Estilo para los botones de la barra de navegación para mejorar la legibilidad */
+        /* Navegación */
         .nav-btn {
-            background: rgba(100, 100, 100, 0.7); /* Gris oscuro semi-transparente */
+            background: rgba(100, 100, 100, 0.7);
             color: white;
             border: 2px solid #555;
             font-weight: bold;
             transition: all 0.3s ease;
-            border-radius: 12px; /* Añadido para consistencia */
-            padding: 10px 20px; /* Añadido para consistencia */
-            margin: 4px; /* Añadido para consistencia */
+            border-radius: 12px;
+            padding: 10px 20px;
+            margin: 4px;
         }
         .nav-btn:hover {
             background: rgba(200, 200, 200, 0.9);
@@ -603,7 +476,8 @@
             </div>
             <div class="battle-ia-cards" id="battleIaCards"></div>
             <div class="battle-player-cards" id="battlePlayerCards"></div>
-            <div class="text-center mt-4">  <button class="attack-button" onclick="playerAttack()">🔥 ATACAR</button>
+            <div class="text-center mt-4">
+                <button class="attack-button" onclick="playerAttack()">🔥 ATACAR</button>
                 <button class="defend-button" onclick="playerDefend()">🛡️ DEFENDER</button>
             </div>
         </div>
@@ -705,30 +579,32 @@
         const DECK_MAX_SIZE = 3;
         const MAX_LEVEL = 100;
         const UPGRADE_COST_BASE = 50;
-        // ✅ CARTAS (con nivel de mejora)
+        
+        // ✅ CARTAS (Añadida propiedad 'ability')
         const ALL_CARDS = [
-            { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
-            { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
-            { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
-            { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
-            { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
-            { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
-            { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-            { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
-            { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
-            { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
-            { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
-            { id: 14, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 300 },
-            { id: 16, name: "Serenade", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/3001/sample_59915a49be3c0b2a86030615f562d3c1.jpg?15147757", shopPrice: 700 },
-            { id: 17, name: "Cammy and Chun-Li", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590", shopPrice: 700 },
-            { id: 18, name: "Briar", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2510/sample_ea2393689e00c9127748cc78a08ef6b5.jpg?15205865", shopPrice: 700 },
-            { id: 19, name: "Torrenta", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1506/sample_b060c3279b1a9b0a7da0e19bb15fa2d5.jpg?15273482", shopPrice: 700 },
-            { id: 20, name: "Siren", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1766/sample_0e848cee467407d1da3fd407bbf6e484.jpg?15276598", shopPrice: 700 },
-            { id: 21, name: "Sabrina Carpente La Diva", rarity: "idolos", baseAtk: 120, baseDef: 80, level: 1, img: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg", shopPrice: null },
-            { id: 22, name: "Carmela", rarity: "paises", baseAtk: 100, baseDef: 60, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: 500 }
+            { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null, ability: null },
+            { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null, ability: 'escudo_azul' },
+            { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null, ability: null },
+            { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80, ability: 'escudo_azul' },
+            { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120, ability: null },
+            { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200, ability: 'golpe_critico' },
+            { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250, ability: 'golpe_critico' },
+            { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null, ability: 'golpe_critico' },
+            { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null, ability: 'escudo_azul' },
+            { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null, ability: 'golpe_critico' },
+            { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null, ability: 'escudo_azul' },
+            { id: 14, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 300, ability: null },
+            { id: 16, name: "Serenade", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/3001/sample_59915a49be3c0b2a86030615f562d3c1.jpg?15147757", shopPrice: 700, ability: null },
+            { id: 17, name: "Cammy and Chun-Li", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590", shopPrice: 700, ability: null },
+            { id: 18, name: "Briar", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2510/sample_ea2393689e00c9127748cc78a08ef6b5.jpg?15205865", shopPrice: 700, ability: null },
+            { id: 19, name: "Torrenta", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1506/sample_b060c3279b1a9b0a7da0e19bb15fa2d5.jpg?15273482", shopPrice: 700, ability: null },
+            { id: 20, name: "Siren", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1766/sample_0e848cee467407d1da3fd407bbf6e484.jpg?15276598", shopPrice: 700, ability: null },
+            { id: 21, name: "Sabrina Carpente La Diva", rarity: "idolos", baseAtk: 120, baseDef: 80, level: 1, img: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg", shopPrice: null, ability: 'golpe_critico' },
+            { id: 22, name: "Carmela", rarity: "paises", baseAtk: 100, baseDef: 60, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: 500, ability: 'golpe_critico' }
         ];
         // ✅ TORNEOS MÚLTIPLES
         const TOURNAMENTS = [
+            // ... (Tus torneos originales) ...
             {
                 id: 1,
                 name: "Torneo Navideño",
@@ -1212,9 +1088,8 @@
                 document.getElementById(id).classList.remove('active');
             });
             document.getElementById(view).classList.add('active');
-            // Quitar clase 'active' de todos los botones
+            // Quitar clase 'selected' de todos los botones y añadir al actual
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            // Añadir clase 'active' al botón de la vista actual
             document.querySelector(`.nav-btn[onclick*="showView('${view}')"]`).classList.add('active');
 
             if (view === 'deck') renderDeck();
@@ -1239,19 +1114,47 @@
         let iaDeckIds = [];
         let iaLevelMultiplier = 1;
         let currentBattleType = null; // To store if it's tournament or cup for rematch
+
+        // Añadimos el ID de la carta a la representación de batalla para poder obtener la habilidad
+        function getCardStats(cardId, isIA = false) {
+            const cardData = ALL_CARDS.find(c => c.id === cardId);
+            if (!cardData) return null;
+
+            let atk = cardData.atk;
+            let def = cardData.def;
+            let level = cardData.level;
+
+            if (isIA) {
+                // Para la IA, su ATK y DEF se multiplican por el multiplicador del torneo
+                atk = cardData.baseAtk * iaLevelMultiplier;
+                def = cardData.baseDef * iaLevelMultiplier;
+                level = level * iaLevelMultiplier; // Nivel visualmente más alto
+            }
+
+            return {
+                id: cardId, // Añadido
+                name: cardData.name,
+                atk: atk,
+                def: def,
+                hp: def,
+                maxHp: def,
+                ability: cardData.ability, // Añadido
+                level: level
+            };
+        }
+
         function renderIaCards() {
             const container = document.getElementById('battleIaCards');
             container.innerHTML = '';
             iaCards = [];
             iaDeckIds.forEach((id, index) => {
-                let card = {...ALL_CARDS.find(c => c.id === id)}; // Copy to avoid modifying original
+                let card = getCardStats(id, true);
                 if (!card) return;
-                card.atk = card.baseAtk * iaLevelMultiplier;
-                card.def = card.baseDef * iaLevelMultiplier;
+
                 const cardEl = document.createElement('div');
                 cardEl.className = 'ia-card';
                 cardEl.innerHTML = `
-                    <img src="${card.img}" alt="${card.name}">
+                    <img src="${ALL_CARDS.find(c => c.id === id).img}" alt="${card.name}">
                     <div class="name">${card.name}</div>
                     <div class="stats">
                         <span>⚔️ ${card.atk}</span>
@@ -1267,14 +1170,7 @@
                     cardEl.classList.add('selected');
                 };
                 container.appendChild(cardEl);
-                iaCards.push({
-                    name: card.name,
-                    atk: card.atk,
-                    def: card.def,
-                    hp: card.def,
-                    maxHp: card.def,
-                    element: cardEl
-                });
+                iaCards.push({...card, element: cardEl});
             });
         }
         function renderBattleCards() {
@@ -1282,12 +1178,13 @@
             container.innerHTML = '';
             playerCards = [];
             gameState.currentDeck.forEach((id, index) => {
-                const card = ALL_CARDS.find(c => c.id === id);
+                const card = getCardStats(id, false);
                 if (!card) return;
+                
                 const cardEl = document.createElement('div');
                 cardEl.className = 'player-card';
                 cardEl.innerHTML = `
-                    <img src="${card.img}" alt="${card.name}">
+                    <img src="${ALL_CARDS.find(c => c.id === id).img}" alt="${card.name}">
                     <div class="name">${card.name}</div>
                     <div class="stats">
                         <span>⚔️ ${card.atk}</span>
@@ -1298,110 +1195,158 @@
                     <div class="hp-text">HP: ${card.def}/${card.def}</div>
                 `;
                 cardEl.onclick = () => {
-                    if (card.def <= 0) return; // No seleccionar si está muerta
+                    if (card.def <= 0) return; 
                     selectedPlayerCard = playerCards[index];
                     document.querySelectorAll('.player-card').forEach(e => e.classList.remove('selected'));
                     cardEl.classList.add('selected');
                 };
                 container.appendChild(cardEl);
-                playerCards.push({
-                    name: card.name,
-                    atk: card.atk,
-                    def: card.def,
-                    hp: card.def,
-                    maxHp: card.def,
-                    element: cardEl
-                });
+                playerCards.push({...card, element: cardEl});
             });
             if (playerCards.length === 0) {
                 container.innerHTML = '<p class="text-center text-xl">¡Añade cartas a tu mazo para batallar!</p>';
             }
         }
-        function resetBattle() {
-            playerCards.forEach(card => {
-                card.hp = card.maxHp;
-                card.element.classList.remove('selected');
-            });
-            iaCards.forEach(card => {
-                card.hp = card.maxHp;
-                card.element.classList.remove('selected');
-            });
-            updateHpBars();
-            selectedPlayerCard = null;
-            selectedTargetCard = null;
+        
+        function showDamage(element, damage, isCritical = false) {
+            const damageEl = document.createElement('div');
+            damageEl.className = 'damage-float' + (isCritical ? ' critical-damage' : '');
+            damageEl.textContent = `-${Math.floor(damage)}`;
+            
+            // Posicionar el daño sobre el centro de la carta
+            const cardRect = element.getBoundingClientRect();
+            const battleRect = document.getElementById('battle').getBoundingClientRect();
+            
+            damageEl.style.left = `${cardRect.left - battleRect.left + cardRect.width / 2}px`;
+            damageEl.style.top = `${cardRect.top - battleRect.top + cardRect.height / 3}px`;
+
+            document.getElementById('battle').appendChild(damageEl);
+            setTimeout(() => damageEl.remove(), 1000);
         }
-        function updateHpBars() {
-            iaCards.forEach(card => {
-                card.element.querySelector('.hp-fill').style.width = `${(card.hp / card.maxHp) * 100}%`;
-                card.element.querySelector('.hp-text').textContent = `HP: ${card.hp}/${card.maxHp}`;
-            });
-            playerCards.forEach(card => {
-                card.element.querySelector('.hp-fill').style.width = `${(card.hp / card.maxHp) * 100}%`;
-                card.element.querySelector('.hp-text').textContent = `HP: ${card.hp}/${card.maxHp}`;
-            });
+
+        // --- LÓGICA DE BATALLA MODIFICADA CON HABILIDADES ---
+        
+        function calculateDamage(attacker, defender) {
+            let baseDamage = attacker.atk;
+            let finalDefense = defender.def;
+            let isCritical = false;
+
+            // Habilidad 1: Golpe Crítico (Legendaria, Ídolos, Países)
+            if (attacker.ability === 'golpe_critico' && Math.random() < 0.15) { // 15% de probabilidad
+                finalDefense = 0;
+                isCritical = true;
+                console.log(`${attacker.name} usó Golpe Crítico!`);
+            }
+            
+            // Habilidad 2: Escudo Azul (Rara, Tournament)
+            if (defender.ability === 'escudo_azul' && !isCritical) { 
+                finalDefense *= 1.25; // 25% más de defensa
+                console.log(`${defender.name} usó Escudo Azul!`);
+            }
+            
+            let finalDamage = Math.max(baseDamage - finalDefense, 1); // Daño mínimo de 1
+
+            return { damage: finalDamage, isCritical };
         }
+
         function playerAttack() {
-            if (!selectedPlayerCard) {
-                alert("Selecciona una carta tuya primero!");
+            if (!selectedPlayerCard || selectedPlayerCard.hp <= 0) {
+                alert("Selecciona una carta tuya viva!");
                 return;
             }
-            if (selectedPlayerCard.hp <= 0) {
-                alert("Esta carta está derrotada! Elige otra.");
+            if (!selectedTargetCard || selectedTargetCard.hp <= 0) {
+                alert("Selecciona una carta enemiga viva para atacar!");
                 return;
             }
-            if (!selectedTargetCard) {
-                alert("Selecciona una carta enemiga para atacar!");
-                return;
-            }
-            if (selectedTargetCard.hp <= 0) {
-                alert("Esta carta enemiga ya está derrotada! Elige otra.");
-                return;
-            }
-            const damage = Math.max(selectedPlayerCard.atk - selectedTargetCard.def, 0);
-            selectedTargetCard.hp -= damage;
-            if (selectedTargetCard.hp <= 0) {
-                selectedTargetCard.hp = 0;
-            }
-            animateAttack(selectedPlayerCard.element, selectedTargetCard.element);
-            updateHpBars();
-            checkBattleEnd();
-            if (!battleEnded) {
-                setTimeout(iaAttack, 1000); // Delay for animation
-            }
+
+            const { damage, isCritical } = calculateDamage(selectedPlayerCard, selectedTargetCard);
+
+            // 1. Animación de ataque (Desplazamiento)
+            selectedPlayerCard.element.classList.add('attacking-player');
+            
+            setTimeout(() => {
+                // 2. Aplicar Daño
+                selectedTargetCard.hp -= damage;
+                if (selectedTargetCard.hp <= 0) {
+                    selectedTargetCard.hp = 0;
+                }
+                
+                // 3. Feedback de Daño
+                showDamage(selectedTargetCard.element, damage, isCritical);
+
+                // 4. Feedback Visual en el objetivo (Shake)
+                selectedTargetCard.element.classList.add('attacked');
+                setTimeout(() => selectedTargetCard.element.classList.remove('attacked'), 500);
+
+                updateHpBars();
+                selectedPlayerCard.element.classList.remove('attacking-player'); // Reinicia la posición
+
+                checkBattleEnd();
+                if (!battleEnded) {
+                    setTimeout(iaAttack, 1000); // IA ataca después del jugador y la animación
+                }
+            }, 500); // Medio segundo para la animación de desplazamiento
         }
+
         function iaAttack() {
             const attackerIaCard = getRandomAliveIaCard();
-            if (!attackerIaCard) return;
             const targetPlayerCard = getRandomAlivePlayerCard();
-            if (!targetPlayerCard) return;
-            const damage = Math.max(attackerIaCard.atk - targetPlayerCard.def, 0);
-            targetPlayerCard.hp -= damage;
-            if (targetPlayerCard.hp <= 0) {
-                targetPlayerCard.hp = 0;
-            }
-            animateAttack(attackerIaCard.element, targetPlayerCard.element);
-            updateHpBars();
-            checkBattleEnd();
-        }
-        function playerDefend() {
-            if (!selectedPlayerCard) {
-                alert("Selecciona una carta tuya primero!");
-                return;
-            }
-            if (selectedPlayerCard.hp <= 0) {
-                alert("Esta carta está derrotada! Elige otra.");
-                return;
-            }
-            const originalDef = selectedPlayerCard.def;
-            selectedPlayerCard.def *= 2;
-            animateDefend(selectedPlayerCard.element);
+
+            if (!attackerIaCard || !targetPlayerCard) return;
+
+            const { damage, isCritical } = calculateDamage(attackerIaCard, targetPlayerCard);
+            
+            // 1. Animación de ataque (Desplazamiento)
+            attackerIaCard.element.classList.add('attacking-ia');
+
             setTimeout(() => {
-                iaAttack();
+                // 2. Aplicar Daño
+                targetPlayerCard.hp -= damage;
+                if (targetPlayerCard.hp <= 0) {
+                    targetPlayerCard.hp = 0;
+                }
+                
+                // 3. Feedback de Daño
+                showDamage(targetPlayerCard.element, damage, isCritical);
+
+                // 4. Feedback Visual en el objetivo (Shake)
+                targetPlayerCard.element.classList.add('attacked');
+                setTimeout(() => targetPlayerCard.element.classList.remove('attacked'), 500);
+
+                updateHpBars();
+                attackerIaCard.element.classList.remove('attacking-ia'); // Reinicia la posición
+
+                checkBattleEnd();
+            }, 500);
+        }
+
+        function playerDefend() {
+            if (!selectedPlayerCard || selectedPlayerCard.hp <= 0) {
+                alert("Selecciona una carta tuya viva para defender!");
+                return;
+            }
+            
+            // 1. Animación de Defensa
+            animateDefend(selectedPlayerCard.element);
+            
+            // Aumentar temporalmente la defensa para la IA, luego volver a la normalidad
+            const originalDef = selectedPlayerCard.def;
+            selectedPlayerCard.def *= 2; // Doble de defensa al defender
+            
+            console.log(`${selectedPlayerCard.name} está defendiendo (DEF x2 temporalmente)!`);
+
+            // La IA ataca mientras el jugador está defendiendo
+            setTimeout(() => {
+                iaAttack(); // La IA ataca
+
+                // Después del ataque de la IA, revertir la defensa
                 selectedPlayerCard.def = originalDef;
                 updateHpBars();
                 checkBattleEnd();
+
             }, 1000);
         }
+        
         let battleEnded = false;
         function checkBattleEnd() {
             if (iaCards.every(c => c.hp <= 0)) {
@@ -1498,19 +1443,7 @@
         }
         // Nuevas funciones para animaciones
         function animateAttack(attackerEl, targetEl) {
-            // Animación de shake y flash en el objetivo
-            targetEl.classList.add('attacked');
-            setTimeout(() => targetEl.classList.remove('attacked'), 500);
-            
-            // Partículas de ataque
-            for (let i = 0; i < 3; i++) { /* Reducido de 5 a 3 */
-                const particle = document.createElement('div');
-                particle.className = 'attack-particle';
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                targetEl.appendChild(particle);
-                setTimeout(() => particle.remove(), 800);
-            }
+            // Ya no se usa directamente, la animación de shake se activa en playerAttack/iaAttack
         }
         function animateDefend(targetEl) {
             targetEl.classList.add('defended');
