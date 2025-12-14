@@ -552,7 +552,7 @@
     <div id="battleMessage">
         <h2 id="messageText"></h2>
         <button class="btn bg-green-600" onclick="rematch()">REVANCHA</button>
-        <button class="btn bg-blue-600" onclick="closeBattleMessage()">Cerrar</button>
+        <button class="btn bg-blue-600" onclick="closeBattleMessage()">SALIR</button>
     </div>
     <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-3 z-10 flex-wrap px-4 py-4 bg-black/50 backdrop-blur-md rounded-t-2xl shadow-lg">
         <button class="nav-btn text-sm px-6 py-3" onclick="showView('battle')">Batalla</button>
@@ -982,7 +982,7 @@
                 rankings.push(playerData);
             }
             // Ordenar por trofeos
-            rankings.sort((a, b) => b.trophies - a.trophies);
+            rankings.sort((a, b) => b.trophies - a.trothies);
             rankings = rankings.slice(0, 10); // Top 10
             localStorage.setItem('rankings', JSON.stringify(rankings));
         }
@@ -1073,7 +1073,7 @@
             showView('battle');
         }
 
-        // ✅ INICIAR BATALLA POR COPAS (CORREGIDO)
+        // ✅ INICIAR BATALLA POR COPAS
         function startCupBattle() {
             // 1. Establecer el estado del modo de batalla
             isCupBattle = true;
@@ -1082,11 +1082,11 @@
             iaDeckIds = [0,1,2]; // Mazo simple para batallas de copa
             iaLevelMultiplier = 1; // IA con nivel base
 
-            // 2. Renderizar las cartas con las nuevas configuraciones (esto inicializa iaCards y playerCards)
+            // 2. Renderizar las cartas con las nuevas configuraciones
             renderIaCards();
             renderBattleCards();
             
-            // 3. Resetear las HP y seleccionar las cartas por defecto (si es necesario)
+            // 3. Resetear las HP y seleccionar las cartas por defecto
             resetBattle(); 
 
             // 4. Mostrar la vista de batalla
@@ -1146,7 +1146,7 @@
                 // Para la IA, su ATK y DEF se multiplican por el multiplicador del torneo
                 atk = cardData.baseAtk * iaLevelMultiplier;
                 def = cardData.baseDef * iaLevelMultiplier;
-                level = level * iaLevelMultiplier; // Nivel visualmente más alto
+                level = cardData.level * iaLevelMultiplier; // Nivel visualmente más alto
             }
 
             return {
@@ -1161,7 +1161,7 @@
             };
         }
         
-        // CORREGIDO: Función de actualización de barras de HP para reflejar el estado actual
+        // Función de actualización de barras de HP para reflejar el estado actual
         function updateHpBars() {
             // Actualizar cartas del jugador
             playerCards.forEach(card => {
@@ -1403,7 +1403,8 @@
         function checkBattleEnd() {
             if (iaCards.every(c => c.hp <= 0)) {
                 battleEnded = true;
-                showBattleMessage("¡FELICIDADES! HAS GANADO");
+                // CAMBIO: El mensaje es explícito en Victoria
+                showBattleMessage("🎉 VICTORIA 🎉"); 
                 if (isTournament) {
                     const tournament = TOURNAMENTS.find(t => t.id === currentTournamentId);
                     tournament.cards.forEach(id => {
@@ -1427,7 +1428,7 @@
                 renderTournaments();
             } else if (playerCards.every(c => c.hp <= 0)) {
                 battleEnded = true;
-                showBattleMessage("HAS PERDIDO LA BATALLA");
+                showBattleMessage("❌ HAS PERDIDO LA BATALLA ❌");
             }
         }
         function getRandomAliveIaCard() {
@@ -1444,27 +1445,37 @@
             document.getElementById('messageText').textContent = message;
             document.getElementById('battleMessage').style.display = 'block';
         }
+
+        // CAMBIO: Lógica para SALIR
         function closeBattleMessage() {
             document.getElementById('battleMessage').style.display = 'none';
             battleEnded = false;
-            // Se asume que el usuario quiere volver a la pantalla principal después de cerrar el mensaje
+            
+            // Limpia el estado de batalla para que la próxima vez sea una batalla nueva
+            isTournament = false;
+            isCupBattle = false;
+            currentTournamentId = null;
+
+            // Vuelve a la vista principal de batalla, donde se puede iniciar un nuevo modo.
             showView('battle'); 
         }
+
         function rematch() {
             document.getElementById('battleMessage').style.display = 'none';
             battleEnded = false;
             
             // Volver a iniciar el modo en el que se estaba
-            if (isTournament) {
+            if (isTournament && currentTournamentId) {
                 startSpecificTournament(currentTournamentId);
             } else if (isCupBattle) {
                 startCupBattle();
             } else {
+                // Si no hay modo activo, simplemente resetea la batalla actual (solo si se está en la vista de batalla)
                 resetBattle();
             }
         }
         
-        // CORREGIDO: Función de reseteo para asegurar que las referencias se limpien.
+        // Función de reseteo para asegurar que las referencias se limpien.
         function resetBattle() {
             playerCards.forEach(card => {
                 card.hp = card.maxHp;
