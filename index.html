@@ -111,11 +111,20 @@
         .rarity-epic .card-glow { background: #9c27b0; }
         .rarity-legendary .card-glow { background: #d4a017; }
         .rarity-idolos .card-glow { background: linear-gradient(45deg, #ff9800, #ff4081, #ffc107); opacity: 0.8; filter: blur(15px); animation: glowPulse 2s infinite alternate; }
+        .rarity-animated .card-glow { background: linear-gradient(45deg, #ff1493, #ff69b4, #ffc0cb); opacity: 0.9; filter: blur(18px); animation: glowPulseAnimated 1.5s infinite alternate; }
         @keyframes glowPulse {
             0% { transform: scale(1); opacity: 0.6; }
             100% { transform: scale(1.1); opacity: 1; }
         }
-        .rarity-idolos .card-base { box-shadow: 0 0 20px #ff9800, 0 0 30px #ff4081; }
+        @keyframes glowPulseAnimated {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+        .rarity-animated .card-base { box-shadow: 0 0 25px #ff1493, 0 0 35px #ff69b4; animation: bounceSlight 2s infinite; }
+        @keyframes bounceSlight {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
         .rarity-tournament .card-glow { background: #f44336; }
         .rarity-paises .card-glow { background: linear-gradient(45deg, #ff0000, #ffffff, #0000ff); opacity: 0.8; filter: blur(15px); animation: glowPulse 2s infinite alternate; }
         .rarity-paises .card-base { box-shadow: 0 0 20px #ff0000, 0 0 30px #0000ff; }
@@ -436,7 +445,7 @@
         </div>
         <div id="deck" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">🎴 TU MAZO</h2>
-            <div id="collectionCounter">Cartas coleccionadas: <span id="collectedCount">0</span> / 36</div>
+            <div id="collectionCounter">Cartas coleccionadas: <span id="collectedCount">0</span> / 41</div>
             <div class="filter-bar">
                 <select id="rarityFilter" onchange="renderDeck()">
                     <option value="all">Todas las rarezas</option>
@@ -447,6 +456,7 @@
                     <option value="idolos">Ídolos</option>
                     <option value="tournament">Torneo</option>
                     <option value="paises">Países</option>
+                    <option value="animated">Animados</option>
                 </select>
             </div>
             <div class="card-grid" id="deckCards"></div>
@@ -475,6 +485,13 @@
                 <div class="chest-container" onclick="openChest('legendary')">
                     <div class="chest chest-legendary">📦</div>
                     <p class="text-center mt-4 text-xl font-bold">Cofre Legendario<br><span class="text-yellow-300">800 gemas</span><br><small>5-8 cartas (épicas+)</small></p>
+                </div>
+            </div>
+            <h3 class="text-3xl font-bold text-center mb-6 text-pink-400">🔥 PACKS ESPECIALES</h3>
+            <div class="chests-grid">
+                <div class="chest-container" onclick="buyAnimatedPack()">
+                    <div class="chest" style="background: linear-gradient(#ff1493, #ff69b4); box-shadow: 0 0 40px #ff1493;">🍆</div>
+                    <p class="text-center mt-4 text-xl font-bold">Pack GIFS ANIMADOS<br><span class="text-yellow-300">3000 gemas</span><br><small>3 Pokémon follados animados</small></p>
                 </div>
             </div>
             <div class="card-grid" id="shopCards"></div>
@@ -571,7 +588,10 @@
             { id: 35, name: "DemonMika", rarity: "idolos", baseAtk: 145, baseDef: 85, level: 1, img: "https://s206.erome.com/3439/knzX8RV6/qi2fnmtw.jpeg?v=1730822823", shopPrice: null },
             { id: 36, name: "Alejandra", rarity: "idolos", baseAtk: 150, baseDef: 100, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: null },
             { id: 37, name: "Muñeca Simpsons", rarity: "legendary", baseAtk: 115, baseDef: 75, level: 1, img: "https://wimg.rule34.xxx/images/1370/e31706328b6ffa7e207dbb2df991f116.gif", shopPrice: 1500 },
-            { id: 38, name: "Princesa Peach", rarity: "legendary", baseAtk: 130, baseDef: 85, level: 1, img: "https://wimg.rule34.xxx/images/4630/43c3385fc160e3d1c5e2927b693cbd62.gif", shopPrice: 2000 }
+            { id: 38, name: "Princesa Peach", rarity: "legendary", baseAtk: 130, baseDef: 85, level: 1, img: "https://i.imgur.com/Z4j0bVv.gif", shopPrice: 2000 },
+            { id: 39, name: "Lopunny Thicc Rider", rarity: "animated", baseAtk: 140, baseDef: 90, level: 1, img: "https://catbox.moe/c/3x5j1r.gif", shopPrice: null },
+            { id: 40, name: "Gardevoir Doggy Thrust", rarity: "animated", baseAtk: 145, baseDef: 85, level: 1, img: "https://catbox.moe/c/8f8fLm.gif", shopPrice: null },
+            { id: 41, name: "Glaceon Paizuri Bounce", rarity: "animated", baseAtk: 135, baseDef: 95, level: 1, img: "https://catbox.moe/c/3d3dMm.gif", shopPrice: null }
         ];
         const TOURNAMENTS = [
             { id: 1, name: "Torneo Navideño", cost: 1, trophies: 500, diamonds: 200, cards: [7, 11, 12, 13], description: "¡Regalo navideño! Gana Francine Smith y cartas de torneo.", image: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", iaDeck: [0,1,2] },
@@ -672,7 +692,7 @@
             } else if (type === 'legendary') {
                 price = 800;
                 minCards = 5; maxCards = 8;
-                pool = ALL_CARDS.filter(c => ['epic', 'legendary', 'idolos', 'tournament', 'paises'].includes(c.rarity));
+                pool = ALL_CARDS.filter(c => ['epic', 'legendary', 'idolos', 'tournament', 'paises', 'animated'].includes(c.rarity));
             }
             if (gameState.diamonds < price) {
                 alert("¡Gemas insuficientes para abrir este cofre!");
@@ -697,6 +717,25 @@
             wonCards.forEach(c => message += `- ${c.name} (${c.rarity})\n`);
             alert(message);
             wonCards.forEach(card => showNewCard(card));
+        }
+        function buyAnimatedPack() {
+            if (gameState.diamonds < 3000) {
+                alert("¡Gemas insuficientes para el Pack GIFS ANIMADOS!");
+                return;
+            }
+            if (confirm("¿Comprar Pack GIFS ANIMADOS por 3000 gemas? Obtendrás 3 cartas Pokémon folladas animadas exclusivas 🔥🍆")) {
+                gameState.diamonds -= 3000;
+                gameState.spentDiamonds += 3000;
+                [39,40,41].forEach(id => {
+                    if (!gameState.ownedCardIds.includes(id)) gameState.ownedCardIds.push(id);
+                });
+                saveGame();
+                updateUI();
+                renderShop();
+                renderDeck();
+                alert("¡Pack comprado! 3 Pokémon animados follados en tu colección 🍆💦");
+                [39,40,41].forEach(id => showNewCard(ALL_CARDS.find(c => c.id === id)));
+            }
         }
         function upgradeCard(cardId) {
             const card = ALL_CARDS.find(c => c.id === cardId);
@@ -738,7 +777,7 @@
         function showCardModal(card) {
             document.getElementById('cardModalImage').src = card.img;
             document.getElementById('cardModalName').textContent = card.name;
-            const rarityLabels = { common: "Común", rare: "Rara", epic: "Épica", legendary: "Legendaria", idolos: "Ídolos", tournament: "Torneo", paises: "Países" };
+            const rarityLabels = { common: "Común", rare: "Rara", epic: "Épica", legendary: "Legendaria", idolos: "Ídolos", tournament: "Torneo", paises: "Países", animated: "Animados" };
             document.getElementById('cardModalRarity').textContent = rarityLabels[card.rarity] || card.rarity;
             document.getElementById('cardModalLevel').textContent = `Nivel: ${card.level}`;
             document.getElementById('cardModalStats').textContent = `⚔️ ${card.atk} 🛡️ ${card.def}`;
