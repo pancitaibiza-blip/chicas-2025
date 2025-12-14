@@ -451,6 +451,11 @@
     </style>
 </head>
 <body>
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="http://googleusercontent.com/file_content/0" type="audio/mp3">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
     <div id="offerBanner">
         🎁 ¡OFERTA POR TIEMPO LIMITADO! 💎 ¡1000 GEMAS POR SOLO HOY!
         <span id="gemsCountdown">--h --m --s</span>
@@ -982,7 +987,7 @@
                 rankings.push(playerData);
             }
             // Ordenar por trofeos
-            rankings.sort((a, b) => b.trophies - a.trothies);
+            rankings.sort((a, b) => b.trophies - a.trophies);
             rankings = rankings.slice(0, 10); // Top 10
             localStorage.setItem('rankings', JSON.stringify(rankings));
         }
@@ -1403,7 +1408,7 @@
         function checkBattleEnd() {
             if (iaCards.every(c => c.hp <= 0)) {
                 battleEnded = true;
-                // CAMBIO: El mensaje es explícito en Victoria
+                // CAMBIO: Mensaje de victoria
                 showBattleMessage("🎉 VICTORIA 🎉"); 
                 if (isTournament) {
                     const tournament = TOURNAMENTS.find(t => t.id === currentTournamentId);
@@ -1446,7 +1451,7 @@
             document.getElementById('battleMessage').style.display = 'block';
         }
 
-        // CAMBIO: Lógica para SALIR
+        // CAMBIO: Lógica para SALIR (limpia el estado de batalla)
         function closeBattleMessage() {
             document.getElementById('battleMessage').style.display = 'none';
             battleEnded = false;
@@ -1456,7 +1461,7 @@
             isCupBattle = false;
             currentTournamentId = null;
 
-            // Vuelve a la vista principal de batalla, donde se puede iniciar un nuevo modo.
+            // Vuelve a la vista principal de batalla.
             showView('battle'); 
         }
 
@@ -1570,10 +1575,27 @@
                 container.appendChild(item);
             });
         }
+
+        // ✅ LÓGICA DE MÚSICA DE FONDO Y REPRODUCCIÓN AUTOMÁTICA
+        function setupMusic() {
+            const music = document.getElementById('backgroundMusic');
+            if (music) {
+                // Establece el volumen a 30%
+                music.volume = 0.3; 
+                
+                // Intenta iniciar la reproducción. Esto puede fallar si el navegador lo bloquea.
+                music.play().catch(error => {
+                    console.log("Autoplay bloqueado. La música se iniciará con la primera interacción del usuario.");
+                });
+            }
+        }
+
+        // Se llama setupMusic al inicio
         updateUI();
         showView('battle');
         createSnowflakes(); // Llama a la función para generar la nieve
         checkAchievements(); // Verificar logros al cargar
+        setupMusic(); // Inicia la lógica de música
     </script>
 </body>
 </html>
