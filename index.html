@@ -465,7 +465,7 @@
 <body>
     <div id="exclusiveBanner">
         🔥 ¡CARTA EXCLUSIVA POR 24 HORAS! 🔥 BUSTING THE FUCK OUT - LA MÁS PODEROSA JAMÁS VISTA
-        <span id="exclusiveCountdown">--h --m --s</span>
+        <span id="exclusiveCountdown">1h 0m 0s</span>
     </div>
     <div id="offerBanner">
         🎁 ¡OFERTA POR TIEMPO LIMITADO! 💎 ¡1000 GEMAS POR SOLO HOY!
@@ -499,7 +499,7 @@
         </div>
         <div id="deck" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">🎴 TU MAZO</h2>
-            <div id="collectionCounter">Cartas coleccionadas: <span id="collectedCount">0</span> / 51</div>
+            <div id="collectionCounter">Cartas coleccionadas: <span id="collectedCount">0</span> / 62</div>
             <div class="filter-bar">
                 <select id="rarityFilter" onchange="renderDeck()">
                     <option value="all">Todas las rarezas</option>
@@ -659,7 +659,17 @@
             { id: 47, name: "Keqing Thicc Ride", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116288/hentai-scaled.webp", shopPrice: 2500 },
             { id: 48, name: "Leona Gym Thrust", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116388/tmr-scaled.webp", shopPrice: 2500 },
             { id: 49, name: "Strange Hero Facesit", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116364/strangeh-scaled.webp", shopPrice: 2500 },
-            { id: 50, name: "Busting The Fuck Out", rarity: "animated", baseAtk: 5000, baseDef: 2500, level: 1, img: "https://cdn2.hentaigifz.com/115480/busting-the-fuck-out-scaled.webp", shopPrice: 5000 }
+            { id: 50, name: "Busting The Fuck Out", rarity: "animated", baseAtk: 5000, baseDef: 2500, level: 1, img: "https://cdn2.hentaigifz.com/115480/busting-the-fuck-out-scaled.webp", shopPrice: 5000 },
+            { id: 51, name: "Motoko Kusanagi Ride", rarity: "animated", baseAtk: 1600, baseDef: 1100, level: 1, img: "https://cdn2.hentaigifz.com/114768/fantasy-fuck-scaled.webp", shopPrice: 2800 },
+            { id: 52, name: "Nezuko Asshole Fuck", rarity: "animated", baseAtk: 1700, baseDef: 1050, level: 1, img: "https://cdn2.hentaigifz.com/114338/id-fuck-the-hell-out-of-nezukos-asshole-scaled.webp", shopPrice: 2900 },
+            { id: 53, name: "Eirin Yagokoro Dildo", rarity: "animated", baseAtk: 1550, baseDef: 1150, level: 1, img: "https://cdn2.hentaigifz.com/115486/bucketheadero-eirin-yagokoro-touhou-scaled.webp", shopPrice: 2700 },
+            { id: 54, name: "Jessie Ass Throw", rarity: "animated", baseAtk: 1650, baseDef: 1200, level: 1, img: "https://cdn2.hentaigifz.com/115328/jessie-throwing-that-ass-way-out-scaled.webp", shopPrice: 2850 },
+            { id: 55, name: "Raven Big Ass", rarity: "animated", baseAtk: 1800, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/115298/raven-big-ass-scaled.webp", shopPrice: 3000 },
+            { id: 56, name: "Strapon Futa", rarity: "animated", baseAtk: 1750, baseDef: 1080, level: 1, img: "https://cdn2.hentaigifz.com/115150/strapon-scaled.webp", shopPrice: 2950 },
+            { id: 57, name: "Bubblegum Tit Shake", rarity: "animated", baseAtk: 1500, baseDef: 1300, level: 1, img: "https://cdn2.hentaigifz.com/115728/by-dabbledraws-bubblegum-shakes-her-huge-tits-scaled.webp", shopPrice: 2600 },
+            { id: 58, name: "Vinyl Luna Smirk", rarity: "animated", baseAtk: 1680, baseDef: 1120, level: 1, img: "https://cdn2.hentaigifz.com/115614/smirk-scaled.webp", shopPrice: 2880 },
+            { id: 59, name: "Best Nelson Ride", rarity: "animated", baseAtk: 1900, baseDef: 950, level: 1, img: "https://cdn2.hentaigifz.com/115978/best-nelson-scaled.webp", shopPrice: 3100 },
+            { id: 60, name: "Dragon Momma Slut", rarity: "animated", baseAtk: 2000, baseDef: 900, level: 1, img: "https://cdn2.hentaigifz.com/116346/dragon-momma-slut-chelodoy-scaled.webp", shopPrice: 3200 }
         ];
         const TOURNAMENTS = [
             { id: 1, name: "Torneo Navideño", cost: 1, trophies: 500, diamonds: 200, cards: [7, 11, 12, 13], description: "¡Regalo navideño! Gana Francine Smith y cartas de torneo.", image: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", iaDeck: [0,1,2] },
@@ -689,7 +699,7 @@
             { id: 14, name: "Exclusivo Cazador", description: "Compra la carta exclusiva 'Busting The Fuck Out'", icon: "⏰" },
             { id: 15, name: "Mazo Thicc Máximo", description: "Llena tu mazo solo con cartas Animadas o Ídolos", icon: "🎴" },
             { id: 16, name: "Spendthrift Caliente", description: "Gasta 10,000 gemas en packs especiales", icon: "🛒" },
-            { id: 17, name: "Coleccionista Supremo", description: "Colecciona TODAS las 51 cartas", icon: "🎉" },
+            { id: 17, name: "Coleccionista Supremo", description: "Colecciona TODAS las 62 cartas", icon: "🎉" },
             { id: 18, name: "Bouncy Bouncy Thicc", description: "Gana 5 batallas seguidas solo con cartas 'thicc' (Épicas+)", icon: "🍑" },
             { id: 19, name: "Creampie Collector", description: "Sube 3 cartas Animadas al nivel 10 (llénalas de upgrades 💦)", icon: "🍆💦" },
             { id: 20, name: "Tentacle Tease", description: "Abre 10 cofres Legendarios", icon: "🐙" },
