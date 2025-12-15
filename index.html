@@ -613,14 +613,14 @@
         const MAX_LEVEL = 100;
         const UPGRADE_COST_BASE = 50;
         const ALL_CARDS = [
-            { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
-            { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
-            { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
+            { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: 50 }, // PRECIO AÑADIDO
+            { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: 100 }, // PRECIO AÑADIDO
+            { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: 50 }, // PRECIO AÑADIDO
             { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
             { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
             { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
             { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-            { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
+            { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: 1000 }, // PRECIO AÑADIDO
             { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
             { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, level: 1, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
             { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
@@ -630,7 +630,7 @@
             { id: 18, name: "Briar", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2510/sample_ea2393689e00c9127748cc78a08ef6b5.jpg?15205865", shopPrice: 700 },
             { id: 19, name: "Torrenta", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1506/sample_b060c3279b1a9b0a7da0e19bb15fa2d5.jpg?15273482", shopPrice: 700 },
             { id: 20, name: "Siren", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1766/sample_0e848cee467407d1da3fd407bbf6e484.jpg?15276598", shopPrice: 700 },
-            { id: 21, name: "Sabrina Carpente La Diva", rarity: "idolos", baseAtk: 120, baseDef: 80, level: 1, img: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg", shopPrice: null },
+            { id: 21, name: "Sabrina Carpente La Diva", rarity: "idolos", baseAtk: 120, baseDef: 80, level: 1, img: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg", shopPrice: 2000 }, // PRECIO AÑADIDO
             { id: 22, name: "Carmela", rarity: "paises", baseAtk: 100, baseDef: 60, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: 500 },
             { id: 23, name: "Amy Wong Thicc", rarity: "epic", baseAtk: 88, baseDef: 55, level: 1, img: "https://rule34.xxx//samples/2701/sample_eae1882d43a188cdcbb129ca7ad3e12e.jpg?14901475", shopPrice: 400 },
             { id: 24, name: "Neon Strike", rarity: "epic", baseAtk: 90, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/902/sample_2e1d3d88982219e96d1bb68453e57b27.jpg?14884672", shopPrice: 450 },
@@ -643,9 +643,9 @@
             { id: 31, name: "D.Va & Uraraka", rarity: "epic", baseAtk: 93, baseDef: 52, level: 1, img: "https://rule34.xxx//samples/2122/sample_cadb0b375ac7de3414d0db39d552e7d4.jpg?14666699", shopPrice: 800 },
             { id: 32, name: "Laguna", rarity: "epic", baseAtk: 89, baseDef: 55, level: 1, img: "https://rule34.xxx//samples/842/sample_727d3f80cc43d197f3977fb5c9dfdc22.jpg?14662037", shopPrice: 850 },
             { id: 33, name: "Facesit Dominatrix", rarity: "epic", baseAtk: 94, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2314/sample_6bdcff4bfa032aed2751a5370a24cf05.jpg?14637455", shopPrice: 900 },
-            { id: 34, name: "LolaLolita", rarity: "idolos", baseAtk: 140, baseDef: 90, level: 1, img: "https://s204.erome.com/2280/sMLLJHdM/kYJtDcuQ.jpeg?v=1709700685", shopPrice: null },
-            { id: 35, name: "DemonMika", rarity: "idolos", baseAtk: 145, baseDef: 85, level: 1, img: "https://s206.erome.com/3439/knzX8RV6/qi2fnmtw.jpeg?v=1730822823", shopPrice: null },
-            { id: 36, name: "Alejandra", rarity: "idolos", baseAtk: 150, baseDef: 100, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: null },
+            { id: 34, name: "LolaLolita", rarity: "idolos", baseAtk: 140, baseDef: 90, level: 1, img: "https://s204.erome.com/2280/sMLLJHdM/kYJtDcuQ.jpeg?v=1709700685", shopPrice: 2500 }, // PRECIO AÑADIDO
+            { id: 35, name: "DemonMika", rarity: "idolos", baseAtk: 145, baseDef: 85, level: 1, img: "https://s206.erome.com/3439/knzX8RV6/qi2fnmtw.jpeg?v=1730822823", shopPrice: 2800 }, // PRECIO AÑADIDO
+            { id: 36, name: "Alejandra", rarity: "idolos", baseAtk: 150, baseDef: 100, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: 3000 }, // PRECIO AÑADIDO
             { id: 37, name: "Muñeca Simpsons", rarity: "legendary", baseAtk: 115, baseDef: 75, level: 1, img: "https://wimg.rule34.xxx/images/1370/e31706328b6ffa7e207dbb2df991f116.gif", shopPrice: 1500 },
             { id: 38, name: "Princesa Peach", rarity: "legendary", baseAtk: 130, baseDef: 85, level: 1, img: "https://files.catbox.moe/0k9j2p.gif", shopPrice: 2000 },
             { id: 39, name: "Braixen Thicc Rider", rarity: "animated", baseAtk: 140, baseDef: 90, level: 1, img: "https://wimg.rule34.xxx/images/1620/752edf7523feb1cfac185fd1cf2a0785.gif", shopPrice: null },
@@ -669,7 +669,16 @@
             { id: 57, name: "Bubblegum Tit Shake", rarity: "animated", baseAtk: 1500, baseDef: 1300, level: 1, img: "https://cdn2.hentaigifz.com/115728/by-dabbledraws-bubblegum-shakes-her-huge-tits-scaled.webp", shopPrice: 2600 },
             { id: 58, name: "Vinyl Luna Smirk", rarity: "animated", baseAtk: 1680, baseDef: 1120, level: 1, img: "https://cdn2.hentaigifz.com/115614/smirk-scaled.webp", shopPrice: 2880 },
             { id: 59, name: "Best Nelson Ride", rarity: "animated", baseAtk: 1900, baseDef: 950, level: 1, img: "https://cdn2.hentaigifz.com/115978/best-nelson-scaled.webp", shopPrice: 3100 },
-            { id: 60, name: "Dragon Momma Slut", rarity: "animated", baseAtk: 2000, baseDef: 900, level: 1, img: "https://cdn2.hentaigifz.com/116346/dragon-momma-slut-chelodoy-scaled.webp", shopPrice: 3200 }
+            { id: 60, name: "Dragon Momma Slut", rarity: "animated", baseAtk: 2000, baseDef: 900, level: 1, img: "https://cdn2.hentaigifz.com/116346/dragon-momma-slut-chelodoy-scaled.webp", shopPrice: 3200 },
+            { id: 61, name: "Samantha Bounce", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/113850/gif-samantha-1-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 62, name: "Tracer Riding", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/113896/tracer-ridingirastris-ii-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 63, name: "Jane Jetson MILF", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114176/milf-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 64, name: "Blonde Ahegao", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114102/blonde-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 65, name: "Mommy's Milk", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114104/mommys-milk-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 66, name: "Modeus Tight Fuck", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114096/hentai-fuck-tight-pussy-with-big-tits-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 67, name: "Family Guy XXXmas", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114026/holy-crap-xxxmas-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 68, name: "Harness Pussy Fuck", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114034/pussy-hentai-fuck-scaled.webp", shopPrice: 4000 }, // PRECIO AÑADIDO
+            { id: 69, name: "Lisa Footjob", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://cdn.truyen-hentai.com/lisa-genshin-impact?interlace=1&quality=90&type=jpeg&url=https%3A%2F%2Fi.redd.it%2F2rhrtyfu486g1.jpeg&width=920&sign=fT55BfklnZBR2KbkAiywdF3fKOyO99UCruuDvfceJcs", shopPrice: null }
         ];
         const TOURNAMENTS = [
             { id: 1, name: "Torneo Navideño", cost: 1, trophies: 500, diamonds: 200, cards: [7, 11, 12, 13], description: "¡Regalo navideño! Gana Francine Smith y cartas de torneo.", image: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", iaDeck: [0,1,2] },
