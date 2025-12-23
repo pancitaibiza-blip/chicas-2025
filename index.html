@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>🎄 Fortnite Cartas MASTER - Online Edition</title>
+    <title>🎄 Fortnite Cartas MASTER - Clan Wars Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
@@ -32,37 +32,66 @@
         .animate-scroll { animation: scroll 40s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         
-        .nav-btn { color: rgba(255,255,255,0.4); transition: all 0.3s; }
+        .nav-btn { color: rgba(255,255,255,0.4); transition: all 0.3s; position: relative; }
         .nav-btn.active { color: white; background: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
-        
-        .rarity-common { border-left: 4px solid #94a3b8; }
-        .rarity-rare { border-left: 4px solid #22c55e; }
-        .rarity-epic { border-left: 4px solid #a855f7; }
-        .rarity-legendary { border-left: 4px solid #f97316; }
-        .rarity-idolos { border-left: 4px solid #ec4899; }
-        .rarity-animated { border-left: 4px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); }
-        .rarity-actricesporno { border-left: 4px solid #ef4444; }
+        .nav-btn.active::after { content: ''; position: absolute; bottom: 15%; width: 4px; height: 4px; background: #06b6d4; rounded: 50%; box-shadow: 0 0 10px #06b6d4; }
 
-        .card-img-container { position: relative; overflow: hidden; border-radius: 1rem; background: #000; }
-        .card-img-container img { transition: transform 0.5s; width: 100%; height: 100%; object-fit: cover; }
-        
-        .attack-card-anim {
-            animation: attackHit 0.8s ease-in-out forwards;
-        }
-        @keyframes attackHit {
-            0% { transform: scale(0) translateY(100px); opacity: 0; }
-            50% { transform: scale(1.2) translateY(-20px); opacity: 1; }
-            100% { transform: scale(1) translateY(0); opacity: 0; }
-        }
+        /* Rarezas */
+        .rarity-common { border: 2px solid #94a3b8; }
+        .rarity-rare { border: 2px solid #22c55e; }
+        .rarity-epic { border: 2px solid #a855f7; }
+        .rarity-legendary { border: 2px solid #f97316; }
+        .rarity-idolos { border: 2px solid #ec4899; }
+        .rarity-animated { border: 2px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+        .rarity-actricesporno { border: 2px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
 
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        /* Sistema de Flip de Cartas */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .revealed .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+        }
+        .card-back {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .card-front {
+            transform: rotateY(180deg);
+        }
 
         .battle-card { cursor: pointer; transition: all 0.3s; }
-        .battle-card:hover { transform: translateY(-10px) scale(1.05); }
-        .battle-card:active { transform: scale(0.9); }
-        .battle-card.disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .battle-card:not(.disabled):hover { transform: translateY(-10px) scale(1.05); }
+        .battle-card.disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .chat-container::-webkit-scrollbar { width: 4px; }
+        .chat-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        .clan-tag { font-family: monospace; font-weight: 900; color: #fbbf24; }
+
+        @keyframes hitEffect {
+            0% { transform: translateX(0); filter: brightness(1); }
+            20% { transform: translateX(-10px); filter: brightness(2); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-5px); }
+            100% { transform: translateX(0); filter: brightness(1); }
+        }
+        .hit-anim { animation: hitEffect 0.4s ease-out; }
     </style>
 <script type="importmap">
 {
@@ -76,12 +105,12 @@
 <body>
 
     <!-- MARQUESINA -->
-    <div class="fixed top-0 inset-x-0 h-10 bg-gradient-to-r from-red-600 to-green-600 z-[60] flex items-center overflow-hidden border-b border-white/20 shadow-lg">
+    <div class="fixed top-0 inset-x-0 h-10 bg-gradient-to-r from-indigo-700 to-purple-800 z-[60] flex items-center overflow-hidden border-b border-white/20 shadow-lg">
         <div class="animate-scroll flex gap-12 font-black text-[10px] uppercase tracking-widest px-4 text-white">
-            <span>🎄 WINTERFEST MASTER ONLINE - SISTEMA DE MAZO ACTIVO</span>
+            <span>🛡️ SISTEMA DE CLANES ACTIVO - ¡CREA EL TUYO Y DOMINA EL RANKING!</span>
+            <span>🔥 DUELO ONLINE MEJORADO: LAS CARTAS DEL RIVAL SE REVELAN</span>
             <span>🎁 RECLAMA TU MILLÓN DE GEMAS EN LA TIENDA</span>
-            <span>🔥 USA TUS MEJORES CARTAS PARA DERROTAR AL RIVAL</span>
-            <span>🏆 GANA TROFEOS POR CADA VICTORIA ONLINE</span>
+            <span>🏆 GANA LA GUERRA DE CLANES PARA PREMIOS EXCLUSIVOS</span>
         </div>
     </div>
 
@@ -92,7 +121,10 @@
                 <img id="u-avatar" src="" class="w-24 h-24 rounded-full border-4 border-white shadow-2xl object-cover bg-black" />
                 <div class="absolute bottom-0 right-0 bg-cyan-500 w-6 h-6 rounded-full flex items-center justify-center text-[10px] border-2 border-white"><i class="fas fa-pen"></i></div>
             </div>
-            <h2 id="u-name" class="text-3xl font-black mt-4 italic uppercase tracking-tighter drop-shadow-lg">Jugador</h2>
+            <div class="flex items-center gap-2 mt-4">
+                <span id="u-clan" class="clan-tag text-lg hidden"></span>
+                <h2 id="u-name" class="text-3xl font-black italic uppercase tracking-tighter drop-shadow-lg">Jugador</h2>
+            </div>
             
             <div class="grid grid-cols-3 gap-2 w-full max-w-md mt-6">
                 <div class="glass-panel p-3 text-center"><span class="text-[7px] text-white/40 block">TROFEOS</span><div id="v-trophies" class="text-yellow-400 font-black text-lg">0</div></div>
@@ -103,131 +135,145 @@
 
         <!-- VISTAS -->
         <section id="view-news" class="view active">
-            <div class="glass-panel p-10 text-center border-4 border-red-500/30 mb-8 relative overflow-hidden">
-                <h3 class="text-4xl font-black italic uppercase mb-2 text-red-500">WINTERFEST ONLINE</h3>
-                <p class="text-white/60 mb-8 font-bold italic">¡Nuevo sistema de combate! Usa tus cartas del mazo para atacar.</p>
+            <div class="glass-panel p-10 text-center border-4 border-cyan-500/30 mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-9xl rotate-12">🛡️</div>
+                <h3 class="text-4xl font-black italic uppercase mb-2 text-cyan-400">GUERRA DE CLANES</h3>
+                <p class="text-white/60 mb-8 font-bold italic">¡Ya puedes crear tu Clan y chatear con tus amigos!</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button onclick="router.navigate('battle')" class="px-8 py-4 bg-cyan-500 text-white font-black rounded-2xl uppercase italic shadow-xl transition-all hover:scale-105">Jugar Duelo Online 🌐</button>
-                    <button onclick="router.navigate('shop')" class="px-8 py-4 bg-white text-black font-black rounded-2xl uppercase italic shadow-xl transition-all hover:scale-105">Tienda Regalo 🎁</button>
+                    <button onclick="router.navigate('clans')" class="px-8 py-4 bg-yellow-500 text-black font-black rounded-2xl uppercase italic shadow-xl hover:scale-105 transition-all">Ir a Clanes 🛡️</button>
+                    <button onclick="router.navigate('battle')" class="px-8 py-4 bg-cyan-500 text-white font-black rounded-2xl uppercase italic shadow-xl hover:scale-105 transition-all">Duelo Online 🌐</button>
                 </div>
             </div>
         </section>
 
+        <!-- CLANES -->
+        <section id="view-clans" class="view">
+            <div id="clans-lobby" class="space-y-6">
+                <div class="glass-panel p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h2 class="text-3xl font-black italic uppercase tracking-tighter">SISTEMA DE CLANES</h2>
+                        <p class="text-white/40 text-xs font-bold uppercase tracking-widest">Únete a una familia y domina el mundo</p>
+                    </div>
+                    <button onclick="clans.showCreate()" class="px-8 py-4 bg-cyan-500 rounded-2xl font-black uppercase italic shadow-lg hover:scale-105 transition-all">Crear Clan 🛡️</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-panel p-6">
+                        <h3 class="text-sm font-black uppercase tracking-widest text-white/40 mb-6">Lista de Clanes</h3>
+                        <div id="clans-list" class="space-y-3 max-h-96 overflow-y-auto pr-2 chat-container">
+                            <!-- Inyectado por JS -->
+                        </div>
+                    </div>
+                    <div class="glass-panel p-6 flex flex-col h-[500px]">
+                        <h3 class="text-sm font-black uppercase tracking-widest text-white/40 mb-4">Chat del Clan <span id="current-clan-name" class="text-cyan-400"></span></h3>
+                        <div id="clan-chat-box" class="flex-1 overflow-y-auto pr-2 space-y-4 chat-container mb-4 text-xs font-medium">
+                            <div class="text-center text-white/20 mt-20 italic">Únete a un clan para chatear</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input id="clan-msg-input" type="text" placeholder="Escribe algo..." class="flex-1 bg-black/40 border border-white/10 p-3 rounded-xl outline-none focus:border-cyan-500 text-sm" />
+                            <button onclick="clans.sendMsg()" class="w-12 h-12 bg-cyan-500 rounded-xl flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MULTIPLAYER BATTLE -->
         <section id="view-battle" class="view">
             <div id="battle-lobby" class="glass-panel p-10 text-center max-w-lg mx-auto border-2 border-cyan-500/30">
                 <div class="text-6xl mb-6">🌐</div>
-                <h2 class="text-3xl font-black italic mb-6 uppercase tracking-tighter">DUELO CON TU MAZO</h2>
+                <h2 class="text-3xl font-black italic mb-6 uppercase tracking-tighter">SALA DE DUELO</h2>
                 <input id="room-id-input" type="text" placeholder="CÓDIGO DE SALA" class="w-full bg-black/40 border-2 border-white/10 p-5 rounded-2xl mb-6 text-center font-black text-2xl uppercase outline-none focus:border-cyan-400 text-white" />
-                <button onclick="multiplayer.join()" class="w-full py-5 bg-cyan-500 rounded-2xl font-black text-xl shadow-xl uppercase italic hover:scale-105">Pelear ⚡</button>
+                <button onclick="multiplayer.join()" class="w-full py-5 bg-cyan-500 rounded-2xl font-black text-xl shadow-xl uppercase italic hover:scale-105 transition-all">Pelear ⚡</button>
             </div>
 
             <div id="battle-arena" class="hidden space-y-4 max-w-4xl mx-auto">
                 <!-- RIVAL -->
-                <div class="glass-panel p-4 border-2 border-red-500/20">
-                    <div class="flex items-center gap-4">
+                <div class="glass-panel p-4 border-2 border-red-500/20" id="rival-ui-box">
+                    <div class="flex items-center gap-4 mb-4">
                         <img id="rival-avatar" src="" class="w-12 h-12 rounded-full border-2 border-white/10 bg-gray-900 object-cover" />
                         <div class="flex-1">
                             <div class="flex justify-between font-black uppercase italic text-[10px] mb-1">
-                                <span id="rival-name">Buscando...</span>
+                                <span id="rival-full-name">...</span>
                                 <span id="rival-hp-text" class="text-red-500">100/100 HP</span>
                             </div>
-                            <div class="w-full bg-black h-2.5 rounded-full overflow-hidden">
+                            <div class="w-full bg-black h-2 rounded-full overflow-hidden">
                                 <div id="rival-hp-bar" class="hp-bar-fill h-full bg-red-600" style="width: 100%"></div>
                             </div>
                         </div>
                     </div>
+                    <!-- MAZO RIVAL -->
+                    <div id="rival-deck-display" class="grid grid-cols-3 gap-3"></div>
                 </div>
 
-                <!-- CAMPO DE BATALLA / ANIMACIONES -->
-                <div class="relative h-64 flex items-center justify-center overflow-hidden rounded-3xl bg-black/20 border border-white/5">
-                    <div id="attack-animation-container" class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <!-- Aquí aparecerá la carta que ataca -->
-                    </div>
-                    <div id="battle-status" class="text-xl font-black italic uppercase text-cyan-400 animate-pulse text-center px-4">Esperando...</div>
+                <div class="h-12 flex items-center justify-center">
+                    <div id="battle-status" class="text-md font-black italic uppercase text-cyan-400 animate-pulse text-center">Esperando...</div>
                 </div>
 
-                <!-- TÚ -->
+                <!-- JUGADOR TÚ -->
                 <div class="glass-panel p-4 border-2 border-cyan-500/20">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 mb-4">
                         <div class="flex-1 text-right">
                             <div class="flex flex-row-reverse justify-between font-black uppercase italic text-[10px] mb-1">
-                                <span id="player-name-battle">Tú</span>
+                                <span id="player-full-name">...</span>
                                 <span id="player-hp-text" class="text-cyan-400">100/100 HP</span>
                             </div>
-                            <div class="w-full bg-black h-2.5 rounded-full overflow-hidden">
+                            <div class="w-full bg-black h-2 rounded-full overflow-hidden">
                                 <div id="player-hp-bar" class="hp-bar-fill h-full bg-cyan-500" style="width: 100%"></div>
                             </div>
                         </div>
                         <img id="player-avatar-battle" src="" class="w-12 h-12 rounded-full border-2 border-white/10 bg-gray-900 object-cover" />
                     </div>
+                    <!-- TU MAZO -->
+                    <div id="player-battle-deck" class="grid grid-cols-3 gap-3"></div>
                 </div>
 
-                <!-- TUS CARTAS (EL MAZO) -->
-                <div id="player-battle-deck" class="grid grid-cols-3 gap-3 pt-4">
-                    <!-- Las cartas se inyectan aquí -->
-                </div>
-
-                <div id="battle-logs" class="p-3 text-center text-[8px] font-bold text-white/20 uppercase tracking-widest max-h-16 overflow-y-auto"></div>
+                <div id="battle-logs" class="p-2 text-center text-[8px] font-bold text-white/20 uppercase tracking-widest max-h-12 overflow-y-auto"></div>
+                <div class="flex justify-center"><button onclick="location.reload()" class="text-[8px] text-white/20 uppercase">Salir</button></div>
             </div>
         </section>
 
-        <!-- OTROS MODOS (RESUMIDOS PARA CONSOLIDAR) -->
+        <!-- OTROS (DECK, SHOP, RANKING) -->
+        <section id="view-deck" class="view"><div id="deck-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div></section>
         <section id="view-shop" class="view">
-            <div class="text-center mb-8">
-                <button onclick="shop.claimMegaGift()" class="px-8 py-6 bg-yellow-400 text-black font-black rounded-3xl text-xl uppercase italic shadow-xl transition-all hover:scale-105">🎁 RECLAMAR 1,000,000 GEMAS</button>
-            </div>
-            <div id="shop-items" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+            <div class="text-center mb-8"><button onclick="shop.claimMegaGift()" class="px-12 py-6 bg-yellow-400 text-black font-black rounded-3xl text-xl uppercase italic shadow-xl">🎁 RECLAMAR 1,000,000 GEMAS</button></div>
+            <div id="shop-items" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
         </section>
+        <section id="view-ranking" class="view"><div id="ranking-list" class="max-w-lg mx-auto space-y-3"></div></section>
 
-        <section id="view-deck" class="view">
-            <h2 class="text-3xl font-black italic uppercase mb-8 text-center tracking-tighter">MI MAZO 🎴</h2>
-            <div id="deck-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-        </section>
-
-        <section id="view-ranking" class="view">
-            <h2 class="text-3xl font-black italic uppercase text-center mb-10 tracking-tighter">TOP GLOBAL 🏆</h2>
-            <div id="ranking-list" class="max-w-lg mx-auto space-y-2"></div>
-        </section>
-
-        <section id="view-arena" class="view">
-             <div class="glass-panel p-10 text-center border-blue-500/30">
-                <h2 class="text-3xl font-black italic mb-6">MODO ARENA</h2>
-                <div id="a-rank-name" class="font-black text-blue-400 mb-4 uppercase">Rango 1</div>
-                <button onclick="arena.hit()" class="px-12 py-4 bg-blue-600 rounded-2xl font-black uppercase">Entrenar ⚔️</button>
-             </div>
-        </section>
     </div>
 
     <!-- NAV -->
     <nav class="fixed bottom-0 inset-x-0 h-24 bg-black/80 backdrop-blur-3xl border-t border-white/10 flex items-center justify-around px-2 z-50">
-        <button onclick="router.navigate('news')" id="nav-news" class="nav-btn active flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-home mb-1"></i><span class="text-[7px] font-black uppercase">Home</span></button>
-        <button onclick="router.navigate('battle')" id="nav-battle" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-swords mb-1"></i><span class="text-[7px] font-black uppercase">Duelo</span></button>
-        <button onclick="router.navigate('arena')" id="nav-arena" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-fire mb-1"></i><span class="text-[7px] font-black uppercase">Arena</span></button>
-        <button onclick="router.navigate('deck')" id="nav-deck" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-layer-group mb-1"></i><span class="text-[7px] font-black uppercase">Mazo</span></button>
-        <button onclick="router.navigate('shop')" id="nav-shop" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-shopping-bag mb-1"></i><span class="text-[7px] font-black uppercase">Tienda</span></button>
-        <button onclick="router.navigate('ranking')" id="nav-ranking" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-list-ol mb-1"></i><span class="text-[7px] font-black uppercase">Rank</span></button>
+        <button onclick="router.navigate('news')" id="nav-news" class="nav-btn active flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-home mb-1 text-sm"></i><span class="text-[7px] font-black uppercase">Home</span></button>
+        <button onclick="router.navigate('battle')" id="nav-battle" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-swords mb-1 text-sm"></i><span class="text-[7px] font-black uppercase">Duelo</span></button>
+        <button onclick="router.navigate('clans')" id="nav-clans" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-shield-alt mb-1 text-sm"></i><span class="text-[7px] font-black uppercase">Clanes</span></button>
+        <button onclick="router.navigate('deck')" id="nav-deck" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-layer-group mb-1 text-sm"></i><span class="text-[7px] font-black uppercase">Mazo</span></button>
+        <button onclick="router.navigate('shop')" id="nav-shop" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-shopping-bag mb-1 text-sm"></i><span class="text-[7px] font-black uppercase">Tienda</span></button>
+        <button onclick="router.navigate('ranking')" id="nav-ranking" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-list-ol mb-1 text-sm"></i><span class="text-[7px] font-black uppercase">Rank</span></button>
     </nav>
 
     <!-- SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, remove, onDisconnect, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: 'AIzaSyAgYrcmcSzz2umxAUp5UqCL3pgNKKR08lU',
-            authDomain: 'juego-de-cartas-f7284.firebaseapp.com',
-            projectId: 'juego-de-cartas-f7284',
-            storageBucket: 'juego-de-cartas-f7284.firebasestorage.app',
-            messagingSenderId: '702565143174',
-            appId: '1:702565143174:web:48a7def7e76a1e9c907707',
-            measurementId: 'G-9RST4H1M1P',
+            apiKey: "AIzaSyAgYrcmcSzz2umxAUp5UqCL3pgNKKR08lU",
+            authDomain: "juego-de-cartas-f7284.firebaseapp.com",
+            projectId: "juego-de-cartas-f7284",
+            storageBucket: "juego-de-cartas-f7284.firebasestorage.app",
+            messagingSenderId: "702565143174",
+            appId: "1:702565143174:web:48a7def7e76a1e9c907707",
+            measurementId: "G-9RST4H1M1P",
             databaseURL: "https://juego-de-cartas-f7284-default-rtdb.firebaseio.com"
         };
 
-        const appFb = initializeApp(firebaseConfig);
-        const db = getDatabase(appFb);
+        const fbApp = initializeApp(firebaseConfig);
+        const db = getDatabase(fbApp);
 
-        // DATA
+        // 101 CARTAS
         const ALL_CARDS = [
             { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg", price: 50 },
             { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png", price: 100 },
@@ -244,48 +290,114 @@
             { id: 61, name: "Samantha Bounce", rarity: "animated", atk: 10000, def: 5000, img: "https://cdn2.hentaigifz.com/113850/gif-samantha-1-scaled.webp", price: 4000 },
             { id: 101, name: "Milf Handjob Wet", rarity: "actricesporno", atk: 12000, def: 6000, img: "https://s2.pictoa.com/media/galleries/269/410/269410603155505d89c/393371260315552a7156.gif", price: 7000 }
         ];
-        for(let i=8; i<=100; i++) { if(!ALL_CARDS.find(c=>c.id===i)) ALL_CARDS.push({ id: i, name: `Skin #${i}`, rarity: i>80?"animated":i>50?"legendary":i>30?"epic":"common", atk: 100+i, def: 80+i, img: `https://picsum.photos/seed/${i+100}/200/300`, price: 100+(i*15) }); }
+        for(let i=0; i<=101; i++) { if(!ALL_CARDS.find(c => c.id === i)) ALL_CARDS.push({ id: i, name: `Skin #${i}`, rarity: i>80?"animated":i>50?"legendary":"rare", atk: 100+i, def: 80+i, price: 100+(i*20), img: `https://picsum.photos/seed/${i+50}/200/300` }); }
 
         // STATE
-        window.state = JSON.parse(localStorage.getItem('cards_master_v8')) || {
-            name: 'BB_' + Math.floor(Math.random()*999),
+        window.state = JSON.parse(localStorage.getItem('cards_master_v10')) || {
+            name: 'PLAYER_' + Math.floor(Math.random()*999),
             diamonds: 100, trophies: 0, cups: 0,
-            owned: [0, 1, 2], currentDeck: [0, 1, 2],
-            arenaRank: 0, avatar: 'https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037'
+            owned: [0, 1, 2], currentDeck: [0, 1, 2], clan: null,
+            avatar: 'https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037'
         };
 
-        const save = () => { localStorage.setItem('cards_master_v8', JSON.stringify(window.state)); renderGlobalUI(); syncRank(); };
+        const save = () => { localStorage.setItem('cards_master_v10', JSON.stringify(window.state)); renderGlobalUI(); };
         const renderGlobalUI = () => {
             document.getElementById('u-name').innerText = window.state.name;
             document.getElementById('u-avatar').src = window.state.avatar;
+            const uClan = document.getElementById('u-clan');
+            if(window.state.clan) { uClan.innerText = `[${window.state.clan}]`; uClan.classList.remove('hidden'); }
+            else { uClan.classList.add('hidden'); }
             document.getElementById('v-diamonds').innerText = window.state.diamonds.toLocaleString();
             document.getElementById('v-trophies').innerText = window.state.trophies;
             document.getElementById('v-cups').innerText = window.state.cups;
         };
 
-        // MULTIPLAYER
+        // ROUTER
+        window.router = {
+            navigate: (view) => {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById('view-' + view).classList.add('active');
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                const btn = document.getElementById('nav-' + view);
+                if(btn) btn.classList.add('active');
+                if(view === 'clans') clans.init();
+                if(view === 'deck') renderDeck();
+                if(view === 'shop') renderShop();
+            }
+        };
+
+        // CLANES
+        window.clans = {
+            init: () => {
+                onValue(ref(db, 'clans_v10'), (snap) => {
+                    const list = snap.val() || {};
+                    const cont = document.getElementById('clans-list');
+                    cont.innerHTML = Object.keys(list).map(name => `
+                        <div class="glass-panel p-4 flex justify-between items-center border-white/5 hover:border-cyan-500 transition-all cursor-pointer" onclick="clans.join('${name}')">
+                            <div class="flex items-center gap-3"><span class="clan-tag">[${name}]</span><span class="text-xs opacity-40">${Object.keys(list[name].members || {}).length} miembros</span></div>
+                            <i class="fas fa-sign-in-alt opacity-20"></i>
+                        </div>
+                    `).join('');
+                });
+                if(window.state.clan) clans.listenChat(window.state.clan);
+            },
+            showCreate: () => {
+                const name = prompt("Nombre del Clan (Máx 5 letras):").toUpperCase().substring(0,5);
+                if(name && name.length > 2) {
+                    set(ref(db, `clans_v10/${name}/members/${window.state.name}`), true);
+                    window.state.clan = name; save(); clans.init();
+                }
+            },
+            join: (name) => {
+                if(window.state.clan) { if(!confirm(`¿Quieres salir de ${window.state.clan} para unirte a ${name}?`)) return; }
+                set(ref(db, `clans_v10/${name}/members/${window.state.name}`), true);
+                window.state.clan = name; save(); clans.init();
+            },
+            listenChat: (name) => {
+                document.getElementById('current-clan-name').innerText = `[${name}]`;
+                onValue(ref(db, `clans_v10/${name}/chat`), (snap) => {
+                    const msgs = snap.val() || {};
+                    const cont = document.getElementById('clan-chat-box');
+                    cont.innerHTML = Object.values(msgs).map(m => `
+                        <div class="flex flex-col ${m.user === window.state.name ? 'items-end' : 'items-start'}">
+                            <span class="text-[8px] opacity-30 uppercase font-black mb-1">${m.user}</span>
+                            <div class="p-3 ${m.user === window.state.name ? 'bg-cyan-600 rounded-l-2xl rounded-tr-2xl' : 'bg-white/5 rounded-r-2xl rounded-tl-2xl'} border border-white/5">${m.text}</div>
+                        </div>
+                    `).join('');
+                    cont.scrollTop = cont.scrollHeight;
+                });
+            },
+            sendMsg: () => {
+                if(!window.state.clan) return alert("Únete a un clan");
+                const input = document.getElementById('clan-msg-input');
+                if(!input.value.trim()) return;
+                push(ref(db, `clans_v10/${window.state.clan}/chat`), { user: window.state.name, text: input.value.trim() });
+                input.value = '';
+            }
+        };
+
+        // DUELOS ONLINE (MEJORADOS)
         window.multiplayer = {
-            room: '', role: '', ref: null, data: null, lastAttackSeen: null,
+            room: '', role: '', ref: null, data: null, revealedCards: new Set(),
             join: () => {
                 const code = document.getElementById('room-id-input').value.toUpperCase().trim();
-                if(code.length < 3) return alert("Código corto");
+                if(code.length < 3) return alert("Mínimo 3 letras");
                 window.multiplayer.room = code;
-                window.multiplayer.ref = ref(db, `rooms_v8/${code}`);
-                
+                window.multiplayer.ref = ref(db, `rooms_v10/${code}`);
                 const deckInfo = window.state.currentDeck.map(id => ALL_CARDS.find(c => c.id === id));
 
                 onValue(window.multiplayer.ref, (snap) => {
                     const val = snap.val();
                     if(!val) {
                         set(window.multiplayer.ref, { 
-                            p1: { n: window.state.name, h: 100, a: window.state.avatar, deck: deckInfo },
+                            p1: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: deckInfo },
                             status: 'waiting', turn: 'p1', logs: ['Esperando rival...']
                         });
                         window.multiplayer.role = 'p1';
                     } else if(val.status === 'waiting' && !window.multiplayer.role) {
                         update(window.multiplayer.ref, { 
-                            p2: { n: window.state.name, h: 100, a: window.state.avatar, deck: deckInfo },
-                            status: 'playing', logs: ['¡Duelo iniciado! Turno de ' + val.p1.n]
+                            p2: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: deckInfo },
+                            status: 'playing', logs: ['¡Guerra de cartas iniciada!']
                         });
                         window.multiplayer.role = 'p2';
                     }
@@ -298,95 +410,89 @@
             },
             sync: (data) => {
                 window.multiplayer.data = data;
-                const me = data[window.multiplayer.role] || { h: 0, n: '...' };
-                const rival = window.multiplayer.role === 'p1' ? data.p2 : data.p1;
-                
-                document.getElementById('player-name-battle').innerText = me.n;
+                const me = data[window.multiplayer.role];
+                const rivalRole = window.multiplayer.role === 'p1' ? 'p2' : 'p1';
+                const rival = data[rivalRole];
+
+                // HP y Nombres
+                document.getElementById('player-full-name').innerText = `${me.c ? '['+me.c+']' : ''} ${me.n}`;
                 document.getElementById('player-avatar-battle').src = me.a;
-                document.getElementById('player-hp-text').innerText = `${me.h}/100 HP`;
-                document.getElementById('player-hp-bar').style.width = me.h + '%';
+                document.getElementById('player-hp-text').innerText = `${me.h}% HP`;
+                document.getElementById('player-hp-bar').style.width = `${me.h}%`;
 
                 if(rival) {
-                    document.getElementById('rival-name').innerText = rival.n;
+                    document.getElementById('rival-full-name').innerText = `${rival.c ? '['+rival.c+']' : ''} ${rival.n}`;
                     document.getElementById('rival-avatar').src = rival.a;
-                    document.getElementById('rival-hp-text').innerText = `${rival.h}/100 HP`;
-                    document.getElementById('rival-hp-bar').style.width = rival.h + '%';
+                    document.getElementById('rival-hp-text').innerText = `${rival.h}% HP`;
+                    document.getElementById('rival-hp-bar').style.width = `${rival.h}%`;
                 }
 
-                // Turno
+                // Render Decks
                 const status = document.getElementById('battle-status');
-                const isMyTurn = data.turn === window.multiplayer.role && data.status === 'playing';
-                
-                if(data.status === 'playing') {
-                    status.innerText = isMyTurn ? '¡TU TURNO! ELIGE UNA CARTA' : 'EL RIVAL ESTÁ ELIGIENDO...';
-                } else if(data.status === 'finished') {
-                    status.innerText = data.winner === window.multiplayer.role ? '¡VICTORIA! 🏆' : 'HAS PERDIDO... 💀';
-                }
+                const isMyTurn = data.status === 'playing' && data.turn === window.multiplayer.role;
+                status.innerText = isMyTurn ? '¡ELIGE TU CARTA PARA ATACAR!' : 'EL RIVAL ESTÁ ELIGIENDO...';
+                if(data.status === 'finished') status.innerText = data.winner === window.multiplayer.role ? '¡VICTORIA PARA EL CLAN! 🏆' : 'DERROTA... 💀';
 
-                // Render Mazo de batalla
-                const deckContainer = document.getElementById('player-battle-deck');
-                deckContainer.innerHTML = (me.deck || []).map(c => `
-                    <div class="glass-panel p-2 battle-card rarity-${c.rarity} ${!isMyTurn ? 'disabled' : ''}" onclick="window.multiplayer.attack(${c.id}, ${c.atk}, '${c.img}')">
-                        <div class="h-24 rounded-lg overflow-hidden mb-1"><img src="${c.img}" class="w-full h-full object-cover"></div>
-                        <div class="text-[7px] font-black truncate uppercase text-center">${c.name}</div>
-                        <div class="text-[8px] font-black text-yellow-400 text-center italic">ATK: ${c.atk}</div>
+                // Tu Mazo
+                document.getElementById('player-battle-deck').innerHTML = (me.deck || []).map(c => `
+                    <div onclick="multiplayer.attack(${c.id}, ${c.atk}, '${c.img}')" class="glass-panel p-2 battle-card rarity-${c.rarity} ${!isMyTurn ? 'disabled' : ''}">
+                        <div class="h-20 rounded-lg overflow-hidden mb-1"><img src="${c.img}" class="w-full h-full object-cover"></div>
+                        <div class="text-[7px] font-black uppercase text-center truncate italic">ATK ${c.atk}</div>
                     </div>
                 `).join('');
 
-                // Animación de ataque si hubo uno nuevo
-                if(data.lastAttack && data.lastAttack.id !== window.multiplayer.lastAttackSeen) {
-                    window.multiplayer.lastAttackSeen = data.lastAttack.id;
-                    const animCont = document.getElementById('attack-animation-container');
-                    animCont.innerHTML = `
-                        <div class="attack-card-anim w-32 h-44 glass-panel p-2 border-2 border-white shadow-2xl bg-white">
-                            <img src="${data.lastAttack.img}" class="w-full h-full object-cover rounded-lg">
-                            <div class="absolute -top-4 -right-4 bg-red-600 text-white font-black px-3 py-1 rounded-full italic text-xl">-${data.lastAttack.dmg}</div>
+                // Mazo Rival (Revealed)
+                const anim = (data.lastAttack && data.lastAttack.role === rivalRole);
+                document.getElementById('rival-deck-display').innerHTML = (rival?.deck || []).map(c => {
+                    const isUsed = data.lastAttack && data.lastAttack.cardId === c.id && data.lastAttack.role === rivalRole;
+                    return `
+                        <div class="h-24 transition-all duration-500 ${isUsed ? 'revealed shadow-[0_0_20px_rgba(239,68,68,0.5)]' : ''}">
+                            <div class="card-inner h-full w-full">
+                                <div class="card-back border-white/5">?</div>
+                                <div class="card-front rarity-${c.rarity} ${isUsed ? 'hit-anim' : ''}">
+                                    <img src="${c.img}" class="w-full h-full object-cover rounded-lg">
+                                </div>
+                            </div>
                         </div>
                     `;
-                    setTimeout(() => animCont.innerHTML = '', 1000);
+                }).join('');
+
+                if(anim) {
+                    document.getElementById('rival-ui-box').classList.add('hit-anim');
+                    setTimeout(() => document.getElementById('rival-ui-box').classList.remove('hit-anim'), 500);
                 }
 
                 document.getElementById('battle-logs').innerHTML = (data.logs || []).map(l => `<div>${l}</div>`).join('');
             },
-            attack: (cardId, atk, img) => {
-                if(window.multiplayer.data.turn !== window.multiplayer.role || window.multiplayer.data.status !== 'playing') return;
-                
-                const opponent = window.multiplayer.role === 'p1' ? 'p2' : 'p1';
-                const dmg = Math.floor(atk / 5) + Math.floor(Math.random() * 5); // Escalado de daño
-                const newHp = Math.max(0, window.multiplayer.data[opponent].h - dmg);
-                
+            attack: (id, atk, img) => {
+                if(window.multiplayer.data.status !== 'playing' || window.multiplayer.data.turn !== window.multiplayer.role) return;
+                const rivalRole = window.multiplayer.role === 'p1' ? 'p2' : 'p1';
+                const dmg = Math.floor(atk / 5) + 5;
+                const newHp = Math.max(0, window.multiplayer.data[rivalRole].h - dmg);
                 const updates = {};
-                updates[`${opponent}/h`] = newHp;
-                updates[`turn`] = opponent;
-                updates[`lastAttack`] = { id: Date.now(), img: img, dmg: dmg, role: window.multiplayer.role };
-                updates[`logs`] = [`${window.state.name} atacó con ${dmg}!`, ...(window.multiplayer.data.logs || [])].slice(0, 5);
-                
-                if(newHp <= 0) {
-                    updates[`status`] = 'finished';
-                    updates[`winner`] = window.multiplayer.role;
-                    window.state.trophies += 50; window.state.diamonds += 100; save();
-                }
+                updates[`${rivalRole}/h`] = newHp;
+                updates[`turn`] = rivalRole;
+                updates[`lastAttack`] = { cardId: id, role: window.multiplayer.role };
+                updates[`logs`] = [`¡${window.state.name} atacó con fuerza!`, ...(window.multiplayer.data.logs || [])].slice(0,3);
+                if(newHp <= 0) { updates[`status`] = 'finished'; updates[`winner`] = window.multiplayer.role; window.state.trophies += 50; save(); }
                 update(window.multiplayer.ref, updates);
-            },
-            leave: () => { location.reload(); }
+            }
         };
 
         // TIENDA
         window.shop = {
-            claimMegaGift: () => { window.state.diamonds += 1000000; save(); renderShop(); alert("¡Millonario! 💎"); },
+            claimMegaGift: () => { window.state.diamonds += 1000000; save(); renderShop(); alert("¡Millonario de por vida! 💎"); },
             buy: (id) => {
                 const c = ALL_CARDS.find(x => x.id === id);
                 if(window.state.diamonds >= c.price) { window.state.diamonds -= c.price; window.state.owned.push(id); save(); renderShop(); }
-                else alert("Faltan gemas");
+                else alert("Te faltan gemas bb.");
             }
         };
         const renderShop = () => {
             document.getElementById('shop-items').innerHTML = ALL_CARDS.filter(c => !window.state.owned.includes(c.id)).map(c => `
-                <div class="glass-panel p-3 rarity-${c.rarity}">
-                    <div class="h-32 rounded-lg overflow-hidden mb-2"><img src="${c.img}" class="w-full h-full object-cover"></div>
-                    <div class="text-[9px] font-black uppercase truncate mb-2">${c.name}</div>
-                    <button onclick="shop.buy(${c.id})" class="w-full py-2 bg-white text-black text-[9px] font-black rounded-lg">💎 ${c.price}</button>
-                </div>
+                <div class="glass-panel p-3 rarity-${c.rarity}"><div class="h-32 rounded-lg overflow-hidden mb-2"><img src="${c.img}" class="w-full h-full object-cover"></div>
+                <div class="text-[9px] font-black uppercase truncate mb-2 italic">${c.name}</div>
+                <button onclick="shop.buy(${c.id})" class="w-full py-2 bg-white text-black text-[9px] font-black rounded-lg">💎 ${c.price}</button></div>
             `).join('');
         };
 
@@ -395,71 +501,26 @@
             document.getElementById('deck-grid').innerHTML = window.state.owned.map(id => {
                 const c = ALL_CARDS.find(x => x.id === id);
                 const inDeck = window.state.currentDeck.includes(id);
-                return `
-                    <div class="glass-panel p-3 rarity-${c.rarity} border-2 ${inDeck?'border-yellow-400':''}">
-                        <div class="h-32 rounded-lg overflow-hidden mb-2"><img src="${c.img}" class="w-full h-full object-cover"></div>
-                        <div class="text-[9px] font-black uppercase mb-2 truncate">${c.name}</div>
-                        <button onclick="app.toggleDeck(${id})" class="w-full py-1 ${inDeck?'bg-red-500':'bg-cyan-500'} text-white text-[7px] font-black rounded uppercase">${inDeck?'Quitar':'Poner'}</button>
-                    </div>
-                `;
+                return `<div class="glass-panel p-3 rarity-${c.rarity} ${inDeck?'border-yellow-400':''}"><div class="h-32 rounded-xl overflow-hidden mb-2"><img src="${c.img}" class="w-full h-full object-cover"></div>
+                <div class="text-[9px] font-black uppercase mb-3 italic">${c.name}</div>
+                <button onclick="app.toggleDeck(${id})" class="w-full py-2 ${inDeck?'bg-red-600':'bg-cyan-600'} text-[8px] font-black rounded-lg uppercase italic">${inDeck?'Quitar':'Equipar'}</button></div>`;
             }).join('');
-        };
-
-        // RANKING
-        const syncRank = () => {
-            let rs = JSON.parse(localStorage.getItem('rank_v8') || '[]');
-            const idx = rs.findIndex(x => x.name === window.state.name);
-            const d = { name: window.state.name, trophies: window.state.trophies, avatar: window.state.avatar };
-            if(idx !== -1) rs[idx] = d; else rs.push(d);
-            rs.sort((a,b) => b.trophies - a.trophies);
-            localStorage.setItem('rank_v8', JSON.stringify(rs.slice(0, 10)));
-        };
-        const renderRanking = () => {
-            const ranks = JSON.parse(localStorage.getItem('rank_v8') || '[]');
-            document.getElementById('ranking-list').innerHTML = ranks.map((r,i) => `
-                <div class="glass-panel p-4 flex items-center gap-4 ${r.name === window.state.name ? 'border-cyan-500' : ''}">
-                    <div class="font-black text-xl opacity-20 w-6">${i+1}</div>
-                    <img src="${r.avatar}" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                    <div class="flex-1 font-bold text-xs uppercase">${r.name}</div>
-                    <div class="text-yellow-400 font-black">${r.trophies} 🏆</div>
-                </div>
-            `).join('');
         };
 
         // UTILS
         window.app = {
             editProfile: () => {
                 const n = prompt("Nombre:", window.state.name);
-                if(n) { window.state.name = n.toUpperCase().substring(0,12); save(); }
+                if(n) { window.state.name = n.toUpperCase().substring(0,10); save(); }
             },
             toggleDeck: (id) => {
-                if(window.state.currentDeck.includes(id)) {
-                    window.state.currentDeck = window.state.currentDeck.filter(x => x !== id);
-                } else {
-                    if(window.state.currentDeck.length >= 3) return alert("Máximo 3 cartas");
-                    window.state.currentDeck.push(id);
-                }
+                if(window.state.currentDeck.includes(id)) { window.state.currentDeck = window.state.currentDeck.filter(x => x !== id); }
+                else { if(window.state.currentDeck.length >= 3) return alert("Max 3 cartas"); window.state.currentDeck.push(id); }
                 save(); renderDeck();
             }
         };
 
-        window.router = {
-            navigate: (view) => {
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById('view-' + view).classList.add('active');
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById('nav-' + view).classList.add('active');
-                if(view === 'deck') renderDeck();
-                if(view === 'shop') renderShop();
-                if(view === 'ranking') renderRanking();
-            }
-        };
-
-        window.arena = {
-            hit: () => { window.state.trophies += 5; window.state.diamonds += 10; save(); alert("+10 Gemas"); }
-        };
-
-        // INIT
+        // START
         renderGlobalUI();
     </script>
 </body>
